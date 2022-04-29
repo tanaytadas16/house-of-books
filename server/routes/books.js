@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const booksData = require("../data/books");
 
 function validateStringParams(param, paramName) {
     if (!param) {
@@ -21,25 +22,31 @@ function validateNumber(param, paramName) {
 }
 router.get("/", async (req, res) => {
     try {
-        let testJson = "House of books";
-        res.status(200).json(testJson);
+        let books = await booksData.getAll();
+        res.status(200).json(books);
+        return books;
     } catch (e) {
         res.status(400).json({error: e.message});
+        return e.message;
     }
 });
 
 router.get("/:id", async (req, res) => {
     try {
         validateStringParams(req.params.id, "Book id");
-        validateNumber(req.params.id, "Book id");
+        let books = await booksData.get(req.params.id);
+        console.log(books);
+        res.status(200).json(books);
+        return books;
     } catch (e) {
         res.status(400).json({error: e});
-        return;
+        return e.message;
     }
     try {
         res.status(200).json();
     } catch (e) {
         res.status(400).json({error: e.message});
+        return e.message;
     }
 });
 
