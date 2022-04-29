@@ -42,12 +42,6 @@ router.get("/:id", async (req, res) => {
         res.status(400).json({error: e});
         return e.message;
     }
-    try {
-        res.status(200).json();
-    } catch (e) {
-        res.status(400).json({error: e.message});
-        return e.message;
-    }
 });
 
 module.exports = router;
