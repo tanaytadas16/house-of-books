@@ -14,11 +14,6 @@
 .App-logo {
     height: 80px;
 }
-.avengers {
-    height: 700px;
-    width: 1800px;
-    object-fit: cover;
-}
 
 input {
     border: 3px groove black;
