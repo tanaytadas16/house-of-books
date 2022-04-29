@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const client = redis.createClient();
 
 function validateStringParams(param, paramName) {
     if (!param) {
@@ -20,11 +19,14 @@ function validateNumber(param, paramName) {
         throw `Argument ${param} entered is not a numeric ${paramName}`;
     }
 }
-
-async function connect() {
-    await client.connect();
-}
-connect();
+router.get("/", async (req, res) => {
+    try {
+        let testJson = "House of books";
+        res.status(200).json(testJson);
+    } catch (e) {
+        res.status(400).json({error: e.message});
+    }
+});
 
 router.get("/:id", async (req, res) => {
     try {
