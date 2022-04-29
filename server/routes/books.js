@@ -21,7 +21,7 @@ function validateNumber(param, paramName) {
 }
 router.get("/", async (req, res) => {
     try {
-        let testJson = "Hi!";
+        let testJson = "House of books";
         res.status(200).json(testJson);
     } catch (e) {
         res.status(400).json({error: e.message});
