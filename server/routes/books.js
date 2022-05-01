@@ -31,10 +31,22 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/newAdditions", async (req, res) => {
+    try {
+        let books = await booksData.getNewAddition();
+        console.log(books);
+        res.status(200).json(books);
+        return books;
+    } catch (e) {
+        res.status(400).json({error: e});
+        return e.message;
+    }
+});
+
 router.get("/:id", async (req, res) => {
     try {
         validateStringParams(req.params.id, "Book id");
-        let books = await booksData.get(req.params.id);
+        let books = await booksData.getById(req.params.id);
         console.log(books);
         res.status(200).json(books);
         return books;
