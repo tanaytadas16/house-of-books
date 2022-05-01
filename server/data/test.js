@@ -23,6 +23,12 @@ const main = async () => {
         console.log(e);
     }
     try {
+        const allBooks = await books.getBooksForRent();
+    } catch (e) {
+        console.log(e);
+    }
+
+    try {
         const db = await connection();
         await db.s.client.close();
         console.log("Done");
