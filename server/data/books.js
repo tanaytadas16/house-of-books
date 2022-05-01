@@ -89,7 +89,7 @@ function validatePriceRange(priceRange) {
     }
 }
 
-async function get(searchId) {
+async function getById(searchId) {
     validateStringParams(searchId, "Id");
     searchId = searchId.trim();
     if (!ObjectId.isValid(searchId)) {
@@ -125,4 +125,26 @@ async function getAll() {
     return booksList;
 }
 
-module.exports = {getAll, get};
+async function getNewAddition() {
+    let len = arguments.length;
+    if (len > 0) {
+        throw `Error: getAll does not accept arguments`;
+    }
+    const booksCollection = await books();
+
+    const booksList = await booksCollection
+        .find({
+            newAddition: true,
+        })
+        .toArray();
+    if (booksList.length === 0) {
+        return [];
+    }
+    for (let book of booksList) {
+        let id = book["_id"];
+        book["_id"] = id.toString();
+    }
+    console.log(booksList);
+    return booksList;
+}
+module.exports = {getAll, getById, getNewAddition};

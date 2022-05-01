@@ -90,20 +90,16 @@ const BookDetails = (props) => {
                 md={5}
                 lg={5}
                 xl={9}
-                key={bookDetailsData.id}
+                key={bookDetailsData._id}
             >
                 <Card className={classes.card} variant='outlined'>
-                    {/* <CardHeader
-                    className={classes.titleHead}
-                    title={charDetailsData.name}
-                /> */}
                     <CardMedia
                         className={classes.media}
                         component='img'
                         image={
                             bookDetailsData.url ? bookDetailsData.url : noImage
                         }
-                        title='character image'
+                        title='book image'
                     />
 
                     <CardContent>
