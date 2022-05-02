@@ -1,20 +1,24 @@
 import React from 'react';
 import './App.css';
-import logo from './img/books.jpeg';
+import logo from './img/books.gif';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import BookDetails from './components/BooksDetails';
 import NewAdditions from './components/NewAdditions';
 import Library from './components/Library';
+import Home from './components/Home';
 
 const App = () => {
     return (
         <Router>
             <div className="App">
                 <header className="App-header">
-                    {/* <img src={logo} className='App-logo' alt='logo' /> */}
+                    <img src={logo} className="App-logo" alt="logo" />
                     <h1 className="App-title">
                         Welcome to the House of books.
                     </h1>
+                    <Link className="showlink" to="/">
+                        Home
+                    </Link>
                     <Link
                         className="showlink"
                         to="/books/626ea903aa3f53db40cc8f99"
@@ -32,7 +36,7 @@ const App = () => {
                 <br />
                 <div className="App-body">
                     <Routes>
-                        {/* <Route path='/' element={<Home />} /> */}
+                        <Route path="/" element={<Home />} />
                         <Route path="/books/:id" element={<BookDetails />} />
                         <Route
                             path="/books/newAdditions"
