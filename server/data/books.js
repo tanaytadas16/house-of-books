@@ -106,6 +106,25 @@ function validatePriceRange(priceRange) {
     }
 }
 
+function validateDate(dateParams) {
+    const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
+    if (!dateParams.match(validDateFormat)) {
+        throw "date is not in valid format";
+    }
+    // var dateParts = dateParams.split("/");
+    // var day = parseInt(dateParts[1], 10);
+    // var month = parseInt(dateParts[0], 10);
+    // var year = parseInt(dateParts[2], 10);
+    // const dateToday = new Date();
+    // if (
+    //     day !== dateToday.getDate() ||
+    //     month !== dateToday.getMonth() + 1 ||
+    //     year !== dateToday.getFullYear()
+    // ) {
+    //     throw `Given date ${dateParams} is not valid date for today`;
+    // }
+}
+
 async function getById(searchId) {
     validateStringParams(searchId, "Id");
     searchId = searchId.trim();
@@ -299,6 +318,10 @@ function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
     validateStringParams(customerId, "customerId");
     validateStringParams(bookId, "bookId");
     validateBoolParams(rentedFlag, "rentedFlag");
+    validateStringParams(startDate, "startDate");
+    validateStringParams(endDate, "endDate");
+    validateDate(startDate);
+    validateDate(endDate);
 }
 
 async function addRentedBook(
