@@ -4,6 +4,7 @@ import logo from "./img/books.jpeg";
 import {BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
 import BookDetails from "./components/BooksDetails";
 import NewAdditions from "./components/NewAdditions";
+import Library from "./components/Library";
 
 const App = () => {
     return (
@@ -23,6 +24,9 @@ const App = () => {
                     <Link className='showlink' to='/books/newAdditions'>
                         New Additions
                     </Link>
+                    <Link className='showlink' to='/library'>
+                        Library
+                    </Link>
                 </header>
                 <br />
                 <br />
@@ -34,6 +38,7 @@ const App = () => {
                             path='/books/newAdditions'
                             element={<NewAdditions />}
                         />
+                        <Route path='/library' element={<Library />} />
                     </Routes>
                 </div>
             </div>

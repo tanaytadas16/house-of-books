@@ -191,7 +191,7 @@ const BookDetails = (props) => {
                                     <dt className='title'>Price:</dt>
                                     {bookDetailsData &&
                                     bookDetailsData.price ? (
-                                        <dd>{bookDetailsData.price}</dd>
+                                        <dd>$ {bookDetailsData.price}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}

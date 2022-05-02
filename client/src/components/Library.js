@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     },
 });
 
-const NewAdditions = (props) => {
+const Library = (props) => {
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
@@ -56,7 +56,7 @@ const NewAdditions = (props) => {
         console.log("useEffect fired");
         async function fetchData() {
             try {
-                const url = `http://localhost:4000/books/newAdditions`;
+                const url = `http://localhost:4000/library`;
                 const {data} = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -109,6 +109,7 @@ const NewAdditions = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
+                    <button className='button'>Rent Book</button>
                 </Card>
             </Grid>
         );
@@ -144,4 +145,4 @@ const NewAdditions = (props) => {
     }
 };
 
-export default NewAdditions;
+export default Library;

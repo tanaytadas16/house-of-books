@@ -1,5 +1,6 @@
 const mongoCollections = require("../../config/mongoCollection");
 const books = mongoCollections.books;
+const library = mongoCollections.library;
 const {ObjectId} = require("mongodb");
 
 function validateStringParams(param, paramName) {
@@ -13,7 +14,14 @@ function validateStringParams(param, paramName) {
         throw `Error: Empty spaces passed to string ${paramName}`;
     }
 }
-
+function validateBoolParams(param, paramName) {
+    if (!param) {
+        throw `Error: No ${paramName} passed to the function`;
+    }
+    if (typeof param != "boolean") {
+        throw `Type Error: Argument ${param} passed is not a boolean ${paramName}`;
+    }
+}
 function validateArray(arryparam, arrname) {
     if (!arryparam) {
         throw `Error: No ${arrname} argument passed to the function`;
@@ -147,4 +155,87 @@ async function getNewAddition() {
     console.log(booksList);
     return booksList;
 }
-module.exports = {getAll, getById, getNewAddition};
+
+async function getBooksForRent() {
+    let len = arguments.length;
+    if (len > 0) {
+        throw `Error: getAll does not accept arguments`;
+    }
+    const booksCollection = await books();
+
+    const booksList = await booksCollection
+        .find({
+            availableForRent: true,
+        })
+        .toArray();
+    if (booksList.length === 0) {
+        return [];
+    }
+    for (let book of booksList) {
+        let id = book["_id"];
+        book["_id"] = id.toString();
+    }
+    console.log(booksList);
+    return booksList;
+}
+
+function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
+    validateStringParams(customerId, "customerId");
+    validateStringParams(bookId, "bookId");
+    validateBoolParams(rentedFlag, "rentedFlag");
+}
+
+async function addRentedBook(
+    customerId,
+    bookId,
+    startDate,
+    endDate,
+    rentedFlag
+) {
+    validateCreations(customerId, bookId, startDate, endDate, rentedFlag);
+    customerId = customerId.trim();
+    bookId = bookId.trim();
+    const libraryCollection = await library();
+    let newBook = {
+        customerId: customerId,
+        bookId: bookId,
+        startDate: startDate,
+        endDate: endDate,
+        rentedFlag: rentedFlag,
+    };
+    const insertedDatadetails = await libraryCollection.insertOne(newBook);
+    if (insertedDatadetails.insertedCount === 0) {
+        throw "Book could not be inserted to rent";
+    }
+
+    const insertedBookId = insertedDatadetails.insertedId.toString();
+
+    const bookDetails = await getRentedBookById(insertedBookId);
+    console.log(bookDetails);
+    return bookDetails;
+}
+
+async function getRentedBookById(searchId) {
+    validateStringParams(searchId, "Id");
+    searchId = searchId.trim();
+    if (!ObjectId.isValid(searchId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
+    let parseId = ObjectId(searchId);
+    const libraryCollection = await library();
+    const bookFound = await libraryCollection.findOne({_id: parseId});
+    if (bookFound === null) {
+        throw `No book found with the id ${searchId}`;
+    } else {
+        bookFound["_id"] = searchId;
+    }
+    return bookFound;
+}
+
+module.exports = {
+    getAll,
+    getById,
+    getNewAddition,
+    getBooksForRent,
+    addRentedBook,
+};
