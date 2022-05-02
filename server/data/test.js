@@ -6,7 +6,7 @@ const connection = require("../../config/mongoConnection");
 const main = async () => {
     try {
         const id = "626ea903aa3f53db40cc8f97";
-        const book = await books.get(id);
+        const book = await books.getById(id);
         console.log("book_found", book);
     } catch (e) {
         console.log(e);
@@ -24,6 +24,17 @@ const main = async () => {
     }
     try {
         const allBooks = await books.getBooksForRent();
+    } catch (e) {
+        console.log(e);
+    }
+    try {
+        const allBooks = await books.addRentedBook(
+            "2",
+            "1",
+            "05-01-2022",
+            "06-01-2022",
+            true
+        );
     } catch (e) {
         console.log(e);
     }

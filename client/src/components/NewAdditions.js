@@ -99,7 +99,7 @@ const NewAdditions = (props) => {
                                         <p>
                                             <dt className='title'>Price:</dt>
                                             {book && book.price ? (
-                                                <dd>{book.price}</dd>
+                                                <dd>$ {book.price}</dd>
                                             ) : (
                                                 <dd>N/A</dd>
                                             )}
