@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import BookDetails from "./components/BooksDetails";
 import NewAdditions from "./components/NewAdditions";
 import BooksList from "./components/BooksList";
+import Home from "./components/Home";
 
 const App = () => {
   return (
@@ -19,14 +20,19 @@ const App = () => {
           <Link className="showlink" to="/books/newAdditions">
             New Additions
           </Link>
+          <Link className="showlink" to="/library">
+            Library
+          </Link>
         </header>
         <br />
         <br />
         <div className="App-body">
           <Routes>
-            {<Route path="/books" element={<BooksList />} />}
+            <Route path="/" element={<Home />} />
+            <Route path="/books" element={<BooksList />} />
             <Route path="/books/:id" element={<BookDetails />} />
             <Route path="/books/newAdditions" element={<NewAdditions />} />
+            <Route path="/library" element={<Library />} />
           </Routes>
         </div>
       </div>

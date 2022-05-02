@@ -12,7 +12,10 @@
     font-weight: bold;
 }
 .App-logo {
-    height: 80px;
+    margin: auto 5px;
+    float: left;
+    width: 220px;
+    height: 210px;
 }
 
 input {
@@ -183,4 +186,14 @@ dd {
     background-color: transparent;
     color: white;
     border: 2px solid white;
+}
+
+.button {
+    padding: 14px 25px;
+    background-color: rgb(156, 52, 52);
+    border-radius: 3px;
+    color: white;
+    text-decoration: none !important;
+    font-weight: bold;
+    font-size: 30px;
 }
