@@ -12,7 +12,10 @@
     font-weight: bold;
 }
 .App-logo {
-    height: 80px;
+    margin: auto 5px;
+    float: left;
+    width: 220px;
+    height: 210px;
 }
 
 input {

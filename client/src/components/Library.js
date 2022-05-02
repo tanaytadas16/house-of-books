@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import noImage from "../img/download.jpeg";
 import {
     makeStyles,
@@ -52,6 +52,8 @@ const Library = (props) => {
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     let {id} = useParams();
     let card = null;
+    const history = useNavigate();
+
     useEffect(() => {
         console.log("useEffect fired");
         async function fetchData() {
@@ -66,7 +68,55 @@ const Library = (props) => {
             }
         }
         fetchData();
-    }, [id]);
+    }, []);
+
+    function alertFunc(date) {
+        alert(
+            "Book has been rented. Please return it within 30 days. Your end date for return is " +
+                date
+        );
+    }
+
+    function padTo2Digits(num) {
+        return num.toString().padStart(2, "0");
+    }
+
+    function formatDate(date) {
+        return [
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join("-");
+    }
+    function formatDateNextMonth(date) {
+        return [
+            padTo2Digits(date.getMonth() + 2),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join("-");
+    }
+    const rentBook = (customerId, bookId) => {
+        let todayDate = formatDate(new Date());
+        let endDate = formatDateNextMonth(new Date());
+        console.log(todayDate);
+        let dataBody = {
+            customerId: customerId,
+            bookId: bookId,
+            startDate: todayDate,
+            endDate: endDate,
+            rentedFlag: true,
+        };
+        axios
+            .post("http://localhost:4000/library", {
+                data: dataBody,
+            })
+            .then(function (response) {
+                console.log(response.data);
+                alertFunc(endDate);
+                history("/", {replace: true}); //to be changed to cart
+            });
+    };
+
     const buildCard = (book) => {
         return (
             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
@@ -109,7 +159,12 @@ const Library = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
-                    <button className='button'>Rent Book</button>
+                    <button
+                        className='button'
+                        onClick={() => rentBook("1", book._id)}
+                    >
+                        Rent Book
+                    </button>
                 </Card>
             </Grid>
         );
