@@ -16,7 +16,8 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        let bookToBeRented = req.body;
+        let bookToBeRented = req.body.data;
+        console.log(req.body);
         let books = await booksData.addRentedBook(
             bookToBeRented.customerId,
             bookToBeRented.bookId,
@@ -28,6 +29,7 @@ router.post("/", async (req, res) => {
         res.status(200).json(books);
         return books;
     } catch (e) {
+        console.log(e);
         res.status(400).json({error: e});
         return e.message;
     }

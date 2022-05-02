@@ -66,7 +66,39 @@ const Library = (props) => {
             }
         }
         fetchData();
-    }, [id]);
+    }, []);
+
+    function padTo2Digits(num) {
+        return num.toString().padStart(2, "0");
+    }
+
+    function formatDate(date) {
+        return [
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join("-");
+    }
+
+    const rentBook = (customerId, bookId) => {
+        let todayDate = formatDate(new Date());
+        console.log(todayDate);
+        let dataBody = {
+            customerId: customerId,
+            bookId: bookId,
+            startDate: todayDate,
+            endDate: todayDate,
+            rentedFlag: true,
+        };
+        axios
+            .post("http://localhost:4000/library", {
+                data: dataBody,
+            })
+            .then(function (response) {
+                console.log(response.data);
+            });
+    };
+
     const buildCard = (book) => {
         return (
             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
@@ -109,7 +141,12 @@ const Library = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
-                    <button className='button'>Rent Book</button>
+                    <button
+                        className='button'
+                        onClick={() => rentBook("1", book._id)}
+                    >
+                        Rent Book
+                    </button>
                 </Card>
             </Grid>
         );
