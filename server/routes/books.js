@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const booksData = require("../data/books");
+const {ObjectId} = require("mongodb");
 
 function validateStringParams(param, paramName) {
     if (!param) {
@@ -14,19 +15,13 @@ function validateStringParams(param, paramName) {
     }
 }
 
-function validateNumber(param, paramName) {
-    element = parseInt(param);
-    if (element !== 0 && (!element || typeof element !== "number")) {
-        throw `Argument ${param} entered is not a numeric ${paramName}`;
-    }
-}
 router.get("/", async (req, res) => {
     try {
         let books = await booksData.getAll();
         res.status(200).json(books);
         return books;
     } catch (e) {
-        res.status(400).json({error: e.message});
+        res.status(500).json({error: e.message});
         return e.message;
     }
 });
@@ -38,20 +33,29 @@ router.get("/newAdditions", async (req, res) => {
         res.status(200).json(books);
         return books;
     } catch (e) {
-        res.status(400).json({error: e});
+        res.status(500).json({error: e});
         return e.message;
     }
 });
 
 router.get("/:id", async (req, res) => {
     try {
-        validateStringParams(req.params.id, "Book id");
+        validateStringParams(req.params.id, "Id");
+        req.params.id = req.params.id.trim();
+        if (!ObjectId.isValid(req.params.id)) {
+            throw `Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+        }
+    } catch (e) {
+        res.status(400).json({error: e});
+        return;
+    }
+    try {
         let books = await booksData.getById(req.params.id);
         console.log(books);
         res.status(200).json(books);
         return books;
     } catch (e) {
-        res.status(400).json({error: e});
+        res.status(404).json({error: e});
         return e.message;
     }
 });
