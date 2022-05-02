@@ -36,6 +36,15 @@ function validateArray(arryparam, arrname) {
     }
 }
 
+function validateNumberParams(param, paramName) {
+    if (typeof param !== "number" || !Number.isInteger(param)) {
+        throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
+    }
+    if (param < 0) {
+        throw `${paramName} can not be negative`;
+    }
+}
+
 function validateRating(element) {
     if (element !== 0 && (!element || typeof element !== "number")) {
         throw `Error : Ratings passed is not a number`;
@@ -79,7 +88,7 @@ function validatePhone(phoneNumber) {
 }
 
 function validateWebsite(websiteLink) {
-    const validLink = /^http(s)?:\/\/www\..{5,}\.com$/;
+    const validLink = /^http(s)/;
     websiteLink = websiteLink.trim().toLowerCase();
     if (!websiteLink.match(validLink)) {
         throw `Error: ${websiteLink} is not a valid web site link`;
@@ -95,6 +104,25 @@ function validatePriceRange(priceRange) {
             }
         }
     }
+}
+
+function validateDate(dateParams) {
+    const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
+    if (!dateParams.match(validDateFormat)) {
+        throw "date is not in valid format";
+    }
+    // var dateParts = dateParams.split("/");
+    // var day = parseInt(dateParts[1], 10);
+    // var month = parseInt(dateParts[0], 10);
+    // var year = parseInt(dateParts[2], 10);
+    // const dateToday = new Date();
+    // if (
+    //     day !== dateToday.getDate() ||
+    //     month !== dateToday.getMonth() + 1 ||
+    //     year !== dateToday.getFullYear()
+    // ) {
+    //     throw `Given date ${dateParams} is not valid date for today`;
+    // }
 }
 
 async function getById(searchId) {
@@ -178,11 +206,122 @@ async function getBooksForRent() {
     console.log(booksList);
     return booksList;
 }
+function validateBookCreations(
+    ISBN,
+    url,
+    description,
+    author,
+    averageRating,
+    binding,
+    genre,
+    numberofPages,
+    originalPublicationYear,
+    price,
+    publisher,
+    title,
+    yearPublished,
+    newAddition,
+    popular,
+    availableForRent
+) {
+    validateStringParams(ISBN, "ISBN");
+    validateWebsite(url, "url");
+    validateStringParams(description, "description");
+    validateStringParams(author, "author");
+    validateStringParams(binding, "binding");
+    validateStringParams(genre, "genre");
+    validateStringParams(publisher, "publisher");
+    validateStringParams(title, "title");
+    validateRating(averageRating, "averageRating");
+    validateNumberParams(numberofPages, "numberofPages");
+    validateNumberParams(originalPublicationYear, "originalPublicationYear");
+    validateNumberParams(price, "price");
+    validateNumberParams(yearPublished, "yearPublished");
+    validateBoolParams(newAddition, "newAddition");
+    validateBoolParams(popular, "popular");
+    validateBoolParams(availableForRent, "availableForRent");
+}
+async function addNewBook(
+    ISBN,
+    url,
+    description,
+    author,
+    averageRating,
+    binding,
+    genre,
+    numberofPages,
+    originalPublicationYear,
+    price,
+    publisher,
+    title,
+    yearPublished,
+    newAddition,
+    popular,
+    availableForRent
+) {
+    validateBookCreations(
+        ISBN,
+        url,
+        description,
+        author,
+        averageRating,
+        binding,
+        genre,
+        numberofPages,
+        originalPublicationYear,
+        price,
+        publisher,
+        title,
+        yearPublished,
+        newAddition,
+        popular,
+        availableForRent
+    );
+    ISBN = ISBN.trim();
+    description = description.trim();
+    author = author.trim();
+    binding = binding.trim();
+    genre = genre.trim();
+    publisher = publisher.trim();
+    title = title.trim();
+    const booksCollection = await books();
+    let newBook = {
+        ISBN: ISBN,
+        url: url,
+        description: description,
+        author: author,
+        averageRating: averageRating,
+        binding: binding,
+        genre: genre,
+        numberofPages: numberofPages,
+        originalPublicationYear: originalPublicationYear,
+        price: price,
+        publisher: publisher,
+        title: title,
+        yearPublished: yearPublished,
+        newAddition: newAddition,
+        popular: popular,
+        availableForRent: availableForRent,
+    };
+    const insertedDatadetails = await booksCollection.insertOne(newBook);
+    if (insertedDatadetails.insertedCount === 0) {
+        throw "Book could not be inserted ";
+    }
 
+    const insertedBookId = insertedDatadetails.insertedId.toString();
+
+    const bookDetails = await getById(insertedBookId);
+    console.log(bookDetails);
+    return bookDetails;
+}
 function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
     validateStringParams(customerId, "customerId");
     validateStringParams(bookId, "bookId");
     validateBoolParams(rentedFlag, "rentedFlag");
+    validateStringParams(startDate, "startDate");
+    validateStringParams(endDate, "endDate");
+    validateDate(startDate);
+    validateDate(endDate);
 }
 
 async function addRentedBook(
@@ -233,6 +372,7 @@ async function getRentedBookById(searchId) {
 }
 
 module.exports = {
+    addNewBook,
     getAll,
     getById,
     getNewAddition,
