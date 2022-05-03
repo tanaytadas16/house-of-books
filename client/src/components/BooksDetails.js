@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {Link, useParams} from "react-router-dom";
-import noImage from "../img/download.jpeg";
+import { useParams } from "react-router-dom";
+import noImage from "../assets/images/no-image.jpeg";
 import {
     makeStyles,
     Card,
@@ -9,9 +9,7 @@ import {
     CardContent,
     CardMedia,
     Typography,
-    CardHeader,
 } from "@material-ui/core";
-import "../App.css";
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -49,14 +47,14 @@ const BookDetails = (props) => {
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
-    let {id} = useParams();
+    let { id } = useParams();
 
     useEffect(() => {
         console.log("useEffect fired");
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/books/${id}`;
-                const {data} = await axios.get(url);
+                const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
@@ -113,7 +111,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Description:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.description ? (
+                                        bookDetailsData.description ? (
                                         <dd>{bookDetailsData.description}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -122,7 +120,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Author:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.author ? (
+                                        bookDetailsData.author ? (
                                         <dd>{bookDetailsData.author}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -139,7 +137,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Average Rating:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.averageRating ? (
+                                        bookDetailsData.averageRating ? (
                                         <dd>{bookDetailsData.averageRating}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -148,7 +146,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Publisher:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.publisher ? (
+                                        bookDetailsData.publisher ? (
                                         <dd>{bookDetailsData.publisher}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -157,7 +155,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Genre:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.genre ? (
+                                        bookDetailsData.genre ? (
                                         <dd>{bookDetailsData.genre}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -166,7 +164,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Number of pages:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.numberofPages ? (
+                                        bookDetailsData.numberofPages ? (
                                         <dd>{bookDetailsData.numberofPages}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -177,7 +175,7 @@ const BookDetails = (props) => {
                                         Original Publication Year:
                                     </dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.originalPublicationYear ? (
+                                        bookDetailsData.originalPublicationYear ? (
                                         <dd>
                                             {
                                                 bookDetailsData.originalPublicationYear
@@ -190,7 +188,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Price:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.price ? (
+                                        bookDetailsData.price ? (
                                         <dd>$ {bookDetailsData.price}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -199,7 +197,7 @@ const BookDetails = (props) => {
                                 <p>
                                     <dt className='title'>Year Published:</dt>
                                     {bookDetailsData &&
-                                    bookDetailsData.yearPublished ? (
+                                        bookDetailsData.yearPublished ? (
                                         <dd>{bookDetailsData.yearPublished}</dd>
                                     ) : (
                                         <dd>N/A</dd>

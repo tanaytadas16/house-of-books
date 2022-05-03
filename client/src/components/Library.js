@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {Link, useParams, useNavigate} from "react-router-dom";
-import noImage from "../img/download.jpeg";
+import { Link, useNavigate } from "react-router-dom";
+import noImage from "../assets/images/no-image.jpeg";
 import {
     makeStyles,
     Card,
@@ -10,9 +10,7 @@ import {
     CardContent,
     CardMedia,
     Typography,
-    CardHeader,
 } from "@material-ui/core";
-import "../App.css";
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -50,7 +48,6 @@ const Library = (props) => {
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
-    let {id} = useParams();
     let card = null;
     const history = useNavigate();
 
@@ -59,7 +56,7 @@ const Library = (props) => {
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/library`;
-                const {data} = await axios.get(url);
+                const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
@@ -73,7 +70,7 @@ const Library = (props) => {
     function alertFunc(date) {
         alert(
             "Book has been rented. Please return it within 30 days. Your end date for return is " +
-                date
+            date
         );
     }
 
@@ -113,7 +110,7 @@ const Library = (props) => {
             .then(function (response) {
                 console.log(response.data);
                 alertFunc(endDate);
-                history("/", {replace: true}); //to be changed to cart
+                history("/", { replace: true }); //to be changed to cart
             });
     };
 
