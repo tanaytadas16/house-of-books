@@ -20,4 +20,5 @@ module.exports = {
   users: getCollectionFn("users"),
   books: getCollectionFn("books"),
   library: getCollectionFn("library"),
+  reviews: getCollectionFn("reviews"),
 };
