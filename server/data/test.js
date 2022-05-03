@@ -1,7 +1,7 @@
 /* this file is strictly for testing db functions. */
 
 const books = require("./books");
-const connection = require("../../config/mongoConnection");
+const connection = require("../config/mongoCollection");
 
 const main = async () => {
     try {
@@ -29,10 +29,10 @@ const main = async () => {
     }
     try {
         const allBooks = await books.addRentedBook(
-            "2",
-            "1",
-            "05-01-2022",
-            "06-01-2022",
+            "627161da17f0455539944549",
+            "626ff983aa3f53db40cc8fad",
+            "05-03-2022",
+            "06-03-2022",
             true
         );
     } catch (e) {
@@ -62,8 +62,8 @@ const main = async () => {
     }
 
     try {
-        const db = await connection();
-        await db.s.client.close();
+        // const db = await connection;
+        // await db.;
         console.log("Done");
     } catch (e) {
         console.log(e);
