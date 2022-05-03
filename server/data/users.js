@@ -1,4 +1,4 @@
-const mongoCollections = require("../../config/mongoCollection");
+const mongoCollections = require("../config/mongoCollection");
 const users = mongoCollections.users;
 const bcrypt = require("bcrypt");
 const saltRounds = 16;

@@ -1,11 +1,12 @@
 import React from "react";
 import "./App.css";
-import logo from "./img/books.jpeg";
+// import logo from "./img/books.jpeg";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import BookDetails from "./components/BooksDetails";
 import NewAdditions from "./components/NewAdditions";
 import BooksList from "./components/BooksList";
 import Home from "./components/Home";
+import Library from "./components/Library";
 
 const App = () => {
   return (
