@@ -165,7 +165,7 @@ const Library = (props) => {
                             rentBook("627161da17f0455539944549", book._id)
                         }
                     >
-                        Rent Book
+                        Rent
                     </button>
                 </Card>
             </Grid>

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import noImage from "../img/download.jpeg";
 import {
     makeStyles,
@@ -50,6 +50,74 @@ const BookDetails = (props) => {
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     let {id} = useParams();
+    const history = useNavigate();
+
+    function padTo2Digits(num) {
+        return num.toString().padStart(2, "0");
+    }
+    function formatDate(date) {
+        return [
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join("-");
+    }
+
+    function formatDateNextMonth(date) {
+        return [
+            padTo2Digits(date.getMonth() + 2),
+            padTo2Digits(date.getDate()),
+            date.getFullYear(),
+        ].join("-");
+    }
+
+    function alertFunc(date) {
+        alert(
+            "Book has been rented. Please return it within 30 days. Your end date for return is " +
+                date
+        );
+    }
+    const buyBook = (customerId, bookId, quantity, price) => {
+        let todayDate = formatDate(new Date());
+        console.log(todayDate);
+        console.log(customerId, bookId);
+        let dataBody = {
+            customerId: customerId,
+            bookId: bookId,
+            quantity: quantity,
+            totalPrice: quantity * price,
+        };
+        axios
+            .post("http://localhost:4000/books/purchase", {
+                data: dataBody,
+            })
+            .then(function (response) {
+                console.log(response.data);
+                history("/", {replace: true}); //to be changed to cart
+            });
+    };
+
+    const rentBook = (customerId, bookId) => {
+        let todayDate = formatDate(new Date());
+        let endDate = formatDateNextMonth(new Date());
+        console.log(todayDate);
+        let dataBody = {
+            customerId: customerId,
+            bookId: bookId,
+            startDate: todayDate,
+            endDate: endDate,
+            rentedFlag: true,
+        };
+        axios
+            .post("http://localhost:4000/library", {
+                data: dataBody,
+            })
+            .then(function (response) {
+                console.log(response.data);
+                alertFunc(endDate);
+                history("/", {replace: true}); //to be changed to cart
+            });
+    };
 
     useEffect(() => {
         console.log("useEffect fired");
@@ -208,6 +276,33 @@ const BookDetails = (props) => {
                             </dl>
                         </Typography>
                     </CardContent>
+                    <button
+                        type='button'
+                        className='button'
+                        onClick={() =>
+                            buyBook(
+                                "627161da17f0455539944549",
+                                bookDetailsData._id,
+                                2,
+                                bookDetailsData.price
+                            )
+                        }
+                    >
+                        Buy
+                    </button>
+                    <br></br>
+                    <br></br>
+                    <button
+                        className='button'
+                        onClick={() =>
+                            rentBook(
+                                "627161da17f0455539944549",
+                                bookDetailsData._id
+                            )
+                        }
+                    >
+                        Rent
+                    </button>
                 </Card>
             </Grid>
         );
