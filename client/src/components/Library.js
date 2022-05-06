@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
-import {Link, useParams, useNavigate} from "react-router-dom";
-import noImage from "../img/download.jpeg";
+import {Link, useNavigate} from "react-router-dom";
+import noImage from "../assets/images/no-image.jpeg";
 import {
     makeStyles,
     Card,
@@ -10,9 +10,7 @@ import {
     CardContent,
     CardMedia,
     Typography,
-    CardHeader,
 } from "@material-ui/core";
-import "../App.css";
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -50,7 +48,6 @@ const Library = (props) => {
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
-    let {id} = useParams();
     let card = null;
     const history = useNavigate();
 
@@ -162,7 +159,7 @@ const Library = (props) => {
                     <button
                         className='button'
                         onClick={() =>
-                            rentBook("627161da17f0455539944549", book._id)
+                            rentBook("62753d826031086ee47c019d", book._id)
                         }
                     >
                         Rent
