@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import noImage from "../assets/images/no-image.jpeg";
 import {
     makeStyles,
@@ -56,7 +56,7 @@ const Library = (props) => {
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/library`;
-                const { data } = await axios.get(url);
+                const {data} = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
@@ -70,7 +70,7 @@ const Library = (props) => {
     function alertFunc(date) {
         alert(
             "Book has been rented. Please return it within 30 days. Your end date for return is " +
-            date
+                date
         );
     }
 
@@ -110,7 +110,7 @@ const Library = (props) => {
             .then(function (response) {
                 console.log(response.data);
                 alertFunc(endDate);
-                history("/", { replace: true }); //to be changed to cart
+                history("/", {replace: true}); //to be changed to cart
             });
     };
 
@@ -159,7 +159,7 @@ const Library = (props) => {
                     <button
                         className='button'
                         onClick={() =>
-                            rentBook("627161da17f0455539944549", book._id)
+                            rentBook("62753d826031086ee47c019d", book._id)
                         }
                     >
                         Rent
