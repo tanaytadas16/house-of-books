@@ -9,10 +9,8 @@ import {
     Grid,
     CardContent,
     CardMedia,
-    Typography,
-    CardHeader,
+    Typography
 } from "@material-ui/core";
-import "../App.css";
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
