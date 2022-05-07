@@ -1,6 +1,7 @@
 .App {
     text-align: center;
 }
+
 .center {
     display: block;
     margin-left: auto;
@@ -11,6 +12,7 @@
     font-size: 50 px;
     font-weight: bold;
 }
+
 .App-logo {
     margin: auto 5px;
     float: left;
@@ -23,12 +25,14 @@ input {
     width: 20%;
     font-size: 20px;
 }
+
 span {
-    color: rgb(179, 20, 20);
+    /* color: rgb(179, 20, 20); */
     font-weight: bold;
-    font-size: 30px;
+    /* font-size: 30px; */
     font-family: "Times New Roman", Times, serif;
 }
+
 .App-body {
     display: block;
     margin-left: auto;
@@ -55,10 +59,12 @@ span {
 cite {
     font-weight: bold;
 }
+
 table {
     align-content: center;
     margin: auto;
 }
+
 td {
     padding: 10px;
 }
@@ -66,9 +72,11 @@ td {
 .App-intro {
     font-size: large;
 }
+
 .cap-first-letter:first-letter {
     text-transform: capitalize;
 }
+
 .col-sm-6,
 col-md-4 {
     border: 1px;
@@ -95,7 +103,7 @@ div {
 a {
     color: black;
     text-decoration: none !important;
-    font-size: 30px;
+    /* font-size: 30px; */
     font-weight: bold;
 }
 
@@ -113,6 +121,7 @@ ul {
     color: rgb(179, 20, 20);
     font-size: 30px;
 }
+
 .title1 {
     font-weight: bold;
     color: rgb(179, 20, 20);
@@ -137,9 +146,11 @@ dt {
     display: inline-block;
     font-size: 30px;
 }
+
 dl {
     font-size: 20px;
 }
+
 dd {
     display: inline;
     margin-left: 5px;
@@ -173,6 +184,7 @@ dd {
     color: #b71540;
     border: 2px solid black;
 }
+
 .showlink {
     padding: 0.4rem 0.8rem;
     background-color: white;
