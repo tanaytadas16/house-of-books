@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { createUserDoc, createNativeUser } from "../firebase/firebase";
+import { createNativeUser } from "../firebase/firebase";
 import FormInput from "./FormInput";
 import Button from "./Button";
 import { UserContext } from "../contexts/userContext";
@@ -40,7 +40,6 @@ const Signup = () => {
         try {
             const { user } = await createNativeUser(email, password);
             setCurrentUser(user);
-            await createUserDoc(user, { displayName });
             resetFormFields();
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
