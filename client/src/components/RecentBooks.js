@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import noImage from '../img/download.jpeg';
+import noImage from '../assets/images/no-image.jpeg';
 import {
   makeStyles,
   Card,
@@ -47,6 +47,7 @@ const RecentBooks = () => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
+  const [error, setError] = useState(false);
   let card = null;
   const history = useNavigate();
 
@@ -57,10 +58,10 @@ const RecentBooks = () => {
         console.log('Before axios call');
         const url = `http://localhost:4000/books/recents`;
         const { data } = await axios.get(url);
-        console.log(data);
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
+        setError(true);
         console.log(e);
       }
     }
@@ -155,11 +156,19 @@ const RecentBooks = () => {
   };
 
   if (loading) {
-    return (
-      <div>
-        <h2>Loading....</h2>
-      </div>
-    );
+    if (error) {
+      return (
+        <div>
+          <h2>No books are present in the recent list</h2>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <h2>Loading....</h2>
+        </div>
+      );
+    }
   } else {
     card =
       bookDetailsData &&
