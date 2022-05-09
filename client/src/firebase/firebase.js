@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { initializeAuth, browserPopupRedirectResolver, browserSessionPersistence, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -10,13 +10,16 @@ const firebaseConfig = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
     prompt: "select_account"
 });
 
-export const auth = getAuth();
+export const auth = initializeAuth(firebaseApp, {
+    persistence: browserSessionPersistence,
+    popupRedirectResolver: browserPopupRedirectResolver
+});
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
 export const createNativeUser = async (email, password) => {
