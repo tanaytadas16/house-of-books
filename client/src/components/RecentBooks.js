@@ -54,7 +54,7 @@ const RecentBooks = () => {
         async function fetchData() {
             try {
                 console.log('Before axios call');
-                const url = `https://houseof-books.herokuapp.com/recents`;
+                const url = `https://houseof-books.herokuapp.com/books/recents`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
