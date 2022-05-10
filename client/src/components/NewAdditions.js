@@ -54,7 +54,7 @@ const NewAdditions = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books/newAdditions`;
+                const url = `http://houseof-books.herokuapp.com/books/newAdditions`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);

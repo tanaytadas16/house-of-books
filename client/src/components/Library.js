@@ -55,7 +55,7 @@ const Library = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/library`;
+                const url = `http://houseof-books.herokuapp.com/library`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -104,7 +104,7 @@ const Library = (props) => {
             rentedFlag: true,
         };
         axios
-            .post('https://houseof-books.herokuapp.com/library', {
+            .post('http://houseof-books.herokuapp.com/library', {
                 data: dataBody,
             })
             .then(function (response) {

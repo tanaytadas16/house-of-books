@@ -86,7 +86,7 @@ const BookDetails = (props) => {
             totalPrice: quantity * price,
         };
         axios
-            .post('https://houseof-books.herokuapp.com/books/purchase', {
+            .post('http://houseof-books.herokuapp.com/books/purchase', {
                 data: dataBody,
             })
             .then(function (response) {
@@ -107,7 +107,7 @@ const BookDetails = (props) => {
             rentedFlag: true,
         };
         axios
-            .post('https://houseof-books.herokuapp.com/library', {
+            .post('http://houseof-books.herokuapp.com/library', {
                 data: dataBody,
             })
             .then(function (response) {
@@ -121,7 +121,7 @@ const BookDetails = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books/${id}`;
+                const url = `http://houseof-books.herokuapp.com/books/${id}`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
