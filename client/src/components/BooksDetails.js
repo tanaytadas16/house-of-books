@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import noImage from "../assets/images/no-image.jpeg";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import noImage from '../assets/images/no-image.jpeg';
 import {
     makeStyles,
     Card,
@@ -9,36 +9,36 @@ import {
     CardContent,
     CardMedia,
     Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
-        height: "auto",
-        marginLeft: "auto",
-        marginRight: "auto",
+        height: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         borderRadius: 5,
-        border: "1px solid #222",
+        border: '1px solid #222',
         boxShadow:
-            "0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);",
-        color: "#222",
+            '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
+        color: '#222',
     },
     titleHead: {
-        borderBottom: "1px solid #222",
-        fontWeight: "bold",
-        color: "#222",
-        fontSize: "large",
+        borderBottom: '1px solid #222',
+        fontWeight: 'bold',
+        color: '#222',
+        fontSize: 'large',
     },
     grid: {
         flexGrow: 1,
-        flexDirection: "row",
+        flexDirection: 'row',
     },
     media: {
-        height: "100%",
-        width: "100%",
+        height: '100%',
+        width: '100%',
     },
     button: {
-        color: "#222",
-        fontWeight: "bold",
+        color: '#222',
+        fontWeight: 'bold',
         fontSize: 12,
     },
 });
@@ -51,14 +51,14 @@ const BookDetails = (props) => {
     const history = useNavigate();
 
     function padTo2Digits(num) {
-        return num.toString().padStart(2, "0");
+        return num.toString().padStart(2, '0');
     }
     function formatDate(date) {
         return [
             padTo2Digits(date.getMonth() + 1),
             padTo2Digits(date.getDate()),
             date.getFullYear(),
-        ].join("-");
+        ].join('-');
     }
 
     function formatDateNextMonth(date) {
@@ -66,13 +66,13 @@ const BookDetails = (props) => {
             padTo2Digits(date.getMonth() + 2),
             padTo2Digits(date.getDate()),
             date.getFullYear(),
-        ].join("-");
+        ].join('-');
     }
 
     function alertFunc(date) {
         alert(
-            "Book has been rented. Please return it within 30 days. Your end date for return is " +
-            date
+            'Book has been rented. Please return it within 30 days. Your end date for return is ' +
+                date
         );
     }
     const buyBook = (customerId, bookId, quantity, price) => {
@@ -86,12 +86,12 @@ const BookDetails = (props) => {
             totalPrice: quantity * price,
         };
         axios
-            .post("http://localhost:4000/books/purchase", {
+            .post('https://houseof-books.herokuapp.com/books/purchase', {
                 data: dataBody,
             })
             .then(function (response) {
                 console.log(response.data);
-                history("/", { replace: true }); //to be changed to cart
+                history('/', { replace: true }); //to be changed to cart
             });
     };
 
@@ -107,21 +107,21 @@ const BookDetails = (props) => {
             rentedFlag: true,
         };
         axios
-            .post("http://localhost:4000/library", {
+            .post('https://houseof-books.herokuapp.com/library', {
                 data: dataBody,
             })
             .then(function (response) {
                 console.log(response.data);
                 alertFunc(endDate);
-                history("/", { replace: true }); //to be changed to cart
+                history('/', { replace: true }); //to be changed to cart
             });
     };
 
     useEffect(() => {
-        console.log("useEffect fired");
+        console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `http://localhost:4000/books/${id}`;
+                const url = `https://houseof-books.herokuapp.com/books/${id}`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -158,44 +158,44 @@ const BookDetails = (props) => {
                 xl={9}
                 key={bookDetailsData._id}
             >
-                <Card className={classes.card} variant='outlined'>
+                <Card className={classes.card} variant="outlined">
                     <CardMedia
                         className={classes.media}
-                        component='img'
+                        component="img"
                         image={
                             bookDetailsData.url ? bookDetailsData.url : noImage
                         }
-                        title='book image'
+                        title="book image"
                     />
 
                     <CardContent>
                         <Typography
-                            variant='body2'
-                            color='textSecondary'
-                            component='span'
+                            variant="body2"
+                            color="textSecondary"
+                            component="span"
                         >
-                            <p className='title1'>{bookDetailsData.title}</p>
+                            <p className="title1">{bookDetailsData.title}</p>
                             <dl>
                                 <p>
-                                    <dt className='title'>Description:</dt>
+                                    <dt className="title">Description:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.description ? (
+                                    bookDetailsData.description ? (
                                         <dd>{bookDetailsData.description}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Author:</dt>
+                                    <dt className="title">Author:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.author ? (
+                                    bookDetailsData.author ? (
                                         <dd>{bookDetailsData.author}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>ISBN:</dt>
+                                    <dt className="title">ISBN:</dt>
                                     {bookDetailsData && bookDetailsData.ISBN ? (
                                         <dd>{bookDetailsData.ISBN}</dd>
                                     ) : (
@@ -203,47 +203,47 @@ const BookDetails = (props) => {
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Average Rating:</dt>
+                                    <dt className="title">Average Rating:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.averageRating ? (
+                                    bookDetailsData.averageRating ? (
                                         <dd>{bookDetailsData.averageRating}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Publisher:</dt>
+                                    <dt className="title">Publisher:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.publisher ? (
+                                    bookDetailsData.publisher ? (
                                         <dd>{bookDetailsData.publisher}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Genre:</dt>
+                                    <dt className="title">Genre:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.genre ? (
+                                    bookDetailsData.genre ? (
                                         <dd>{bookDetailsData.genre}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Number of pages:</dt>
+                                    <dt className="title">Number of pages:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.numberofPages ? (
+                                    bookDetailsData.numberofPages ? (
                                         <dd>{bookDetailsData.numberofPages}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>
+                                    <dt className="title">
                                         Original Publication Year:
                                     </dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.originalPublicationYear ? (
+                                    bookDetailsData.originalPublicationYear ? (
                                         <dd>
                                             {
                                                 bookDetailsData.originalPublicationYear
@@ -254,18 +254,18 @@ const BookDetails = (props) => {
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Price:</dt>
+                                    <dt className="title">Price:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.price ? (
+                                    bookDetailsData.price ? (
                                         <dd>$ {bookDetailsData.price}</dd>
                                     ) : (
                                         <dd>N/A</dd>
                                     )}
                                 </p>
                                 <p>
-                                    <dt className='title'>Year Published:</dt>
+                                    <dt className="title">Year Published:</dt>
                                     {bookDetailsData &&
-                                        bookDetailsData.yearPublished ? (
+                                    bookDetailsData.yearPublished ? (
                                         <dd>{bookDetailsData.yearPublished}</dd>
                                     ) : (
                                         <dd>N/A</dd>
@@ -275,11 +275,11 @@ const BookDetails = (props) => {
                         </Typography>
                     </CardContent>
                     <button
-                        type='button'
-                        className='button'
+                        type="button"
+                        className="button"
                         onClick={() =>
                             buyBook(
-                                "627161da17f0455539944549",
+                                '627161da17f0455539944549',
                                 bookDetailsData._id,
                                 2,
                                 bookDetailsData.price
@@ -291,10 +291,10 @@ const BookDetails = (props) => {
                     <br></br>
                     <br></br>
                     <button
-                        className='button'
+                        className="button"
                         onClick={() =>
                             rentBook(
-                                "627161da17f0455539944549",
+                                '627161da17f0455539944549',
                                 bookDetailsData._id
                             )
                         }
