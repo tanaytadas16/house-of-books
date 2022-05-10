@@ -1,8 +1,8 @@
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require("mongodb").MongoClient;
 
 const mongoConfig = {
-    serverUrl: process.env.MONGO_URL,
-    database: 'house_of_books',
+    serverUrl: "mongodb://localhost:27017/",
+    database: "house_of_books",
 };
 
 let _connection = undefined;
