@@ -3,6 +3,7 @@ const app = express();
 const static = express.static(__dirname + '/public');
 const configRoutes = require('./routes');
 const cors = require('cors');
+require('dotenv').config;
 app.use(cors());
 app.use('/public', static);
 app.use(express.json());
