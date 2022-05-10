@@ -54,7 +54,7 @@ const MostPopular = () => {
         async function fetchData() {
             try {
                 console.log('Before axios call');
-                const url = `http://houseof-books.herokuapp.com/books/mostPopular`;
+                const url = `https://houseof-books.herokuapp.com/books/mostPopular`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);

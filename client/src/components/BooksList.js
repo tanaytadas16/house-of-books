@@ -54,7 +54,7 @@ const BooksList = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books`;
+                const url = `httpss://houseof-books.herokuapp.com/books`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -88,7 +88,7 @@ const BooksList = () => {
             totalPrice: quantity * price,
         };
         axios
-            .post('http://houseof-books.herokuapp.com/books/purchase', {
+            .post('https://houseof-books.herokuapp.com/books/purchase', {
                 data: dataBody,
             })
             .then(function (response) {
