@@ -88,7 +88,7 @@ const BooksList = () => {
             totalPrice: quantity * price,
         };
         axios
-            .post('https://houseof-books.herokuapp.com/books/purchase', {
+            .post('http://localhost:4000/books/purchase', {
                 data: dataBody,
             })
             .then(function (response) {
