@@ -54,7 +54,7 @@ const BooksList = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const url = `http://localhost:4000/books`;
+                const url = `https://houseof-books.herokuapp.com/books`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
