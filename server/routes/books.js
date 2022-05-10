@@ -3,8 +3,13 @@ const router = express.Router();
 const booksData = require('../data/books');
 const { ObjectId } = require('mongodb');
 const redis = require('redis');
-const REDIS_PORT = process.env.PORT || 6379;
-const client = redis.createClient(REDIS_PORT);
+
+const client = redis.createClient({
+    url: process.env.REDIS_URL,
+    socket: {
+        rejectUnauthorized: false,
+    },
+});
 
 (async () => {
     await client.connect();
