@@ -11,7 +11,6 @@ import '../styles/Navigation.scss';
 
 const Navigation = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
-  console.log(currentUser);
   const isCartOpen = useSelector(selectIsCartOpen);
 
   const signOutHandler = async () => {
@@ -21,33 +20,33 @@ const Navigation = () => {
 
   return (
     <>
-      <div className="navigation">
-        <Link className="logo-container" to="/">
-          <OpenBookLogo className="logo" /> <span>HOUSE OF BOOKS</span>
+      <div className='navigation'>
+        <Link className='logo-container' to='/'>
+          <OpenBookLogo className='logo' /> <span>HOUSE OF BOOKS</span>
         </Link>
-        <div className="navigation">
-          <div className="nav-links-container">
-            <Link className="nav-link" to="/books">
+        <div className='navigation'>
+          <div className='nav-links-container'>
+            <Link className='nav-link' to='/books'>
               BOOKS
             </Link>
-            <Link className="nav-link" to="/books/newAdditions">
+            <Link className='nav-link' to='/books/newAdditions'>
               NEW ADDITIONS
             </Link>
-            <Link className="nav-link" to="/library">
+            <Link className='nav-link' to='/library'>
               LIBRARY
             </Link>
-            <Link className="nav-link" to="/books/mostPopular">
+            <Link className='nav-link' to='/books/mostPopular'>
               POPULAR BOOKS
             </Link>
-            {/* <Link className="nav-link" to="/books/recents">
+            {/* <Link className='nav-link' to='/books/recents'>
               RECENTLY VIEWED
             </Link> */}
             {currentUser ? (
-              <span className="nav-link" onClick={signOutHandler}>
+              <span className='nav-link' onClick={signOutHandler}>
                 SIGN OUT
               </span>
             ) : (
-              <Link className="nav-link" to="/auth">
+              <Link className='nav-link' to='/auth'>
                 SIGN IN
               </Link>
             )}

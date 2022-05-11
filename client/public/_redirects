@@ -1,3 +1,4 @@
 # Redirects from what the browser requests to what we serve
-/api/*  https://houseof-books.herokuapp.com/books/api/:splat  200
-/*    /index.html   200
+
+/api/* https://houseof-books.herokuapp.com/api/:splat 200
+/* /index.html 200
