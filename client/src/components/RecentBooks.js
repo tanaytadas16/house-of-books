@@ -76,7 +76,6 @@ const RecentBooks = () => {
     //                                 image={book.url ? book.url : noImage}
     //                                 title="book image"
     //                             />
-
     //                             <CardContent>
     //                                 <Typography
     //                                     variant="body2"
@@ -133,5 +132,6 @@ const RecentBooks = () => {
     //     }
     return <div></div>;
 };
+
 
 export default RecentBooks;
