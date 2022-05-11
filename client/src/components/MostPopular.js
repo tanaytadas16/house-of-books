@@ -48,16 +48,14 @@ const MostPopular = () => {
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
-
   let card = null;
   const history = useNavigate();
-
   useEffect(() => {
     console.log('useEffect fired');
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `http://localhost:4000/books/mostPopular`;
+        const url = `https://houseof-books.herokuapp.com/books/mostPopular`;
         const { data } = await axios.get(url);
         console.log(data);
         setBookDetailsData(data);
@@ -100,30 +98,29 @@ const MostPopular = () => {
         history('/', { replace: true }); //to be changed to cart
       });
   };
-
   const buildCard = (book) => {
     return (
       <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-        <Card className={classes.card} variant="outlined">
+        <Card className={classes.card} variant='outlined'>
           <CardActionArea>
             <Link to={`/books/${book._id}`}>
               <CardMedia
                 className={classes.media}
-                component="img"
+                component='img'
                 image={book.url ? book.url : noImage}
-                title="book image"
+                title='book image'
               />
 
               <CardContent>
                 <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="span"
+                  variant='body2'
+                  color='textSecondary'
+                  component='span'
                 >
-                  <p className="title1">{book.title}</p>
+                  <p className='title1'>{book.title}</p>
                   <dl>
                     <p>
-                      <dt className="title">Genre:</dt>
+                      <dt className='title'>Genre:</dt>
                       {book && book.genre ? (
                         <dd>{book.genre}</dd>
                       ) : (
@@ -131,7 +128,7 @@ const MostPopular = () => {
                       )}
                     </p>
                     <p>
-                      <dt className="title">Price:</dt>
+                      <dt className='title'>Price:</dt>
                       {book && book.price ? (
                         <dd>$ {book.price}</dd>
                       ) : (
@@ -144,8 +141,8 @@ const MostPopular = () => {
             </Link>
           </CardActionArea>
           <button
-            type="button"
-            className="button"
+            type='button'
+            className='button'
             onClick={() =>
               buyBook('627161da17f0455539944549', book._id, 2, book.price)
             }

@@ -58,7 +58,6 @@ const Signup = () => {
       return;
     }
 
-    console.log('Before firebase');
     try {
       const { user } = await createNativeUser(email, password);
       setCurrentUser(user);
@@ -93,100 +92,100 @@ const Signup = () => {
   };
 
   return (
-    <div className="sign-up-container">
+    <div className='sign-up-container'>
       <h2>Don't have an account?</h2>
       <span>Sign up with your email and password</span>
       <form onSubmit={handleOnSubmit}>
         <FormInput
-          label="First Name"
-          type="text"
+          label='First Name'
+          type='text'
           required
           onChange={handleChange}
           value={firstName}
-          name="firstName"
+          name='firstName'
         />
         <FormInput
-          label="Last Name"
-          type="text"
+          label='Last Name'
+          type='text'
           required
           onChange={handleChange}
           value={lastName}
-          name="lastName"
+          name='lastName'
         />
         <FormInput
-          label="Email"
-          type="email"
+          label='Email'
+          type='email'
           required
           onChange={handleChange}
           value={email}
-          name="email"
+          name='email'
         />
         <FormInput
-          label="Phone Number"
-          type="text"
+          label='Phone Number'
+          type='text'
           required
           onChange={handleChange}
           value={phoneNumber}
-          name="phoneNumber"
+          name='phoneNumber'
         />
         <FormInput
-          label="Username"
-          type="text"
+          label='Username'
+          type='text'
           required
           onChange={handleChange}
           value={username}
-          name="username"
+          name='username'
         />
         <FormInput
-          label="Password"
-          type="password"
+          label='Password'
+          type='password'
           required
           onChange={handleChange}
           value={password}
-          name="password"
+          name='password'
         />
         <FormInput
-          label="Confirm Password"
-          type="password"
+          label='Confirm Password'
+          type='password'
           required
           onChange={handleChange}
           value={confirmPassword}
-          name="confirmPassword"
+          name='confirmPassword'
         />
         <FormInput
-          label="Address"
-          type="text"
+          label='Address'
+          type='text'
           required
           onChange={handleChange}
           value={address}
-          name="address"
+          name='address'
         />
         <FormInput
-          label="City"
-          type="text"
+          label='City'
+          type='text'
           required
           onChange={handleChange}
           value={city}
-          name="city"
+          name='city'
         />
         <FormInput
-          label="State"
-          type="text"
+          label='State'
+          type='text'
           required
           onChange={handleChange}
           value={state}
-          name="state"
+          name='state'
         />
         <FormInput
-          label="Zip"
-          type="text"
+          label='Zip'
+          type='text'
           required
           onChange={handleChange}
           value={zip}
-          name="zip"
+          name='zip'
         />
 
-        <Button type="submit">Sign Up</Button>
+        <Button type='submit'>Sign Up</Button>
       </form>
     </div>
   );

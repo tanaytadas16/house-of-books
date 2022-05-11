@@ -36,9 +36,9 @@ const Navigation = () => {
             <Link className='nav-link' to='/books/mostPopular'>
               POPULAR BOOKS
             </Link>
-            <Link className='nav-link' to='/books/recents'>
-              RECENTLY VIEWED
-            </Link>
+            {/* <Link className="nav-link" to="/books/recents">
+                            RECENTLY VIEWED
+                        </Link> */}
             {currentUser ? (
               <span className='nav-link' onClick={signOutHandler}>
                 SIGN OUT
