@@ -33,9 +33,9 @@ const Navigation = () => {
                         <Link className="nav-link" to="/books/mostPopular">
                             POPULAR BOOKS
                         </Link>
-                        <Link className="nav-link" to="/books/recents">
+                        {/* <Link className="nav-link" to="/books/recents">
                             RECENTLY VIEWED
-                        </Link>
+                        </Link> */}
                         {
                             currentUser ?
                                 (
