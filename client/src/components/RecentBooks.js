@@ -44,7 +44,7 @@ const useStyles = makeStyles({
     },
 });
 
-// const RecentBooks = () => {
+ const RecentBooks = () => {
 //     const [loading, setLoading] = useState(true);
 //     const classes = useStyles();
 //     const [bookDetailsData, setBookDetailsData] = useState(undefined);
@@ -132,6 +132,7 @@ const useStyles = makeStyles({
 //             </div>
 //         );
 //     }
-// };
+      return <div></div>;
+ };
 
 export default RecentBooks;
