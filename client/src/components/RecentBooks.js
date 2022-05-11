@@ -44,94 +44,94 @@ const useStyles = makeStyles({
     },
 });
 
-const RecentBooks = () => {
-    const [loading, setLoading] = useState(true);
-    const classes = useStyles();
-    const [bookDetailsData, setBookDetailsData] = useState(undefined);
-    let card = null;
-    useEffect(() => {
-        console.log('useEffect fired');
-        async function fetchData() {
-            try {
-                console.log('Before axios call');
-                const url = `https://houseof-books.herokuapp.com/books/recents`;
-                const { data } = await axios.get(url);
-                console.log(data);
-                setBookDetailsData(data);
-                setLoading(false);
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        fetchData();
-    }, []);
-    const buildCard = (book) => {
-        return (
-            <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-                <Card className={classes.card} variant="outlined">
-                    <CardActionArea>
-                        <Link to={`/books/${book._id}`}>
-                            <CardMedia
-                                className={classes.media}
-                                component="img"
-                                image={book.url ? book.url : noImage}
-                                title="book image"
-                            />
+// const RecentBooks = () => {
+//     const [loading, setLoading] = useState(true);
+//     const classes = useStyles();
+//     const [bookDetailsData, setBookDetailsData] = useState(undefined);
+//     let card = null;
+//     useEffect(() => {
+//         console.log('useEffect fired');
+//         async function fetchData() {
+//             try {
+//                 console.log('Before axios call');
+//                 const url = `https://houseof-books.herokuapp.com/books/recents`;
+//                 const { data } = await axios.get(url);
+//                 console.log(data);
+//                 setBookDetailsData(data);
+//                 setLoading(false);
+//             } catch (e) {
+//                 console.log(e);
+//             }
+//         }
+//         fetchData();
+//     }, []);
+//     const buildCard = (book) => {
+//         return (
+//             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
+//                 <Card className={classes.card} variant="outlined">
+//                     <CardActionArea>
+//                         <Link to={`/books/${book._id}`}>
+//                             <CardMedia
+//                                 className={classes.media}
+//                                 component="img"
+//                                 image={book.url ? book.url : noImage}
+//                                 title="book image"
+//                             />
 
-                            <CardContent>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    component="span"
-                                >
-                                    <p className="title1">{book.title}</p>
-                                    <dl>
-                                        <p>
-                                            <dt className="title">Genre:</dt>
-                                            {book && book.genre ? (
-                                                <dd>{book.genre}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                        <p>
-                                            <dt className="title">Price:</dt>
-                                            {book && book.price ? (
-                                                <dd>$ {book.price}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                    </dl>
-                                </Typography>
-                            </CardContent>
-                        </Link>
-                    </CardActionArea>
-                </Card>
-            </Grid>
-        );
-    };
+//                             <CardContent>
+//                                 <Typography
+//                                     variant="body2"
+//                                     color="textSecondary"
+//                                     component="span"
+//                                 >
+//                                     <p className="title1">{book.title}</p>
+//                                     <dl>
+//                                         <p>
+//                                             <dt className="title">Genre:</dt>
+//                                             {book && book.genre ? (
+//                                                 <dd>{book.genre}</dd>
+//                                             ) : (
+//                                                 <dd>N/A</dd>
+//                                             )}
+//                                         </p>
+//                                         <p>
+//                                             <dt className="title">Price:</dt>
+//                                             {book && book.price ? (
+//                                                 <dd>$ {book.price}</dd>
+//                                             ) : (
+//                                                 <dd>N/A</dd>
+//                                             )}
+//                                         </p>
+//                                     </dl>
+//                                 </Typography>
+//                             </CardContent>
+//                         </Link>
+//                     </CardActionArea>
+//                 </Card>
+//             </Grid>
+//         );
+//     };
 
-    if (loading) {
-        return (
-            <div>
-                <h2>Loading....</h2>
-            </div>
-        );
-    } else {
-        card =
-            bookDetailsData &&
-            bookDetailsData.map((book) => {
-                return buildCard(book);
-            });
-        return (
-            <div>
-                <Grid container className={classes.grid} spacing={5}>
-                    {card}
-                </Grid>
-            </div>
-        );
-    }
-};
+//     if (loading) {
+//         return (
+//             <div>
+//                 <h2>Loading....</h2>
+//             </div>
+//         );
+//     } else {
+//         card =
+//             bookDetailsData &&
+//             bookDetailsData.map((book) => {
+//                 return buildCard(book);
+//             });
+//         return (
+//             <div>
+//                 <Grid container className={classes.grid} spacing={5}>
+//                     {card}
+//                 </Grid>
+//             </div>
+//         );
+//     }
+// };
 
 export default RecentBooks;
