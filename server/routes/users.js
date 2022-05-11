@@ -1,117 +1,130 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const userData = require("../data/users");
-const {ObjectId} = require("mongodb");
-const imageData = require("../graphics");
+const userData = require('../data/users');
+const { ObjectId } = require('mongodb');
+const imageData = require('../graphics');
 
 stateList = [
-    "AL",
-    "AK",
-    "AZ",
-    "AR",
-    "CA",
-    "CO",
-    "CT",
-    "DE",
-    "DC",
-    "FL",
-    "GA",
-    "HI",
-    "ID",
-    "IL",
-    "IN",
-    "IA",
-    "KS",
-    "KY",
-    "LA",
-    "ME",
-    "MD",
-    "MA",
-    "MI",
-    "MN",
-    "MS",
-    "MO",
-    "MT",
-    "NE",
-    "NV",
-    "NH",
-    "NJ",
-    "NM",
-    "NY",
-    "NC",
-    "ND",
-    "OH",
-    "OK",
-    "OR",
-    "PA",
-    "PR",
-    "RI",
-    "SC",
-    "SD",
-    "TN",
-    "TX",
-    "UT",
-    "VT",
-    "VA",
-    "WA",
-    "WV",
-    "WI",
-    "WY",
+  'AL',
+  'AK',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'DC',
+  'FL',
+  'GA',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'OH',
+  'OK',
+  'OR',
+  'PA',
+  'PR',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
 ];
 
 function checkIsString(s) {
-    if (typeof s !== "string") throw "Given input is invalid";
-    if (s.length < 1) throw "Given input is empty";
-    if (s.trim().length === 0) throw "Given input is all white spaces";
+  if (typeof s !== 'string') throw 'Given input is invalid';
+  if (s.length < 1) throw 'Given input is empty';
+  if (s.trim().length === 0) throw 'Given input is all white spaces';
 }
 
 function checkIsName(s) {
-    if (/[^a-zA-Z]/.test(s)) throw "Given input is not only letters";
+  if (/[^a-zA-Z]/.test(s)) throw 'Given input is not only letters';
 }
 
 function checkIsPassword(s) {
-    if (s.length < 8) throw "Given password size is less than 8";
+  if (s.length < 8) throw 'Given password size is less than 8';
 }
 
 function checkIsEmail(s) {
-    if (!/^\S+@[a-zA-Z]+\.[a-zA-Z]+$/.test(s))
-        throw "Given email id is invalid";
+  if (!/^\S+@[a-zA-Z]+\.[a-zA-Z]+$/.test(s)) throw 'Given email id is invalid';
 }
 
 function checkIsUsername(s) {
-    if (s.length < 4) throw "Given username size is less than 4";
+  if (s.length < 4) throw 'Given username size is less than 4';
 }
 
-router.post("/signup", async (req, res) => {
-    let {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        username,
-        password,
-        address,
-        city,
-        state,
-        zip,
-    } = req.body;
-    // console.log(userInfo);
+router.post('/signup', async (req, res) => {
+  console.log(req.body.data);
+  let {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    username,
+    password,
+    address,
+    city,
+    state,
+    zip,
+    flag,
+  } = req.body.data;
+  // console.log(userInfo);
 
+  console.log('flag is ', flag);
+  if (flag === 'G') {
+    if (!email) {
+      return res.status(400).send('You must provide email for google sign in.');
+    }
+    email = email.toLowerCase().trim();
+    try {
+      checkIsEmail(email);
+    } catch (e) {
+      return res.status(400).send(String(e));
+    }
+  } else {
     if (
-        !(
-            firstName &&
-            lastName &&
-            email &&
-            username &&
-            password &&
-            phoneNumber &&
-            address &&
-            city &&
-            state &&
-            zip
-        )
+      !(
+        firstName &&
+        lastName &&
+        email &&
+        phoneNumber &&
+        username &&
+        password &&
+        address &&
+        city &&
+        state &&
+        zip
+      )
     ) {
-        return res.status(400).send("You must provide all values.");
+      return res.status(400).send('You must provide all values.');
     }
 
     firstName = firstName.trim();
@@ -126,79 +139,83 @@ router.post("/signup", async (req, res) => {
     zip = zip.trim();
 
     try {
-        checkIsString(firstName);
-        checkIsString(lastName);
-        checkIsString(email);
-        checkIsString(username);
-        checkIsString(password);
-        checkIsString(address);
-        checkIsString(city);
-        checkIsString(state);
-        checkIsString(zip);
+      checkIsString(firstName);
+      checkIsString(lastName);
+      checkIsString(email);
+      checkIsString(username);
+      checkIsString(password);
+      checkIsString(address);
+      checkIsString(city);
+      checkIsString(state);
+      checkIsString(zip);
 
-        checkIsName(firstName);
-        checkIsName(lastName);
+      checkIsName(firstName);
+      checkIsName(lastName);
 
-        checkIsEmail(email);
-        checkIsUsername(username);
-        checkIsPassword(password);
+      checkIsEmail(email);
+      checkIsUsername(username);
+      checkIsPassword(password);
     } catch (e) {
-        return res.status(400).send(String(e));
+      return res.status(400).send(String(e));
     }
+  }
 
-    try {
-        let initials = firstName[0] + lastName[0];
-        console.log(initials);
-        let image = imageData.createImage(initials);
-        const newUser = await userData.createUser(
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            username,
-            password,
-            address,
-            city,
-            state,
-            zip,
-            "/server/imgs/initials.png"
-        );
-        res.status(200).json(newUser);
-    } catch (e) {
-        return res.status(500).send(String(e));
+  try {
+    if (flag !== 'G') {
+      let initials = firstName[0] + lastName[0];
+      console.log(initials);
+      let image = imageData.createImage(initials);
     }
+    const newUser = await userData.createUser(
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      username,
+      password,
+      address,
+      city,
+      state,
+      zip,
+      flag,
+      '/server/imgs/initials.png'
+    );
+    res.status(200).json(newUser);
+  } catch (e) {
+    return res.status(500).send(String(e));
+  }
 });
 
-router.get("/logout", async (req, res) => {
-    res.redirect("/users/login");
+router.get('/logout', async (req, res) => {
+  res.redirect('/users/login');
 });
 
-router.post("/login", async (req, res) => {
-    let {username, password} = req.body;
+router.post('/login', async (req, res) => {
+  let { username, password } = req.body;
 
-    if (!(username && password))
-        return res.status(400).send("You must provide all values.");
+  if (!(username && password))
+    return res.status(400).send('You must provide all values.');
 
-    username = username.toLowerCase().trim();
+  username = username.toLowerCase().trim();
 
-    try {
-        checkIsString(username);
-        checkIsString(password);
+  try {
+    checkIsString(username);
+    checkIsString(password);
 
-        checkIsUsername(username);
-        checkIsPassword(password);
-    } catch (e) {
-        return res.status(400).send(String(e));
-    }
+    checkIsUsername(username);
+    checkIsPassword(password);
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
 
-    try {
-        let auth = await userData.checkUser(username, password);
-        if (auth.authenticated) res.status(200).json(auth);
-        else res.status(401).send("Invalid username or password");
-    } catch (e) {
-        console.log(e);
-        return res.status(400).json({error: e});
-    }
+  try {
+    let auth = await userData.checkUser(username, password);
+    if (auth.authenticated) res.status(200).json(auth);
+    else res.status(401).send('Invalid username or password');
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ error: e });
+  }
 });
 
 // router.delete("/delete/:id", async (req, res) => {
@@ -216,93 +233,102 @@ router.post("/login", async (req, res) => {
 //   }
 // });
 
-router.get("/profile", async (req, res) => {
-    // error check
-    try {
-        if (!req.body.userId) throw "must provide user Id";
-        ObjectId(req.body.userId);
-    } catch (e) {
-        return res.status(400).send(String(e));
-    }
-    try {
-        res.status(200).json(await userData.getUser(req.body.userId));
-    } catch (e) {
-        res.status(500).send(String(e));
-    }
+router.get('/profile/:emailId', async (req, res) => {
+  // error check
+  try {
+    console.log(req.params.emailId);
+    if (!req.params.emailId) throw 'must provide email Id';
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
+  try {
+    res.status(200).json(await userData.getUser(req.params.emailId));
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(String(e));
+  }
 });
 
-router.put("/profile", async (req, res) => {
-    let {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        username,
-        password,
-        address,
-        city,
-        state,
-        zip,
-    } = req.body;
+router.put('/profile', async (req, res) => {
+  let {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    username,
+    password,
+    confirmPassword,
+    address,
+    city,
+    state,
+    zip,
+  } = req.body;
 
-    try {
-        if (!firstName) throw "Must provide the first name";
-        if (!lastName) throw "Must provide the last name";
-        if (!email) throw "Must provide the email";
-        if (!username) throw "Must provide the username";
-        if (!password) throw "Must provide the password";
-        if (!phoneNumber) throw "Must provide the phone number";
-        if (!address) throw "Must provide the address";
-        if (!city) throw "Must provide the city";
-        if (!state) throw "Must provide the state";
-        if (!zip) throw "Must provide the zip";
+  try {
+    if (!firstName) throw 'Must provide the first name';
+    if (!lastName) throw 'Must provide the last name';
+    if (!email) throw 'Must provide the email';
+    if (!username) throw 'Must provide the username';
+    if (!password) throw 'Must provide the password';
+    if (!confirmPassword) throw 'Must provide the confirm password';
+    if (!phoneNumber) throw 'Must provide the phone number';
+    if (!address) throw 'Must provide the address';
+    if (!city) throw 'Must provide the city';
+    if (!state) throw 'Must provide the state';
+    if (!zip) throw 'Must provide the zip';
 
-        checkIsString(firstName);
-        checkIsString(lastName);
-        checkIsString(email);
-        checkIsString(username);
-        checkIsString(password);
-        checkIsString(address);
-        checkIsString(city);
-        checkIsString(state);
-        checkIsString(zip);
+    checkIsString(firstName);
+    checkIsString(lastName);
+    checkIsString(email);
+    checkIsString(username);
+    checkIsString(password);
+    checkIsString(confirmPassword);
 
-        checkIsName(firstName);
-        checkIsName(lastName);
+    checkIsString(address);
+    checkIsString(city);
+    checkIsString(state);
+    checkIsString(zip);
 
-        checkIsEmail(email);
-        checkIsUsername(username);
-        checkIsPassword(password);
-    } catch (e) {
-        return res.status(400).send(String(e));
-    }
+    checkIsName(firstName);
+    checkIsName(lastName);
 
-    let userId = req.body.userId;
-    try {
-        if (!userId) throw "must provide user Id";
-        userId = ObjectId(userId);
-    } catch (e) {
-        return res.status(400).send(String(e));
-    }
+    checkIsEmail(email);
+    checkIsUsername(username);
+    checkIsPassword(password);
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
+  if (password !== confirmPassword) {
+    return res.status(400).send('Password does not match');
+  }
 
-    try {
-        updatedUser = await userData.updateUser(
-            userId,
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            username,
-            password,
-            address,
-            city,
-            state,
-            zip
-        );
-        res.status(200).json(updatedUser);
-    } catch (e) {
-        res.status(500).send(String(e));
-    }
+  let userId = req.body.userId;
+  try {
+    if (!userId) throw 'must provide user Id';
+    userId = ObjectId(userId);
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
+
+  try {
+    updatedUser = await userData.updateUser(
+      userId,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      username,
+      password,
+      confirmPassword,
+      address,
+      city,
+      state,
+      zip
+    );
+    res.status(200).json(updatedUser);
+  } catch (e) {
+    res.status(500).send(String(e));
+  }
 });
 
 module.exports = router;
