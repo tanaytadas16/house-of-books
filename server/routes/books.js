@@ -11,9 +11,15 @@ const { ObjectId } = require('mongodb');
 //     },
 // });
 
-(async () => {
-    await client.connect();
-})();
+// (async () => {
+//     await client.connect();
+// })();
+
+const ErrorCode = {
+    BAD_REQUEST: 400,
+    NOT_FOUND: 404,
+    INTERNAL_SERVER_ERROR: 500,
+};
 
 function validateStringParams(param, paramName) {
     if (!param) {
@@ -148,7 +154,32 @@ router.post('/purchase', async (req, res) => {
         return e.message;
     }
 });
+/////////////////////////////////////////////////////////////////////////////  tanay code starts
+router.get('/genres', async (req, res) => {
+    try {
+        restrictRequestQuery(request, response);
 
-router.get('/genres', async (req, res) => {});
+        if (Object.keys(request.body).length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: Doesn't require fields to be passed."
+            );
+        }
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || 'Internal server error.',
+        });
+    }
+});
 router.get('/genres/:genre', async (req, res) => {});
+
+const throwError = (code = 404, message = 'Not found') => {
+    throw { code, message };
+};
+const restrictRequestQuery = (request, response) => {
+    if (Object.keys(request.query).length > 0) {
+        throw { code: 400, message: 'Request query not allowed.' };
+    }
+};
+//////////////////////////////////////////////////////////////////////////////  tanay code ends
 module.exports = router;
