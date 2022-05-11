@@ -155,7 +155,7 @@ router.post('/purchase', async (req, res) => {
     }
 });
 /////////////////////////////////////////////////////////////////////////////  tanay code starts
-router.get('/genres', async (req, res) => {
+router.get('/genres', async (request, response) => {
     try {
         restrictRequestQuery(request, response);
 
@@ -171,7 +171,7 @@ router.get('/genres', async (req, res) => {
         });
     }
 });
-router.get('/genres/:genre', async (req, res) => {});
+router.get('/genres/:genre', async (request, response) => {});
 
 const throwError = (code = 404, message = 'Not found') => {
     throw { code, message };
