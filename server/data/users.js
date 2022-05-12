@@ -156,6 +156,7 @@ async function createUser(
       checkIsString(lastName);
       checkIsString(email);
       checkIsString(username);
+      checkIsString(oldUsername);
       checkIsString(password);
       checkIsString(address);
       checkIsString(city);
@@ -222,6 +223,8 @@ async function createUser(
 }
 
 async function getUser(emailId) {
+  console.log('After function call');
+
   if (
     typeof emailId !== 'string' ||
     emailId.length === 0 ||
@@ -231,21 +234,24 @@ async function getUser(emailId) {
 
   checkIsEmail(emailId);
 
+  console.log('Before DB call');
+
   const userCollection = await users();
   const singleUserId = await userCollection.findOne({ email: emailId });
   if (singleUserId === null) return null;
+  console.log(singleUserId);
   return { ...singleUserId, _id: singleUserId._id.toString() };
 }
 
 async function updateUser(
-  userId,
   firstName,
   lastName,
   email,
+  oldEmail,
   phoneNumber,
   username,
+  oldUsername,
   password,
-  confirmPassword,
   address,
   city,
   state,
@@ -254,9 +260,11 @@ async function updateUser(
   if (!firstName) throw 'Must provide the first name';
   if (!lastName) throw 'Must provide the last name';
   if (!email) throw 'Must provide the email';
+  if (!oldEmail) throw 'Must provide the email';
   if (!username) throw 'Must provide the username';
+  if (!oldUsername) throw 'Must provide the username';
+
   if (!password) throw 'Must provide the password';
-  if (!confirmPassword) throw 'Must provide the confirm password';
 
   if (!phoneNumber) throw 'Must provide the phone number';
   if (!address) throw 'Must provide the address';
@@ -267,9 +275,10 @@ async function updateUser(
   firstName = firstName.trim();
   lastName = lastName.trim();
   email = email.toLowerCase().trim();
+  oldEmail = oldEmail.toLowerCase().trim();
   username = username.toLowerCase().trim();
+  oldUsername = oldUsername.toLowerCase().trim();
   password = password.trim();
-  confirmPassword = confirmPassword.trim();
   phoneNumber = phoneNumber.trim();
   address = address.trim();
   city = city.trim();
@@ -277,13 +286,12 @@ async function updateUser(
   zip = zip.trim();
 
   try {
-    validateID(userId);
     checkIsString(firstName);
     checkIsString(lastName);
     checkIsString(email);
     checkIsString(username);
+    checkIsString(oldUsername);
     checkIsString(password);
-    checkIsString(confirmPassword);
 
     checkIsString(address);
     checkIsString(city);
@@ -295,6 +303,8 @@ async function updateUser(
     checkIsName(lastName);
 
     checkIsEmail(email);
+    checkIsEmail(oldEmail);
+
     checkPhoneNumber(phoneNumber);
     checkIsUsername(username);
     checkIsPassword(password);
@@ -304,13 +314,17 @@ async function updateUser(
 
   const userCollection = await users();
 
-  // check if email exists
-  if (await userCollection.findOne({ email: email }))
-    throw 'Email address is taken.';
+  if (oldEmail !== email) {
+    // check if email exists
+    if (await userCollection.findOne({ email: email }))
+      throw 'Email address is taken.';
+  }
 
-  // check if username exists
-  if (await userCollection.findOne({ username: username }))
-    throw 'Username is taken.';
+  if (oldUsername !== username) {
+    // check if username exists
+    if (await userCollection.findOne({ username: username }))
+      throw 'Username is taken.';
+  }
 
   found = false;
 
@@ -322,7 +336,6 @@ async function updateUser(
     throw `State not found`;
   }
 
-  userId = ObjectId(userId);
   const hash = await bcrypt.hash(password, saltRounds);
 
   let updatedUser = {
@@ -338,8 +351,9 @@ async function updateUser(
     zip: zip,
   };
 
+  console.log(email, typeof email);
   const updateUser = await userCollection.updateOne(
-    { _id: userId },
+    { email: oldEmail },
     { $set: updatedUser }
   );
 

@@ -81,6 +81,23 @@ function checkIsUsername(s) {
   if (s.length < 4) throw 'Given username size is less than 4';
 }
 
+router.post('/profile', async (req, res) => {
+  // error check
+  try {
+    console.log(req.body.data);
+    if (!req.body.data) throw 'must provide email Id';
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
+  try {
+    console.log('Before function call');
+    res.status(200).json(await userData.getUser(req.body.data));
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(String(e));
+  }
+});
+
 router.post('/signup', async (req, res) => {
   console.log(req.body.data);
   let {
@@ -233,44 +250,32 @@ router.post('/login', async (req, res) => {
 //   }
 // });
 
-router.get('/profile/:emailId', async (req, res) => {
-  // error check
-  try {
-    console.log(req.params.emailId);
-    if (!req.params.emailId) throw 'must provide email Id';
-  } catch (e) {
-    return res.status(400).send(String(e));
-  }
-  try {
-    res.status(200).json(await userData.getUser(req.params.emailId));
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(String(e));
-  }
-});
-
 router.put('/profile', async (req, res) => {
   let {
     firstName,
     lastName,
     email,
+    oldEmail,
     phoneNumber,
     username,
+    oldUsername,
     password,
-    confirmPassword,
     address,
     city,
     state,
     zip,
-  } = req.body;
+  } = req.body.data;
 
+  console.log(req.body.data);
   try {
     if (!firstName) throw 'Must provide the first name';
     if (!lastName) throw 'Must provide the last name';
     if (!email) throw 'Must provide the email';
+    if (!oldEmail) throw 'Must provide the email';
+
     if (!username) throw 'Must provide the username';
+    if (!oldUsername) throw 'Must provide the username';
     if (!password) throw 'Must provide the password';
-    if (!confirmPassword) throw 'Must provide the confirm password';
     if (!phoneNumber) throw 'Must provide the phone number';
     if (!address) throw 'Must provide the address';
     if (!city) throw 'Must provide the city';
@@ -281,8 +286,8 @@ router.put('/profile', async (req, res) => {
     checkIsString(lastName);
     checkIsString(email);
     checkIsString(username);
+    checkIsString(oldUsername);
     checkIsString(password);
-    checkIsString(confirmPassword);
 
     checkIsString(address);
     checkIsString(city);
@@ -293,33 +298,24 @@ router.put('/profile', async (req, res) => {
     checkIsName(lastName);
 
     checkIsEmail(email);
+    checkIsEmail(oldEmail);
+
     checkIsUsername(username);
     checkIsPassword(password);
-  } catch (e) {
-    return res.status(400).send(String(e));
-  }
-  if (password !== confirmPassword) {
-    return res.status(400).send('Password does not match');
-  }
-
-  let userId = req.body.userId;
-  try {
-    if (!userId) throw 'must provide user Id';
-    userId = ObjectId(userId);
   } catch (e) {
     return res.status(400).send(String(e));
   }
 
   try {
     updatedUser = await userData.updateUser(
-      userId,
       firstName,
       lastName,
       email,
+      oldEmail,
       phoneNumber,
       username,
+      oldUsername,
       password,
-      confirmPassword,
       address,
       city,
       state,
