@@ -414,9 +414,9 @@ async function checkUser(username, password) {
     };
 }
 
-async function getRentedBooks(userId) {
+async function getRentedBooks(userEmail) {
     const userCollection = await users();
-    let user = await getUser(userId);
+    let user = await getUser(userEmail);
     let rentedBooks = user.bookRenting;
     let rentedBooksCollection = [];
     for (let book of rentedBooks) {
