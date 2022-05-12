@@ -84,7 +84,6 @@ function checkIsUsername(s) {
 router.post('/profile', async (req, res) => {
   // error check
   try {
-    console.log(req.body.data);
     if (!req.body.data) throw 'must provide email Id';
   } catch (e) {
     return res.status(400).send(String(e));
