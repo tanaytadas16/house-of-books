@@ -3,6 +3,7 @@ const users = mongoCollections.users;
 const bcrypt = require("bcrypt");
 const saltRounds = 16;
 const {ObjectId} = require("mongodb");
+const booksFunctions = require("./books");
 
 stateList = [
     "AL",
@@ -384,4 +385,18 @@ async function checkUser(username, password) {
     };
 }
 
-module.exports = {createUser, getUser, updateUser, checkUser};
+async function getRentedBooks(userId) {
+    const userCollection = await users();
+    let user = await getUser(userId);
+    let rentedBooks = user.bookRenting;
+    let rentedBooksCollection = [];
+    for (let book of rentedBooks) {
+        let id = book["_id"].toString();
+        const bookDetail = await booksFunctions.getById(id);
+        rentedBooksCollection.push(bookDetail);
+    }
+    console.log(rentedBooksCollection);
+    return rentedBooksCollection;
+}
+
+module.exports = {createUser, getUser, updateUser, checkUser, getRentedBooks};

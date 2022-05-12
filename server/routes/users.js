@@ -305,4 +305,21 @@ router.put("/profile", async (req, res) => {
     }
 });
 
+router.get("/rentedbooks", async (req, res) => {
+    try {
+        if (!req.body.userId) throw "must provide user Id";
+        ObjectId(req.body.userId);
+    } catch (e) {
+        res.status(400).json({error: e});
+        return;
+    }
+    try {
+        let rentedBooks = await userData.getRentedBooks(req.body.userId);
+        console.log(rentedBooks);
+        res.status(200).json(res.status(200).json(rentedBooks));
+    } catch (e) {
+        res.status(500).json({error: e});
+        return;
+    }
+});
 module.exports = router;
