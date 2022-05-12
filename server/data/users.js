@@ -3,6 +3,7 @@ const users = mongoCollections.users;
 const bcrypt = require("bcrypt");
 const saltRounds = 16;
 const {ObjectId} = require("mongodb");
+const e = require("express");
 const booksFunctions = require("./books");
 
 stateList = [
@@ -117,68 +118,82 @@ async function createUser(
     city,
     state,
     zip,
-    image
+    flag
+    // image
 ) {
-    if (!firstName) throw "Must provide the first name";
-    if (!lastName) throw "Must provide the last name";
-    if (!email) throw "Must provide the email";
-    if (!username) throw "Must provide the username";
-    if (!password) throw "Must provide the password";
-    if (!phoneNumber) throw "Must provide the phone number";
-    if (!address) throw "Must provide the address";
-    if (!city) throw "Must provide the city";
-    if (!state) throw "Must provide the state";
-    if (!zip) throw "Must provide the zip";
+    if (flag === "G") {
+        if (!email) throw "Must provide the email";
+        email = email.toLowerCase().trim();
+        try {
+            checkIsEmail(email);
+        } catch (e) {
+            throw String(e);
+        }
+    } else {
+        if (!firstName) throw "Must provide the first name";
+        if (!lastName) throw "Must provide the last name";
+        if (!email) throw "Must provide the email";
+        if (!username) throw "Must provide the username";
+        if (!password) throw "Must provide the password";
+        if (!phoneNumber) throw "Must provide the phone number";
+        if (!address) throw "Must provide the address";
+        if (!city) throw "Must provide the city";
+        if (!state) throw "Must provide the state";
+        if (!zip) throw "Must provide the zip";
 
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.toLowerCase().trim();
-    username = username.toLowerCase().trim();
-    password = password.trim();
-    phoneNumber = phoneNumber.trim();
-    address = address.trim();
-    city = city.trim();
-    state = state.trim();
-    zip = zip.trim();
+        firstName = firstName.trim();
+        lastName = lastName.trim();
+        email = email.toLowerCase().trim();
+        username = username.toLowerCase().trim();
+        password = password.trim();
+        phoneNumber = phoneNumber.trim();
+        address = address.trim();
+        city = city.trim();
+        state = state.trim();
+        zip = zip.trim();
 
-    try {
-        checkIsString(firstName);
-        checkIsString(lastName);
-        checkIsString(email);
-        checkIsString(username);
-        checkIsString(password);
-        checkIsString(address);
-        checkIsString(city);
-        checkIsString(state);
-        checkIsString(zip);
-        checkZip(zip);
+        try {
+            checkIsString(firstName);
+            checkIsString(lastName);
+            checkIsString(email);
+            checkIsString(username);
+            checkIsString(oldUsername);
+            checkIsString(password);
+            checkIsString(address);
+            checkIsString(city);
+            checkIsString(state);
+            checkIsString(zip);
+            checkZip(zip);
 
-        checkIsName(firstName);
-        checkIsName(lastName);
+            checkIsName(firstName);
+            checkIsName(lastName);
 
-        checkIsEmail(email);
-        checkPhoneNumber(phoneNumber);
-        checkIsUsername(username);
-        checkIsPassword(password);
-    } catch (e) {
-        throw String(e);
+            checkIsEmail(email);
+            checkPhoneNumber(phoneNumber);
+            checkIsUsername(username);
+            checkIsPassword(password);
+        } catch (e) {
+            throw String(e);
+        }
     }
 
     const userCollection = await users();
 
-    if (await userCollection.findOne({username: username}))
+    if (await userCollection.findOne({email: email}))
         throw "Username is taken.";
 
-    const hash = await bcrypt.hash(password, saltRounds);
+    let hash = null;
+    if (flag !== "G") {
+        hash = await bcrypt.hash(password, saltRounds);
+        found = false;
 
-    found = false;
+        for (let i = 0; i < stateList.length; i++) {
+            if (state == stateList[i]) found = true;
+        }
 
-    for (let i = 0; i < stateList.length; i++) {
-        if (state == stateList[i]) found = true;
-    }
-
-    if (found == false) {
-        throw `State not found`;
+        if (found == false) {
+            throw `State not found`;
+        }
     }
 
     let newUser = {
@@ -195,7 +210,7 @@ async function createUser(
         bookRenting: [],
         purchasedBooks: [],
         reviews: [],
-        image: image,
+        // image: image,
     };
 
     const insertInfo = await userCollection
@@ -208,34 +223,35 @@ async function createUser(
     return insertInfo.insertedId.toString();
 }
 
-async function getUser(userId) {
-    if (
-        typeof userId !== "string" ||
-        userId.length === 0 ||
-        userId === " ".repeat(userId.length)
-    )
-        throw "Error: userId must be a non-empty string.";
+async function getUser(emailId) {
+    console.log("After function call");
 
-    validateID(userId);
-    try {
-        userId = ObjectId(userId);
-    } catch (e) {
-        throw String(e);
-    }
+    if (
+        typeof emailId !== "string" ||
+        emailId.length === 0 ||
+        emailId === " ".repeat(emailId.length)
+    )
+        throw "Error: emailId must be a non-empty string.";
+
+    checkIsEmail(emailId);
+
+    console.log("Before DB call");
 
     const userCollection = await users();
-    const singleUserId = await userCollection.findOne({_id: userId});
-    if (singleUserId === null) throw "Error: failed to find user.";
+    const singleUserId = await userCollection.findOne({email: emailId});
+    if (singleUserId === null) return null;
+    console.log(singleUserId);
     return {...singleUserId, _id: singleUserId._id.toString()};
 }
 
 async function updateUser(
-    userId,
     firstName,
     lastName,
     email,
+    oldEmail,
     phoneNumber,
     username,
+    oldUsername,
     password,
     address,
     city,
@@ -245,8 +261,12 @@ async function updateUser(
     if (!firstName) throw "Must provide the first name";
     if (!lastName) throw "Must provide the last name";
     if (!email) throw "Must provide the email";
+    if (!oldEmail) throw "Must provide the email";
     if (!username) throw "Must provide the username";
+    if (!oldUsername) throw "Must provide the username";
+
     if (!password) throw "Must provide the password";
+
     if (!phoneNumber) throw "Must provide the phone number";
     if (!address) throw "Must provide the address";
     if (!city) throw "Must provide the city";
@@ -256,7 +276,9 @@ async function updateUser(
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.toLowerCase().trim();
+    oldEmail = oldEmail.toLowerCase().trim();
     username = username.toLowerCase().trim();
+    oldUsername = oldUsername.toLowerCase().trim();
     password = password.trim();
     phoneNumber = phoneNumber.trim();
     address = address.trim();
@@ -265,12 +287,13 @@ async function updateUser(
     zip = zip.trim();
 
     try {
-        validateID(userId);
         checkIsString(firstName);
         checkIsString(lastName);
         checkIsString(email);
         checkIsString(username);
+        checkIsString(oldUsername);
         checkIsString(password);
+
         checkIsString(address);
         checkIsString(city);
         checkIsString(state);
@@ -281,6 +304,8 @@ async function updateUser(
         checkIsName(lastName);
 
         checkIsEmail(email);
+        checkIsEmail(oldEmail);
+
         checkPhoneNumber(phoneNumber);
         checkIsUsername(username);
         checkIsPassword(password);
@@ -290,13 +315,17 @@ async function updateUser(
 
     const userCollection = await users();
 
-    // check if email exists
-    if (await userCollection.findOne({email: email}))
-        throw "Email address is taken.";
+    if (oldEmail !== email) {
+        // check if email exists
+        if (await userCollection.findOne({email: email}))
+            throw "Email address is taken.";
+    }
 
-    // check if username exists
-    if (await userCollection.findOne({username: username}))
-        throw "Username is taken.";
+    if (oldUsername !== username) {
+        // check if username exists
+        if (await userCollection.findOne({username: username}))
+            throw "Username is taken.";
+    }
 
     found = false;
 
@@ -308,7 +337,6 @@ async function updateUser(
         throw `State not found`;
     }
 
-    userId = ObjectId(userId);
     const hash = await bcrypt.hash(password, saltRounds);
 
     let updatedUser = {
@@ -324,8 +352,9 @@ async function updateUser(
         zip: zip,
     };
 
+    console.log(email, typeof email);
     const updateUser = await userCollection.updateOne(
-        {_id: userId},
+        {email: oldEmail},
         {$set: updatedUser}
     );
 

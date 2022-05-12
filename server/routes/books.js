@@ -132,6 +132,7 @@ router.post("/purchase", async (req, res) => {
         if (Object.keys(req.body.data).length === 0) {
             throw `No data provided for buying book`;
         }
+
         // validateCreations(bookToBePurchased.customerId, bookToBePurchased.bookId);
     } catch (e) {
         console.log(e);
@@ -145,7 +146,6 @@ router.post("/purchase", async (req, res) => {
             bookToBePurchased.quantity,
             bookToBePurchased.totalPrice
         );
-        console.log(books);
         res.status(200).json(books);
         return books;
     } catch (e) {
