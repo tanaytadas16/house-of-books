@@ -422,6 +422,8 @@ async function getRentedBooks(userEmail) {
     for (let book of rentedBooks) {
         let id = book["_id"].toString();
         const bookDetail = await booksFunctions.getById(id);
+        bookDetail["startDate"] = book.startDate;
+        bookDetail["endDate"] = book.endDate;
         rentedBooksCollection.push(bookDetail);
     }
     console.log(rentedBooksCollection);

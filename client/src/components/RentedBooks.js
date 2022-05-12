@@ -92,27 +92,6 @@ const Library = (props) => {
             date.getFullYear(),
         ].join("-");
     }
-    const rentBook = (customerId, bookId) => {
-        let todayDate = formatDate(new Date());
-        let endDate = formatDateNextMonth(new Date());
-        console.log(todayDate);
-        let dataBody = {
-            customerId: customerId,
-            bookId: bookId,
-            startDate: todayDate,
-            endDate: endDate,
-            rentedFlag: true,
-        };
-        axios
-            .post("https://houseof-books.herokuapp.com/library", {
-                data: dataBody,
-            })
-            .then(function (response) {
-                console.log(response.data);
-                alertFunc(endDate);
-                history("/", {replace: true}); //to be changed to cart
-            });
-    };
 
     const buildCard = (book) => {
         return (
@@ -156,14 +135,6 @@ const Library = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
-                    <button
-                        className='button'
-                        onClick={() =>
-                            rentBook("62747b9290588d151a6344f3", book._id)
-                        }
-                    >
-                        Rent
-                    </button>
                 </Card>
             </Grid>
         );
