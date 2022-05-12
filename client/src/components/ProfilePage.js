@@ -1,47 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { createNativeUser, auth, emailUpdate } from '../firebase/firebase';
 import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import '../styles/Signup.scss';
 
-const defaultFormFields = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  phoneNumber: '',
-  username: '',
-  password: '',
-  confirmPassword: '',
-  address: '',
-  city: '',
-  state: '',
-  zip: '',
-};
-
 const ProfilePage = () => {
-  const [formFields, setFormFields] = useState(defaultFormFields);
   const [userData, setUserData] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const history = useNavigate();
+  const [oldUsername, setOldUsername] = useState(undefined);
 
-  const {
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    username,
-    password,
-    confirmPassword,
-    address,
-    city,
-    state,
-    zip,
-  } = formFields;
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
   console.log('Current user is ', currentUser.email);
 
   useEffect(() => {
@@ -49,10 +21,12 @@ const ProfilePage = () => {
     async function fetchData() {
       try {
         console.log('Before axios call in profile page');
-        const url = `http://localhost:4000/users/profile/`;
-        const { data } = await axios.get(url + currentUser.email);
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, { data: currentUser.email });
         console.log(data);
         setUserData(data);
+        console.log('Old username is ', data.username);
+        setOldUsername(data.username);
         setLoading(false);
       } catch (e) {
         setError(true);
@@ -61,10 +35,6 @@ const ProfilePage = () => {
     }
     fetchData();
   }, []);
-
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -75,64 +45,44 @@ const ProfilePage = () => {
   const handleOnSubmit = async (event) => {
     event.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (
+      event.target.elements.password.value !==
+      event.target.elements.confirmPassword.value
+    ) {
       alert('Passwords do not match');
       return;
     }
 
-    if (currentUser.email !== email) {
-      try {
-        const { emailData } = await emailUpdate(email);
-        setCurrentUser(emailData);
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          alert('Cannot create user, email already exists');
-        } else if (error.code === 'auth/invalid-email') {
-          alert('Email is invalid');
-        } else {
-          console.log('Error creating user', error);
-        }
-      }
-    }
-
     let dataBody = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phoneNumber: phoneNumber,
-      username: username,
-      password: password,
-      confirmPassword: confirmPassword,
-      address: address,
-      city: city,
-      state: state,
-      zip: zip,
+      firstName: event.target.elements.firstName.value,
+      lastName: event.target.elements.lastName.value,
+      email: event.target.elements.email.value,
+      oldEmail: currentUser.email,
+      phoneNumber: event.target.elements.phoneNumber.value,
+      username: event.target.elements.username.value,
+      oldUsername: oldUsername,
+      password: event.target.elements.password.value,
+      address: event.target.elements.address.value,
+      city: event.target.elements.city.value,
+      state: event.target.elements.state.value,
+      zip: event.target.elements.zip.value,
     };
+
     axios
-      .put('http://localhost:4000/users/profile/', { data: dataBody })
+      .put('http://localhost:4000/users/profile/', {
+        data: dataBody,
+      })
       .then(function (response) {
         console.log(response.data);
         history('/', { replace: true });
       });
-
-    // try {
-    //   const { user } = await createNativeUser(email, password);
-    //   setCurrentUser(user);
-    //   resetFormFields();
-    // } catch (error) {
-    //   if (error.code === 'auth/email-already-in-use') {
-    //     alert('Cannot create user, email already exists');
-    //   } else {
-    //     console.log('Error creating user', error);
-    //   }
-    // }
   };
 
   if (loading) {
     if (error) {
       return (
         <div>
-          <h2>No books are present in the popular list</h2>
+          <h2>No User found, Please sign in</h2>
         </div>
       );
     } else {
@@ -170,6 +120,7 @@ const ProfilePage = () => {
             onChange={handleChange}
             value={userData.email ? userData.email : ''}
             name='email'
+            disabled
           />
           <FormInput
             label='Phone Number'
@@ -192,7 +143,7 @@ const ProfilePage = () => {
             type='password'
             required
             onChange={handleChange}
-            value={password}
+            value={userData.password ? userData.password : ''}
             name='password'
           />
           <FormInput
@@ -200,7 +151,7 @@ const ProfilePage = () => {
             type='password'
             required
             onChange={handleChange}
-            value={confirmPassword}
+            value={userData.confirmPassword ? userData.confirmPassword : ''}
             name='confirmPassword'
           />
           <FormInput
@@ -225,7 +176,7 @@ const ProfilePage = () => {
             required
             onChange={handleChange}
             value={userData.state ? userData.state : ''}
-            name='lastName'
+            name='state'
           />
           <FormInput
             label='Zip'

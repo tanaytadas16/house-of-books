@@ -24,8 +24,8 @@ const Signin = () => {
     await signInWithGooglePopup();
     const user = auth.currentUser;
 
-    const url = `http://localhost:4000/users/profile/`;
-    const { data } = await axios.get(url + user.email);
+    const url = `http://localhost:4000/users/profile`;
+    const { data } = await axios.post(url, { data: user.email });
 
     if (data === null) {
       let dataBody = { email: user.email, flag: 'G' };
@@ -69,18 +69,32 @@ const Signin = () => {
     }
   };
 
-    return (
-        <div className="sign-up-container">
-            <h2>Already have an account?</h2>
-            <span>Sign in with your email and password</span>
-            <form onSubmit={handleOnSubmit}>
-                <FormInput label="Email" type="email" required onChange={handleChange} value={email} name='email' />
-                <FormInput label="Password" type="password" required onChange={handleChange} value={password} name='password' />
-                <div className="buttons-container">
-                    <Button type='submit'>Sign In</Button>
-                    <Button type='button' buttonType='google' onClick={SignInWithGoogle}>Google sign in</Button>
-                </div>
-            </form>
+  return (
+    <div className='sign-up-container'>
+      <h2>Already have an account?</h2>
+      <span>Sign in with your email and password</span>
+      <form onSubmit={handleOnSubmit}>
+        <FormInput
+          label='Email'
+          type='email'
+          required
+          onChange={handleChange}
+          value={email}
+          name='email'
+        />
+        <FormInput
+          label='Password'
+          type='password'
+          required
+          onChange={handleChange}
+          value={password}
+          name='password'
+        />
+        <div className='buttons-container'>
+          <Button type='submit'>Sign In</Button>
+          <Button type='button' buttonType='google' onClick={SignInWithGoogle}>
+            Google sign in
+          </Button>
         </div>
       </form>
     </div>

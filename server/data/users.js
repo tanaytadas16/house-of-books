@@ -1,5 +1,6 @@
 const mongoCollections = require('../config/mongoCollection');
 const users = mongoCollections.users;
+const books = mongoCollections.books;
 const bcrypt = require('bcrypt');
 const saltRounds = 16;
 const { ObjectId } = require('mongodb');
@@ -223,8 +224,6 @@ async function createUser(
 }
 
 async function getUser(emailId) {
-  console.log('After function call');
-
   if (
     typeof emailId !== 'string' ||
     emailId.length === 0 ||
@@ -233,13 +232,9 @@ async function getUser(emailId) {
     throw 'Error: emailId must be a non-empty string.';
 
   checkIsEmail(emailId);
-
-  console.log('Before DB call');
-
   const userCollection = await users();
   const singleUserId = await userCollection.findOne({ email: emailId });
   if (singleUserId === null) return null;
-  console.log(singleUserId);
   return { ...singleUserId, _id: singleUserId._id.toString() };
 }
 
@@ -351,7 +346,6 @@ async function updateUser(
     zip: zip,
   };
 
-  console.log(email, typeof email);
   const updateUser = await userCollection.updateOne(
     { email: oldEmail },
     { $set: updatedUser }
@@ -413,4 +407,37 @@ async function checkUser(username, password) {
   };
 }
 
-module.exports = { createUser, getUser, updateUser, checkUser };
+async function myOrders(emailId) {
+  console.log('Inside my orders function');
+
+  let myOrdersArr = [];
+  let bookFound;
+  const userCollection = await users();
+  const booksCollection = await books();
+
+  let user = await userCollection.findOne({ email: emailId });
+  if (user === null) throw 'No users present with given Email Id';
+
+  console.log(user.purchasedBooks[0]);
+
+  const d = await Promise.all(
+    user.purchasedBooks.map(async (element) => {
+      console.log(element._id);
+      let bookFound = await booksCollection.findOne({
+        _id: element._id,
+      });
+      if (bookFound === null) {
+        throw `No book found with the id ${element._id}`;
+      }
+
+      return bookFound;
+    })
+  );
+
+  console.log('D is ', d);
+  // myOrdersArr = d;
+  // console.log('Array of book found is ', myOrdersArr);
+  return myOrdersArr;
+}
+
+module.exports = { createUser, getUser, updateUser, checkUser, myOrders };
