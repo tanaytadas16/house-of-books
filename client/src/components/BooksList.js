@@ -89,7 +89,7 @@ const BooksList = () => {
       totalPrice: quantity * price,
     };
     axios
-      .post('https://houseof-books.herokuapp.com/books/purchase', {
+      .post('http://localhost:4000/books/purchase', {
         data: dataBody,
       })
       .then(function (response) {
@@ -97,91 +97,90 @@ const BooksList = () => {
         history('/', { replace: true }); //to be changed to cart
       });
   };
-  axios
-    .post('http://localhost:4000/books/purchase', {
-      data: dataBody,
-    })
-    .then(function (response) {
-      console.log(response.data);
-      history('/', { replace: true }); //to be changed to cart
-    });
-};
 
-const buildCard = (book) => {
-  return (
-    <Grid item xs={10} sm={7} md={5} lg={4} xl={3} height={45} key={book._id}>
-      <Card className={classes.card} variant='outlined'>
-        <CardActionArea>
-          <Link to={`/books/${book._id}`}>
-            <CardMedia
-              className={classes.media}
-              component='img'
-              image={book.url ? book.url : noImage}
-              title='book image'
-            />
-
-            <CardContent>
-              <Typography
-                variant='body2'
-                color='textSecondary'
-                component='span'
-              >
-                <p className='title1'>{book.title}</p>
-                <dl>
-                  <p>
-                    <dt className='title'>Genre:</dt>
-                    {book && book.genre ? <dd>{book.genre}</dd> : <dd>N/A</dd>}
-                  </p>
-                  <p>
-                    <dt className='title'>Price:</dt>
-                    {book && book.price ? <dd>{book.price}</dd> : <dd>N/A</dd>}
-                  </p>
-                </dl>
-              </Typography>
-            </CardContent>
-          </Link>
-        </CardActionArea>
-        <button
-          type='button'
-          className='button'
-          onClick={() =>
-            buyBook('627161da17f0455539944549', book._id, 2, book.price)
-          }
-        >
-          Buy
-        </button>
-      </Card>
-    </Grid>
-  );
-};
-
-if (loading) {
-  if (error) {
+  const buildCard = (book) => {
     return (
-      <div>
-        <h2>No books are present in the list</h2>
-      </div>
+      <Grid item xs={10} sm={7} md={5} lg={4} xl={3} height={45} key={book._id}>
+        <Card className={classes.card} variant='outlined'>
+          <CardActionArea>
+            <Link to={`/books/${book._id}`}>
+              <CardMedia
+                className={classes.media}
+                component='img'
+                image={book.url ? book.url : noImage}
+                title='book image'
+              />
+
+              <CardContent>
+                <Typography
+                  variant='body2'
+                  color='textSecondary'
+                  component='span'
+                >
+                  <p className='title1'>{book.title}</p>
+                  <dl>
+                    <p>
+                      <dt className='title'>Genre:</dt>
+                      {book && book.genre ? (
+                        <dd>{book.genre}</dd>
+                      ) : (
+                        <dd>N/A</dd>
+                      )}
+                    </p>
+                    <p>
+                      <dt className='title'>Price:</dt>
+                      {book && book.price ? (
+                        <dd>{book.price}</dd>
+                      ) : (
+                        <dd>N/A</dd>
+                      )}
+                    </p>
+                  </dl>
+                </Typography>
+              </CardContent>
+            </Link>
+          </CardActionArea>
+          <button
+            type='button'
+            className='button'
+            onClick={() =>
+              buyBook('627c63b29009fdf78267e5cb', book._id, 2, book.price)
+            }
+          >
+            Buy
+          </button>
+        </Card>
+      </Grid>
     );
+  };
+  if (loading) {
+    if (error) {
+      return (
+        <div>
+          <h2>No books are present in the list</h2>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <h2>Loading....</h2>
+        </div>
+      );
+    }
   } else {
+    card =
+      bookDetailsData &&
+      bookDetailsData.map((book) => {
+        return buildCard(book);
+      });
     return (
       <div>
-        <h2>Loading....</h2>
+        <Grid container className={classes.grid} spacing={5}>
+          {card}
+        </Grid>
       </div>
     );
   }
-} else {
-  card =
-    bookDetailsData &&
-    bookDetailsData.map((book) => {
-      return buildCard(book);
-    });
-  return (
-    <div>
-      <Grid container className={classes.grid} spacing={5}>
-        {card}
-      </Grid>
-    </div>
-  );
-}
+};
 
 export default BooksList;
