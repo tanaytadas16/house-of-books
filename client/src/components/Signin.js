@@ -1,46 +1,73 @@
-import React, { useState } from "react";
-import { NativeSignIn, signInWithGooglePopup } from "../firebase/firebase";
-import FormInput from "./FormInput";
-import Button from "./Button";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {
+  NativeSignIn,
+  signInWithGooglePopup,
+  auth,
+} from '../firebase/firebase';
+import FormInput from './FormInput';
+import Button from './Button';
 import '../styles/Signin.scss';
 
 const defaultFormFields = {
-    email: '',
-    password: ''
-}
-
+  email: '',
+  password: '',
+};
 
 const Signin = () => {
-    const [formFields, setFormFields] = useState(defaultFormFields);
-    const { email, password } = formFields;
+  const [formFields, setFormFields] = useState(defaultFormFields);
+  const { email, password } = formFields;
+  const history = useNavigate();
 
-    const SignInWithGoogle = async () => {
-        await signInWithGooglePopup();
+  const SignInWithGoogle = async () => {
+    await signInWithGooglePopup();
+    const user = auth.currentUser;
+
+    const url = `http://localhost:4000/users/profile/`;
+    const { data } = await axios.get(url + user.email);
+
+    if (data === null) {
+      let dataBody = { email: user.email, flag: 'G' };
+      axios
+        .post('http://localhost:4000/users/signup', {
+          data: dataBody,
+        })
+        .then(function (response) {
+          console.log(response.data);
+          history('/', { replace: true });
+        });
+    } else {
+      history('/', { replace: true });
     }
+  };
 
-    const resetFormFields = () => {
-        setFormFields(defaultFormFields);
+  const resetFormFields = () => {
+    setFormFields(defaultFormFields);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormFields({ ...formFields, [name]: value });
+  };
+
+  const handleOnSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await NativeSignIn(email, password);
+      resetFormFields();
+    } catch (error) {
+      if (
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password'
+      ) {
+        alert('Invalid email or password');
+      }
+      console.log('Error signing in', error);
     }
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-
-        setFormFields({ ...formFields, [name]: value });
-    }
-
-    const handleOnSubmit = async (event) => {
-        event.preventDefault();
-
-        try {
-            await NativeSignIn(email, password);
-            resetFormFields();
-        } catch (error) {
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                alert('Invalid email or password');
-            }
-            console.log('Error signing in', error);
-        }
-    }
+  };
 
     return (
         <div className="sign-up-container">
@@ -55,7 +82,9 @@ const Signin = () => {
                 </div>
             </form>
         </div>
-    )
-}
+      </form>
+    </div>
+  );
+};
 
 export default Signin;
