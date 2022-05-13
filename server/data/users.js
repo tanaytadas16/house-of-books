@@ -560,15 +560,12 @@ function formatDate(date) {
 }
 
 async function getRentedBooks(userEmail) {
-    console.log("users function");
     const userCollection = await users();
     let user = await getUser(userEmail);
     let rentedBooks = user.bookRenting;
     let rentedBooksCollection = [];
     let todayDate = formatDate(new Date());
-    console.log(todayDate);
     for (let book of rentedBooks) {
-        console.log(book.endDate >= todayDate);
         if (book.endDate >= todayDate) {
             let id = book["_id"].toString();
             const bookDetail = await booksFunctions.getById(id);

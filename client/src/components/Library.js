@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import {Link, useNavigate} from "react-router-dom";
 import noImage from "../assets/images/no-image.jpeg";
+import {auth} from "../firebase/firebase";
 import {
     makeStyles,
     Card,
@@ -50,7 +51,7 @@ const Library = (props) => {
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     let card = null;
     const history = useNavigate();
-
+    const user = auth.currentUser;
     useEffect(() => {
         console.log("useEffect fired");
         async function fetchData() {
@@ -92,19 +93,19 @@ const Library = (props) => {
             date.getFullYear(),
         ].join("-");
     }
-    const rentBook = (customerId, bookId) => {
+    const rentBook = (bookId) => {
         let todayDate = formatDate(new Date());
         let endDate = formatDateNextMonth(new Date());
         console.log(todayDate);
         let dataBody = {
-            customerId: customerId,
+            email: user.email,
             bookId: bookId,
             startDate: todayDate,
             endDate: endDate,
             rentedFlag: true,
         };
         axios
-            .post("https://houseof-books.herokuapp.com/library", {
+            .post("http://localhost:4000/library", {
                 data: dataBody,
             })
             .then(function (response) {
@@ -158,9 +159,7 @@ const Library = (props) => {
                     </CardActionArea>
                     <button
                         className='button'
-                        onClick={() =>
-                            rentBook("627ea71d6f4ac4cfc57ecf72", book._id)
-                        }
+                        onClick={() => rentBook(book._id)}
                     >
                         Rent
                     </button>
