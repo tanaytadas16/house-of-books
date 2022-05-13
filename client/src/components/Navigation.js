@@ -58,6 +58,7 @@ const Navigation = () => {
                 PROFILE
               </Link>
             ) : null}
+            <CartIcon />
           </div>
           {isCartOpen && <CartDropdown />}
         </div>
