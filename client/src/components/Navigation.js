@@ -58,6 +58,11 @@ const Navigation = () => {
                 PROFILE
               </Link>
             ) : null}
+            {currentUser ? (
+              <Link className='nav-link' to='/users/rentedbooks'>
+                RENTED BOOKS
+              </Link>
+            ) : null}
             <CartIcon />
           </div>
           {isCartOpen && <CartDropdown />}

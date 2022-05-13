@@ -11,6 +11,7 @@ import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
 import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
+import RentedBooks from './components/RentedBooks';
 import './App.css';
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
         <Route exact path='/books/recents' element={<RecentBooks />} />
         <Route exact path='/users/profile' element={<ProfilePage />} />
         <Route path='/checkout' element={<Checkout />} />
+        <Route exact path='/users/rentedbooks' element={<RentedBooks />} />
       </Routes>
     </div>
   );
