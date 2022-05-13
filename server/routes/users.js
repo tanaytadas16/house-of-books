@@ -82,15 +82,19 @@ function checkIsUsername(s) {
     if (s.length < 4) throw "Given username size is less than 4";
 }
 
-router.get("/rentedbooks", async (req, res) => {
+router.get("/rentedbooks/:email", async (req, res) => {
     try {
-        if (!req.body.userEmail) throw "must provide user email";
+        console.log("got request", req.params.email);
+        checkIsString(req.params.email);
+        req.params.email = req.params.email.trim();
+        if (!req.params.email) throw "must provide user email";
     } catch (e) {
         res.status(400).send(String(e));
         return;
     }
     try {
-        let rentedBooks = await userData.getRentedBooks(req.body.userEmail);
+        req.params.email = req.params.email.trim();
+        let rentedBooks = await userData.getRentedBooks(req.params.email);
         console.log(rentedBooks);
         res.status(200).json(rentedBooks);
     } catch (e) {

@@ -157,7 +157,6 @@ async function createUser(
             checkIsString(lastName);
             checkIsString(email);
             checkIsString(username);
-            checkIsString(oldUsername);
             checkIsString(password);
             checkIsString(address);
             checkIsString(city);
@@ -413,18 +412,35 @@ async function checkUser(username, password) {
         username: username,
     };
 }
+function padTo2Digits(num) {
+    return num.toString().padStart(2, "0");
+}
+
+function formatDate(date) {
+    return [
+        padTo2Digits(date.getMonth() + 1),
+        padTo2Digits(date.getDate()),
+        date.getFullYear(),
+    ].join("-");
+}
 
 async function getRentedBooks(userEmail) {
+    console.log("users function");
     const userCollection = await users();
     let user = await getUser(userEmail);
     let rentedBooks = user.bookRenting;
     let rentedBooksCollection = [];
+    let todayDate = formatDate(new Date());
+    console.log(todayDate);
     for (let book of rentedBooks) {
-        let id = book["_id"].toString();
-        const bookDetail = await booksFunctions.getById(id);
-        bookDetail["startDate"] = book.startDate;
-        bookDetail["endDate"] = book.endDate;
-        rentedBooksCollection.push(bookDetail);
+        console.log(book.endDate >= todayDate);
+        if (book.endDate >= todayDate) {
+            let id = book["_id"].toString();
+            const bookDetail = await booksFunctions.getById(id);
+            bookDetail["startDate"] = book.startDate;
+            bookDetail["endDate"] = book.endDate;
+            rentedBooksCollection.push(bookDetail);
+        }
     }
     console.log(rentedBooksCollection);
     return rentedBooksCollection;
