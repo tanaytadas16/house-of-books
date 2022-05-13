@@ -1,5 +1,6 @@
 const mongoCollections = require("../config/mongoCollection");
 const users = mongoCollections.users;
+const books = mongoCollections.books;
 const bcrypt = require("bcrypt");
 const saltRounds = 16;
 const {ObjectId} = require("mongodb");
@@ -336,6 +337,141 @@ async function updateUser(
         throw `State not found`;
     }
 
+    let newUser = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+        username: username,
+        password: hash,
+        address: address,
+        city: city,
+        state: state,
+        zip: zip,
+        bookRenting: [],
+        purchasedBooks: [],
+        reviews: [],
+        // image: image,
+    };
+
+    const insertInfo = await userCollection
+        .insertOne(newUser)
+        .catch(function (e) {
+            throw "Username already exists";
+        });
+    if (insertInfo.insertedCount === 0) throw `Could not add user`;
+
+    return insertInfo.insertedId.toString();
+}
+
+async function getUser(emailId) {
+    if (
+        typeof emailId !== "string" ||
+        emailId.length === 0 ||
+        emailId === " ".repeat(emailId.length)
+    )
+        throw "Error: emailId must be a non-empty string.";
+
+    checkIsEmail(emailId);
+    const userCollection = await users();
+    const singleUserId = await userCollection.findOne({email: emailId});
+    if (singleUserId === null) return null;
+    return {...singleUserId, _id: singleUserId._id.toString()};
+}
+
+async function updateUser(
+    firstName,
+    lastName,
+    email,
+    oldEmail,
+    phoneNumber,
+    username,
+    oldUsername,
+    password,
+    address,
+    city,
+    state,
+    zip
+) {
+    if (!firstName) throw "Must provide the first name";
+    if (!lastName) throw "Must provide the last name";
+    if (!email) throw "Must provide the email";
+    if (!oldEmail) throw "Must provide the email";
+    if (!username) throw "Must provide the username";
+    if (!oldUsername) throw "Must provide the username";
+
+    if (!password) throw "Must provide the password";
+
+    if (!phoneNumber) throw "Must provide the phone number";
+    if (!address) throw "Must provide the address";
+    if (!city) throw "Must provide the city";
+    if (!state) throw "Must provide the state";
+    if (!zip) throw "Must provide the zip";
+
+    firstName = firstName.trim();
+    lastName = lastName.trim();
+    email = email.toLowerCase().trim();
+    oldEmail = oldEmail.toLowerCase().trim();
+    username = username.toLowerCase().trim();
+    oldUsername = oldUsername.toLowerCase().trim();
+    password = password.trim();
+    phoneNumber = phoneNumber.trim();
+    address = address.trim();
+    city = city.trim();
+    state = state.trim();
+    zip = zip.trim();
+
+    try {
+        checkIsString(firstName);
+        checkIsString(lastName);
+        checkIsString(email);
+        checkIsString(username);
+        checkIsString(oldUsername);
+        checkIsString(password);
+
+        checkIsString(address);
+        checkIsString(city);
+        checkIsString(state);
+        checkIsString(zip);
+        checkZip(zip);
+
+        checkIsName(firstName);
+        checkIsName(lastName);
+
+        checkIsEmail(email);
+        checkIsEmail(oldEmail);
+
+        checkPhoneNumber(phoneNumber);
+        checkIsUsername(username);
+        checkIsPassword(password);
+    } catch (e) {
+        throw String(e);
+    }
+
+    const userCollection = await users();
+
+    if (oldEmail !== email) {
+        // check if email exists
+        if (await userCollection.findOne({email: email}))
+            throw "Email address is taken.";
+    }
+
+    if (oldUsername !== username) {
+        // check if username exists
+        if (await userCollection.findOne({username: username}))
+            throw "Username is taken.";
+    }
+
+    found = false;
+
+    for (let i = 0; i < stateList.length; i++) {
+        if (state == stateList[i]) found = true;
+    }
+
+    if (found == false) {
+        throw `State not found`;
+    }
+
     const hash = await bcrypt.hash(password, saltRounds);
 
     let updatedUser = {
@@ -351,7 +487,6 @@ async function updateUser(
         zip: zip,
     };
 
-    console.log(email, typeof email);
     const updateUser = await userCollection.updateOne(
         {email: oldEmail},
         {$set: updatedUser}
@@ -446,4 +581,44 @@ async function getRentedBooks(userEmail) {
     return rentedBooksCollection;
 }
 
-module.exports = {createUser, getUser, updateUser, checkUser, getRentedBooks};
+async function myOrders(emailId) {
+    console.log("Inside my orders function");
+
+    let myOrdersArr = [];
+    let bookFound;
+    const userCollection = await users();
+    const booksCollection = await books();
+
+    let user = await userCollection.findOne({email: emailId});
+    if (user === null) throw "No users present with given Email Id";
+
+    console.log(user.purchasedBooks[0]);
+
+    const d = await Promise.all(
+        user.purchasedBooks.map(async (element) => {
+            console.log(element._id);
+            let bookFound = await booksCollection.findOne({
+                _id: element._id,
+            });
+            if (bookFound === null) {
+                throw `No book found with the id ${element._id}`;
+            }
+
+            return bookFound;
+        })
+    );
+
+    console.log("D is ", d);
+    // myOrdersArr = d;
+    // console.log('Array of book found is ', myOrdersArr);
+    return myOrdersArr;
+}
+
+module.exports = {
+    createUser,
+    getUser,
+    updateUser,
+    checkUser,
+    myOrders,
+    getRentedBooks,
+};

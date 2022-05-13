@@ -90,7 +90,7 @@ const BooksList = () => {
             totalPrice: quantity * price,
         };
         axios
-            .post("https://houseof-books.herokuapp.com/books/purchase", {
+            .post("http://localhost:4000/books/purchase", {
                 data: dataBody,
             })
             .then(function (response) {
@@ -98,14 +98,6 @@ const BooksList = () => {
                 history("/", {replace: true}); //to be changed to cart
             });
     };
-    // axios
-    //     .post("http://localhost:4000/books/purchase", {
-    //         data: dataBody,
-    //     })
-    //     .then(function (response) {
-    //         console.log(response.data);
-    //         history("/", {replace: true}); //to be changed to cart
-    //     });
 
     const buildCard = (book) => {
         return (
@@ -163,7 +155,7 @@ const BooksList = () => {
                         className='button'
                         onClick={() =>
                             buyBook(
-                                "627161da17f0455539944549",
+                                "627c63b29009fdf78267e5cb",
                                 book._id,
                                 2,
                                 book.price
@@ -176,7 +168,6 @@ const BooksList = () => {
             </Grid>
         );
     };
-
     if (loading) {
         if (error) {
             return (

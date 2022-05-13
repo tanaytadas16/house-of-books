@@ -20,8 +20,8 @@ const Signin = () => {
         await signInWithGooglePopup();
         const user = auth.currentUser;
 
-        const url = `http://localhost:4000/users/profile/`;
-        const {data} = await axios.get(url + user.email);
+        const url = `http://localhost:4000/users/profile`;
+        const {data} = await axios.post(url, {data: user.email});
 
         if (data === null) {
             let dataBody = {email: user.email, flag: "G"};
