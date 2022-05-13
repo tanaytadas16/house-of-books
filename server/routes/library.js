@@ -28,8 +28,8 @@ function validateDate(dateParams) {
     }
 }
 
-function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
-    validateStringParams(customerId, "customerId");
+function validateCreations(email, bookId, startDate, endDate, rentedFlag) {
+    validateStringParams(email, "email");
     validateStringParams(bookId, "bookId");
     validateBoolParams(rentedFlag, "rentedFlag");
     validateStringParams(startDate, "startDate");
@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
             throw `No data provided for rented book`;
         }
         validateCreations(
-            bookToBeRented.customerId,
+            bookToBeRented.email,
             bookToBeRented.bookId,
             bookToBeRented.startDate,
             bookToBeRented.endDate,
@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
     try {
         console.log(req.body);
         let books = await booksData.addRentedBook(
-            bookToBeRented.customerId,
+            bookToBeRented.email,
             bookToBeRented.bookId,
             bookToBeRented.startDate,
             bookToBeRented.endDate,

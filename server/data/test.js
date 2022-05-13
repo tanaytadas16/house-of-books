@@ -1,6 +1,7 @@
 /* this file is strictly for testing db functions. */
 
 const books = require("./books");
+const users = require("./users");
 const connection = require("../config/mongoCollection");
 
 const main = async () => {
@@ -56,6 +57,12 @@ const main = async () => {
             true,
             true
         );
+    } catch (e) {
+        console.log(e);
+    }
+
+    try {
+        const rentBooks = await users.getRentedBooks("abc@gmail.com");
     } catch (e) {
         console.log(e);
     }

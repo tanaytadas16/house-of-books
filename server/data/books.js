@@ -294,8 +294,8 @@ async function addNewBook(
     console.log(bookDetails);
     return bookDetails;
 }
-function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
-    validateStringParams(customerId, "customerId");
+function validateCreations(email, bookId, startDate, endDate, rentedFlag) {
+    validateStringParams(email, "email");
     validateStringParams(bookId, "bookId");
     validateBoolParams(rentedFlag, "rentedFlag");
     validateStringParams(startDate, "startDate");
@@ -304,19 +304,13 @@ function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
     validateDate(endDate);
 }
 
-async function addRentedBook(
-    customerId,
-    bookId,
-    startDate,
-    endDate,
-    rentedFlag
-) {
-    validateCreations(customerId, bookId, startDate, endDate, rentedFlag);
-    customerId = customerId.trim();
+async function addRentedBook(email, bookId, startDate, endDate, rentedFlag) {
+    validateCreations(email, bookId, startDate, endDate, rentedFlag);
+    email = email.trim();
     bookId = bookId.trim();
     const libraryCollection = await library();
     let newBook = {
-        customerId: customerId,
+        email: email,
         bookId: bookId,
         startDate: startDate,
         endDate: endDate,
@@ -335,9 +329,9 @@ async function addRentedBook(
     const userCollection = await users();
 
     let constUserId = await userCollection.findOne({
-        _id: ObjectId(customerId),
+        email: email,
     });
-    if (constUserId === null) throw `No user with that id.`;
+    if (constUserId === null) throw `No user with that email.`;
 
     const newRentedBook = {
         _id: ObjectId(bookId),
@@ -346,7 +340,7 @@ async function addRentedBook(
     };
 
     const booksArrUpdated = await userCollection.updateOne(
-        {_id: ObjectId(customerId)},
+        {email: email},
         {$push: {bookRenting: newRentedBook}}
     );
     if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
