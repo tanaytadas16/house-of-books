@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../firebase/firebase';
+import { UserContext } from '../contexts/userContext';
 import noImage from '../assets/images/no-image.jpeg';
 import {
   makeStyles,
@@ -51,6 +53,8 @@ const BooksList = () => {
   let card = null;
   const history = useNavigate();
 
+  const { currentUser } = useContext(UserContext);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -61,7 +65,6 @@ const BooksList = () => {
         setLoading(false);
       } catch (e) {
         setError(true);
-
         console.log(e);
       }
     }
@@ -78,24 +81,29 @@ const BooksList = () => {
       date.getFullYear(),
     ].join('-');
   }
-  const buyBook = (customerId, bookId, quantity, price) => {
-    let todayDate = formatDate(new Date());
-    console.log(todayDate);
-    console.log(customerId, bookId);
-    let dataBody = {
-      customerId: customerId,
-      bookId: bookId,
-      quantity: quantity,
-      totalPrice: quantity * price,
-    };
-    axios
-      .post('http://localhost:4000/books/purchase', {
-        data: dataBody,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        history('/', { replace: true }); //to be changed to cart
-      });
+  const buyBook = (email, bookId, quantity, price) => {
+    if (currentUser.email) {
+      let todayDate = formatDate(new Date());
+      console.log(todayDate);
+      console.log(email, bookId);
+      let dataBody = {
+        email: email,
+        bookId: bookId,
+        quantity: quantity,
+        totalPrice: quantity * price,
+      };
+      axios
+        .post('http://localhost:4000/books/purchase', {
+          data: dataBody,
+        })
+        .then(function (response) {
+          console.log(response.data);
+          history('/', { replace: true }); //to be changed to cart
+        });
+    } else {
+      alert('Please sign to buy the book');
+      return;
+    }
   };
 
   const buildCard = (book) => {
@@ -110,7 +118,6 @@ const BooksList = () => {
                 image={book.url ? book.url : noImage}
                 title='book image'
               />
-
               <CardContent>
                 <Typography
                   variant='body2'
@@ -143,9 +150,13 @@ const BooksList = () => {
           <button
             type='button'
             className='button'
-            onClick={() =>
-              buyBook('627c63b29009fdf78267e5cb', book._id, 2, book.price)
-            }
+            onClick={() => {
+              if (auth.currentUser) {
+                buyBook(auth.currentUser.email, book._id, 2, book.price);
+              } else {
+                alert('You need to sign in first to buy the book');
+              }
+            }}
           >
             Buy
           </button>
