@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../contexts/userContext';
 import noImage from '../assets/images/no-image.jpeg';
 import {
   makeStyles,
@@ -43,20 +44,24 @@ const useStyles = makeStyles({
   },
 });
 
-const MostPopular = () => {
+const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
   let card = null;
   const history = useNavigate();
+
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  console.log('Current user is ', currentUser.email);
+
   useEffect(() => {
     console.log('useEffect fired');
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `https://houseof-books.herokuapp.com/books/mostPopular`;
-        const { data } = await axios.get(url);
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, { data: currentUser.email });
         console.log(data);
         setBookDetailsData(data);
         setLoading(false);
@@ -184,4 +189,4 @@ const MostPopular = () => {
   }
 };
 
-export default MostPopular;
+export default MyOrders;

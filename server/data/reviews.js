@@ -1,14 +1,18 @@
-const mongoCollections = require("../config/mongoCollection");
+const mongoCollections = require('../config/mongoCollection');
 const books = mongoCollections.books;
 const users = mongoCollections.users;
-const { ObjectId } = require("mongodb");
+const { ObjectId } = require('mongodb');
+const errorCheck = require('./errorCheck');
 
 const updateRating = (checkBook, rating) => {
   rating = parseInt(rating);
   let avgRating = rating;
+
   checkBook.reviews.forEach((element) => {
     avgRating += element.rating;
   });
+  avgRating = Number(avgRating / (checkBook.reviews.length + 1)).toFixed(1);
+  return avgRating;
 };
 
 async function createReview(
@@ -19,17 +23,25 @@ async function createReview(
   comment,
   username
 ) {
+  if (!errorCheck.checkId(bookId)) throw 'Book Id is not a valid input';
+  if (!errorCheck.checkId(userId)) throw 'userId is not a valid input';
+  if (!errorCheck.checkRating(rating)) throw 'Rating is not a valid input';
+  if (!errorCheck.checkString(comment)) throw 'Comment is not a valid input';
+  if (!errorCheck.checkDate(dateOfReview))
+    throw 'The date provided is not a valid date. Please enter a valid date of today';
+  if (!errorCheck.checkString(comment)) throw 'Username is not a valid input';
+
   const userCollection = await users();
   const userData = await userCollection.findOne({ _id: ObjectId(userId) });
 
-  if (userData === null) throw "User does not exist";
+  if (userData === null) throw 'User does not exist';
 
   const bookCollection = await books();
   const checkBook = await bookCollection.findOne({
     _id: ObjectId(bookId),
   });
 
-  if (checkBook === null) throw "Book does not exist";
+  if (checkBook === null) throw 'Book does not exist';
 
   const averageRating = updateRating(checkBook, rating);
 
@@ -52,7 +64,7 @@ async function createReview(
   );
 
   if (!ratingUpdate.matchedCount && !ratingUpdate.modifiedCount)
-    throw "Creating reviews have been failed";
+    throw 'Creating reviews have been failed';
 
   const userUpdate = await userCollection.updateOne(
     { _id: ObjectId(userId) },
@@ -60,24 +72,25 @@ async function createReview(
   );
 
   if (!userUpdate.matchedCount && !userUpdate.modifiedCount)
-    throw "Cannot add Reviews to the User collection";
+    throw 'Cannot add Reviews to the User collection';
 
   const sameReview = await bookCollection.findOne({
     _id: ObjectId(bookId),
   });
 
   if (sameReview === null)
-    throw "Book does not exist, review cannot be displayed";
+    throw 'Book does not exist, review cannot be displayed';
 
   return sameReview;
 }
 
 async function getReview(reviewId) {
+  if (!errorCheck.checkId(reviewId)) throw 'Review Id is not a valid input';
   let resultData = {};
   const bookCollection = await books();
   const book = await bookCollection.find({}).toArray();
 
-  if (book === null) throw "No review present with that ID";
+  if (book === null) throw 'No review present with that ID';
 
   book.forEach((element) => {
     element.reviews.forEach((data) => {
@@ -98,21 +111,23 @@ async function getReview(reviewId) {
 }
 
 async function getAllReviewsOfBook(bookId) {
+  if (!errorCheck.checkId(bookId)) throw 'Book Id is not a valid input';
   const bookCollection = await books();
   const book = await bookCollection.findOne({
     _id: ObjectId(bookId),
   });
 
-  if (book === null) throw "No book found with that ID";
+  if (book === null) throw 'No book found with that ID';
   return book.reviews;
 }
 
 async function getAllReviewsOfUser(userId) {
+  if (!errorCheck.checkId(userId)) throw 'Lister Id is not a valid input';
   let resultData = {};
   const bookCollection = await books();
   const book = await bookCollection.find({}).toArray();
 
-  if (book === null) throw "No review present with that ID";
+  if (book === null) throw 'No review present with that ID';
 
   book.forEach((element) => {
     element.reviews.forEach((data) => {
@@ -133,18 +148,19 @@ async function getAllReviewsOfUser(userId) {
 }
 
 async function removeReview(reviewId) {
+  if (!errorCheck.checkId(reviewId)) throw 'Review Id is not a valid input';
   let avgRating = 0;
   let resultData = {};
   const bookCollection = await books();
   const book = await bookCollection
     .aggregate([
-      { $unwind: "$reviews" },
-      { $match: { "reviews._id": ObjectId(reviewId) } },
-      { $replaceRoot: { newRoot: "$reviews" } },
+      { $unwind: '$reviews' },
+      { $match: { 'reviews._id': ObjectId(reviewId) } },
+      { $replaceRoot: { newRoot: '$reviews' } },
     ])
     .toArray();
 
-  if (book === null) throw "No review present with that Id";
+  if (book === null) throw 'No review present with that Id';
 
   const removeReview = await bookCollection.updateOne(
     {},
@@ -152,19 +168,19 @@ async function removeReview(reviewId) {
   );
 
   if (!removeReview.matchedCount && !removeReview.modifiedCount)
-    throw "Removal of review has failed";
+    throw 'Removal of review has failed';
 
   const getBookData = await bookCollection.findOne({
     _id: ObjectId(book[0].bookId),
   });
 
-  if (getBookData === null) throw "No book found with that ID";
+  if (getBookData === null) throw 'No book found with that ID';
 
   getBookData.reviews.forEach((element) => {
     avgRating += element.rating;
   });
 
-  if (getBookData.bookReviews.length !== 0) {
+  if (getBookData.reviews.length !== 0) {
     avgRating = Number(avgRating / getBookData.reviews.length).toFixed(1);
   } else {
     avgRating = 0;
@@ -176,7 +192,7 @@ async function removeReview(reviewId) {
   );
 
   if (!reviewUpdate.matchedCount && !reviewUpdate.modifiedCount)
-    throw "Update of the rating has been failed";
+    throw 'Update of the rating has been failed';
 
   const userCollection = await users();
   const removeUserReview = await userCollection.updateOne(
@@ -185,7 +201,7 @@ async function removeReview(reviewId) {
   );
 
   if (!removeUserReview.matchedCount && !removeUserReview.modifiedCount)
-    throw "Removal of review from the user has failed";
+    throw 'Removal of review from the user has failed';
 
   resultData = {
     reviewId: reviewId,
@@ -196,22 +212,22 @@ async function removeReview(reviewId) {
 }
 
 async function updateReview(reviewId, rating, comment) {
-  //   if (!errorCheck.checkId(reviewId)) throw "Review Id is not a valid input";
-  //   if (!errorCheck.checkRating(rating)) throw "Rating is not a valid input";
-  //   if (!errorCheck.checkString(comment)) throw "Comment is not a valid input";
+  if (!errorCheck.checkId(reviewId)) throw 'Review Id is not a valid input';
+  if (!errorCheck.checkRating(rating)) throw 'Rating is not a valid input';
+  if (!errorCheck.checkString(comment)) throw 'Comment is not a valid input';
 
   rating = parseInt(rating);
   const userCollection = await users();
   const bookCollection = await books();
   const findReview = await bookCollection
     .aggregate([
-      { $unwind: "$reviews" },
-      { $match: { "reviews._id": ObjectId(reviewId) } },
-      { $replaceRoot: { newRoot: "$reviews" } },
+      { $unwind: '$reviews' },
+      { $match: { 'reviews._id': ObjectId(reviewId) } },
+      { $replaceRoot: { newRoot: '$reviews' } },
     ])
     .toArray();
 
-  if (findReview === null) throw "Review does not exist";
+  if (findReview === null) throw 'Review does not exist';
 
   const extractReview = await bookCollection.updateOne(
     {},
@@ -219,13 +235,13 @@ async function updateReview(reviewId, rating, comment) {
   );
 
   if (!extractReview.matchedCount && !extractReview.modifiedCount)
-    throw "Review update has been failed";
+    throw 'Review update has been failed';
 
   const getBookData = await bookCollection.findOne({
     _id: ObjectId(findReview[0].bookId),
   });
 
-  if (getBookData === null) throw "No book found with that ID";
+  if (getBookData === null) throw 'No book found with that ID';
 
   let avgRating = rating;
   getBookData.reviews.forEach((element) => {
@@ -257,10 +273,10 @@ async function updateReview(reviewId, rating, comment) {
   );
 
   if (!updateReview.matchedCount && !updateReview.modifiedCount)
-    throw "Update has been failed";
+    throw 'Update has been failed';
 
   if (!updateReview.modifiedCount)
-    throw "Same values has been provided for update. Please change the values";
+    throw 'Same values has been provided for update. Please change the values';
 
   const extractUserReview = await userCollection.updateOne(
     {},
@@ -268,7 +284,7 @@ async function updateReview(reviewId, rating, comment) {
   );
 
   if (!extractUserReview.matchedCount && !extractUserReview.modifiedCount)
-    throw "Review remove from the user have been failed";
+    throw 'Review remove from the user have been failed';
 
   const updateNewReview = await userCollection.updateOne(
     { _id: ObjectId(findReview[0].userId) },
@@ -276,7 +292,7 @@ async function updateReview(reviewId, rating, comment) {
   );
 
   if (!updateNewReview.matchedCount && !updateNewReview.modifiedCount)
-    throw "Update has been failed in the user collection";
+    throw 'Update has been failed in the user collection';
 
   return await this.getReview(reviewId);
 }

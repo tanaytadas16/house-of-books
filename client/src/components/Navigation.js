@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/userContext';
 import { signOutUser } from '../firebase/firebase';
 import { ReactComponent as OpenBookLogo } from '../assets/images/openbook.svg';
@@ -7,11 +7,13 @@ import '../styles/Navigation.scss';
 
 const Navigation = () => {
     const { currentUser, setCurrentUser } = useContext(UserContext);
-    console.log('currentUser', currentUser);
+    console.log(currentUser);
+    const history = useNavigate();
 
     const signOutHandler = async () => {
         await signOutUser();
         setCurrentUser(null);
+        history('/', { replace: true });
     };
 
     return (
@@ -47,6 +49,11 @@ const Navigation = () => {
                                 SIGN IN
                             </Link>
                         )}
+                        {currentUser ? (
+                            <Link className="nav-link" to="/users/profile">
+                                PROFILE
+                            </Link>
+                        ) : null}
                     </div>
                 </div>
             </div>

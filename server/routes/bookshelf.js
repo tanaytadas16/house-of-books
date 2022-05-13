@@ -40,5 +40,4 @@ const restrictRequestQuery = (request, response) => {
         throw { code: 400, message: 'Request query not allowed.' };
     }
 };
-
 module.exports = router;
