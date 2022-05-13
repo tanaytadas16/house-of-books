@@ -88,12 +88,17 @@ const BooksList = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (customerId, title, bookId, quantity, price, imageUrl) => {
+  const buyBook = (
+    customerId,
+    title,
+    bookId,
+    quantity,
+    price,
+    imageUrl,
+    flag
+  ) => {
     price = parseFloat(price);
     console.log(isNaN(price));
-    // if (parseInt(isNaN(price))) {
-    //   price = 0;
-    // }
     let todayDate = formatDate(new Date());
     console.log(todayDate);
     console.log(customerId, bookId);
@@ -105,6 +110,7 @@ const BooksList = () => {
       quantity: quantity,
       totalPrice: quantity * price,
       imageUrl: imageUrl,
+      flag: flag,
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
@@ -161,7 +167,8 @@ const BooksList = () => {
                 book._id,
                 2,
                 book.price,
-                book.url
+                book.url,
+                'b'
               )
             }
           >
