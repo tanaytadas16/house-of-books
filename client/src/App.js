@@ -9,6 +9,7 @@ import MostPopular from './components/MostPopular';
 import RecentBooks from './components/RecentBooks';
 import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
+import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
 import './App.css';
 
@@ -26,6 +27,7 @@ const App = () => {
         <Route exact path='/library' element={<Library />} />
         <Route exact path='/books/mostPopular' element={<MostPopular />} />
         <Route exact path='/books/recents' element={<RecentBooks />} />
+        <Route exact path='/users/profile' element={<ProfilePage />} />
         <Route path='/checkout' element={<Checkout />} />
       </Routes>
     </div>

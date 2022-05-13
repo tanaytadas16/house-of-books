@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/userContext';
 import { signOutUser } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
@@ -12,10 +12,13 @@ import '../styles/Navigation.scss';
 const Navigation = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const isCartOpen = useSelector(selectIsCartOpen);
+  console.log(currentUser);
+  const history = useNavigate();
 
   const signOutHandler = async () => {
     await signOutUser();
     setCurrentUser(null);
+    history('/', { replace: true });
   };
 
   return (
@@ -38,9 +41,9 @@ const Navigation = () => {
             <Link className='nav-link' to='/books/mostPopular'>
               POPULAR BOOKS
             </Link>
-            {/* <Link className='nav-link' to='/books/recents'>
-              RECENTLY VIEWED
-            </Link> */}
+            {/* <Link className="nav-link" to="/books/recents">
+                            RECENTLY VIEWED
+                        </Link> */}
             {currentUser ? (
               <span className='nav-link' onClick={signOutHandler}>
                 SIGN OUT
@@ -50,7 +53,11 @@ const Navigation = () => {
                 SIGN IN
               </Link>
             )}
-            <CartIcon />
+            {currentUser ? (
+              <Link className='nav-link' to='/users/profile'>
+                PROFILE
+              </Link>
+            ) : null}
           </div>
           {isCartOpen && <CartDropdown />}
         </div>

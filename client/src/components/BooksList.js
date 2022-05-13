@@ -50,6 +50,7 @@ const BooksList = () => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
+  const [error, setError] = useState(false);
   let card = null;
 
   const getRandomFloat = (max) => {
@@ -65,6 +66,8 @@ const BooksList = () => {
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
+        setError(true);
+
         console.log(e);
       }
     }
@@ -168,13 +171,20 @@ const BooksList = () => {
       </Grid>
     );
   };
-
   if (loading) {
-    return (
-      <div>
-        <h2>Loading....</h2>
-      </div>
-    );
+    if (error) {
+      return (
+        <div>
+          <h2>No books are present in the list</h2>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <h2>Loading....</h2>
+        </div>
+      );
+    }
   } else {
     card =
       bookDetailsData &&
