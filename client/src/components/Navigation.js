@@ -2,12 +2,17 @@ import React, { useContext } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/userContext';
 import { signOutUser } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
+import CartIcon from './CartIcon';
+import CartDropdown from './CartDropdown';
+import { selectIsCartOpen } from '../store/selector/cartSelector';
 import { ReactComponent as OpenBookLogo } from '../assets/images/openbook.svg';
 import '../styles/Navigation.scss';
 
 const Navigation = () => {
     const { currentUser, setCurrentUser } = useContext(UserContext);
-    // console.log(currentUser);
+    const isCartOpen = useSelector(selectIsCartOpen);
+    console.log(currentUser);
     const history = useNavigate();
 
     const signOutHandler = async () => {
@@ -54,7 +59,14 @@ const Navigation = () => {
                                 PROFILE
                             </Link>
                         ) : null}
+                        {currentUser ? (
+                            <Link className="nav-link" to="/users/rentedbooks">
+                                RENTED BOOKS
+                            </Link>
+                        ) : null}
+                        <CartIcon />
                     </div>
+                    {isCartOpen && <CartDropdown />}
                 </div>
             </div>
             <Outlet />

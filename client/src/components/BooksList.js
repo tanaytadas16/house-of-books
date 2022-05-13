@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import {
   makeStyles,
@@ -49,7 +52,10 @@ const BooksList = () => {
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
   let card = null;
-  const history = useNavigate();
+
+  const getRandomFloat = (max) => {
+    return (Math.random() * max).toFixed(2);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -78,24 +84,35 @@ const BooksList = () => {
       date.getFullYear(),
     ].join('-');
   }
-  const buyBook = (customerId, bookId, quantity, price) => {
+
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+
+  const buyBook = (
+    customerId,
+    title,
+    bookId,
+    quantity,
+    price,
+    imageUrl,
+    flag
+  ) => {
+    price = parseFloat(price);
+    console.log(isNaN(price));
     let todayDate = formatDate(new Date());
     console.log(todayDate);
     console.log(customerId, bookId);
     let dataBody = {
       customerId: customerId,
+      name: title,
       bookId: bookId,
+      price: isNaN(price) ? getRandomFloat(20) : price,
       quantity: quantity,
       totalPrice: quantity * price,
+      imageUrl: imageUrl,
+      flag: flag,
     };
-    axios
-      .post('http://localhost:4000/books/purchase', {
-        data: dataBody,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        history('/', { replace: true }); //to be changed to cart
-      });
+    dispatch(addItemToCart(cartItems, dataBody));
   };
 
   const buildCard = (book) => {
@@ -144,7 +161,15 @@ const BooksList = () => {
             type='button'
             className='button'
             onClick={() =>
-              buyBook('627c63b29009fdf78267e5cb', book._id, 2, book.price)
+              buyBook(
+                '627161da17f0455539944549',
+                book.title,
+                book._id,
+                2,
+                book.price,
+                book.url,
+                'b'
+              )
             }
           >
             Buy
@@ -182,5 +207,4 @@ const BooksList = () => {
     );
   }
 };
-
 export default BooksList;
