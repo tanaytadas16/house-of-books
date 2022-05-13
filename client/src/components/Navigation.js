@@ -7,7 +7,7 @@ import '../styles/Navigation.scss';
 
 const Navigation = () => {
     const { currentUser, setCurrentUser } = useContext(UserContext);
-    console.log(currentUser);
+    // console.log(currentUser);
     const history = useNavigate();
 
     const signOutHandler = async () => {

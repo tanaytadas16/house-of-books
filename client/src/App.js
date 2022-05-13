@@ -36,7 +36,7 @@ const App = () => {
                 />
                 <Route exact path="/books/recents" element={<RecentBooks />} />
                 <Route exact path="/users/profile" element={<ProfilePage />} />
-                <Route path="/bookshelf" element={<Bookshelf />} />
+                <Route exact path="/bookshelf" element={<Bookshelf />} />
             </Routes>
         </div>
     );

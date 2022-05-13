@@ -16,6 +16,8 @@ router.get('/', async (request, response) => {
                 "Error: Doesn't require fields to be passed."
             );
         }
+
+        response.json({ name: 'Tanay' });
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || 'Internal server error.',
@@ -24,8 +26,8 @@ router.get('/', async (request, response) => {
 });
 router.post('/', async (request, response) => {
     try {
-        console.log(request.userEmail);
-        res.json({ name: 'Tanay' });
+        console.log(request.body.data);
+        response.json({ name: 'Tanay' });
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || 'Internal server error.',
