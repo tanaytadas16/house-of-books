@@ -6,7 +6,7 @@ const ErrorCode = {
     NOT_FOUND: 404,
     INTERNAL_SERVER_ERROR: 500,
 };
-router.get('/', async (req, res) => {
+router.get('/', async (request, response) => {
     try {
         restrictRequestQuery(request, response);
 
@@ -22,8 +22,10 @@ router.get('/', async (req, res) => {
         });
     }
 });
-router.post('/', async (req, res) => {
+router.post('/', async (request, response) => {
     try {
+        console.log(request.userEmail);
+        res.json({ name: 'Tanay' });
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || 'Internal server error.',
@@ -38,3 +40,5 @@ const restrictRequestQuery = (request, response) => {
         throw { code: 400, message: 'Request query not allowed.' };
     }
 };
+
+module.exports = router;
