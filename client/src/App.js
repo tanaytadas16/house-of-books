@@ -11,6 +11,7 @@ import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
 import ProfilePage from './components/ProfilePage';
 import './App.css';
+import MyOrders from './components/MyOrders';
 
 const App = () => {
   return (
@@ -18,15 +19,16 @@ const App = () => {
       <Navigation />
 
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="/books" element={<BooksList />} />
-        <Route exact path="/books/:id" element={<BookDetails />} />
-        <Route path="/auth" element={<Authentication />} />
-        <Route exact path="/books/newAdditions" element={<NewAdditions />} />
-        <Route exact path="/library" element={<Library />} />
-        <Route exact path="/books/mostPopular" element={<MostPopular />} />
-        <Route exact path="/books/recents" element={<RecentBooks />} />
-        <Route exact path="/users/profile" element={<ProfilePage />} />
+        <Route exact path='/' element={<Home />} />
+        <Route exact path='/books' element={<BooksList />} />
+        <Route exact path='/books/:id' element={<BookDetails />} />
+        <Route path='/auth' element={<Authentication />} />
+        <Route exact path='/books/newAdditions' element={<NewAdditions />} />
+        <Route exact path='/library' element={<Library />} />
+        <Route exact path='/books/mostPopular' element={<MostPopular />} />
+        <Route exact path='/books/recents' element={<RecentBooks />} />
+        <Route exact path='/users/profile' element={<ProfilePage />} />
+        <Route exact path='/users/myOrders' element={<MyOrders />} />
       </Routes>
     </div>
   );

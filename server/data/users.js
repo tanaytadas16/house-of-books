@@ -4,7 +4,6 @@ const books = mongoCollections.books;
 const bcrypt = require('bcrypt');
 const saltRounds = 16;
 const { ObjectId } = require('mongodb');
-const e = require('express');
 
 stateList = [
   'AL',
@@ -118,9 +117,10 @@ async function createUser(
   city,
   state,
   zip,
-  flag
-  // image
+  flag,
+  image
 ) {
+  console.log('Inside create user flag is ', flag);
   if (flag === 'G') {
     if (!email) throw 'Must provide the email';
     email = email.toLowerCase().trim();
@@ -130,6 +130,7 @@ async function createUser(
       throw String(e);
     }
   } else {
+    console.log('Inside else of create user');
     if (!firstName) throw 'Must provide the first name';
     if (!lastName) throw 'Must provide the last name';
     if (!email) throw 'Must provide the email';
@@ -157,7 +158,6 @@ async function createUser(
       checkIsString(lastName);
       checkIsString(email);
       checkIsString(username);
-      checkIsString(oldUsername);
       checkIsString(password);
       checkIsString(address);
       checkIsString(city);
@@ -173,14 +173,14 @@ async function createUser(
       checkIsUsername(username);
       checkIsPassword(password);
     } catch (e) {
+      console.log(e);
       throw String(e);
     }
   }
 
   const userCollection = await users();
 
-  if (await userCollection.findOne({ email: email }))
-    throw 'Username is taken.';
+  if (await userCollection.findOne({ email: email })) throw 'Email is taken.';
 
   let hash = null;
   if (flag !== 'G') {
@@ -210,16 +210,16 @@ async function createUser(
     bookRenting: [],
     purchasedBooks: [],
     reviews: [],
-    // image: image,
+    image: image,
   };
 
+  console.log('Before insert of create user');
   const insertInfo = await userCollection
     .insertOne(newUser)
     .catch(function (e) {
       throw 'Username already exists';
     });
   if (insertInfo.insertedCount === 0) throw `Could not add user`;
-
   return insertInfo.insertedId.toString();
 }
 
@@ -408,8 +408,6 @@ async function checkUser(username, password) {
 }
 
 async function myOrders(emailId) {
-  console.log('Inside my orders function');
-
   let myOrdersArr = [];
   let bookFound;
   const userCollection = await users();
@@ -418,25 +416,22 @@ async function myOrders(emailId) {
   let user = await userCollection.findOne({ email: emailId });
   if (user === null) throw 'No users present with given Email Id';
 
-  console.log(user.purchasedBooks[0]);
-
   const d = await Promise.all(
     user.purchasedBooks.map(async (element) => {
-      console.log(element._id);
-      let bookFound = await booksCollection.findOne({
+      bookFound = {};
+      bookFound = await booksCollection.findOne({
         _id: element._id,
       });
       if (bookFound === null) {
         throw `No book found with the id ${element._id}`;
       }
-
+      bookFound.dateOfPurchase = element.dateOfPurchase;
+      bookFound.totalPrice = element.totalPrice;
+      bookFound.quantity = element.quantity;
       return bookFound;
     })
   );
-
-  console.log('D is ', d);
-  // myOrdersArr = d;
-  // console.log('Array of book found is ', myOrdersArr);
+  myOrdersArr = d;
   return myOrdersArr;
 }
 

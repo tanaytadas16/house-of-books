@@ -97,6 +97,24 @@ router.post('/profile', async (req, res) => {
   }
 });
 
+router.post('/myOrders', async (req, res) => {
+  // error check
+  try {
+    if (!req.body.data) throw 'must provide email Id';
+  } catch (e) {
+    return res.status(400).send(String(e));
+  }
+  try {
+    console.log('Before function call');
+    const myOrders = await userData.myOrders(req.body.data);
+    console.log('In routes my orders are ', myOrders);
+    res.status(200).json(myOrders);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(String(e));
+  }
+});
+
 router.post('/signup', async (req, res) => {
   console.log(req.body.data);
   let {
@@ -126,6 +144,7 @@ router.post('/signup', async (req, res) => {
       return res.status(400).send(String(e));
     }
   } else {
+    console.log('Inside else of sign up');
     if (
       !(
         firstName &&
@@ -198,7 +217,8 @@ router.post('/signup', async (req, res) => {
     );
     res.status(200).json(newUser);
   } catch (e) {
-    return res.status(500).send(String(e));
+    console.log(e);
+    return res.status(500).json({ error: e });
   }
 });
 

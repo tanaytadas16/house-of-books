@@ -53,6 +53,11 @@ const Navigation = () => {
                 PROFILE
               </Link>
             ) : null}
+            {currentUser ? (
+              <Link className='nav-link' to='/users/myOrders'>
+                MY ORDERS
+              </Link>
+            ) : null}
           </div>
         </div>
       </div>

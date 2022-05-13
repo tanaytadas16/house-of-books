@@ -35,7 +35,7 @@ const Signin = () => {
         })
         .then(function (response) {
           console.log(response.data);
-          history('/', { replace: true });
+          history('/users/profile', { replace: true });
         });
     } else {
       history('/', { replace: true });
