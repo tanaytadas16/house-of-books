@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
 import {
@@ -49,11 +52,9 @@ const BookDetails = (props) => {
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const user = auth.currentUser;
   let { id } = useParams();
-  const history = useNavigate();
-
-  const getRandomFloat = (max) => {
-    return (Math.random() * max).toFixed(2);
-  };
+  //   const history = useNavigate();
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -74,33 +75,34 @@ const BookDetails = (props) => {
     ].join('-');
   }
 
-  function alertFunc(date) {
-    alert(
-      'Book has been rented. Please return it within 30 days. Your end date for return is ' +
-        date
-    );
-  }
+  //   function alertFunc(date) {
+  //     alert(
+  //       'Book has been rented. Please return it within 30 days. Your end date for return is ' +
+  //         date
+  //     );
+  //   }
   const buyBook = (title, bookId, quantity, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     console.log(todayDate);
     let dataBody = {
       email: user.email,
       name: title,
-      price: isNaN(price) ? getRandomFloat(20) : price,
+      price: price,
       bookId: bookId,
       quantity: quantity,
       totalPrice: quantity * price,
       imageUrl: imageUrl,
       flag: 'B',
     };
-    axios
-      .post('https://houseof-books.herokuapp.com/books/purchase', {
-        data: dataBody,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        history('/', { replace: true }); //to be changed to cart
-      });
+    dispatch(addItemToCart(cartItems, dataBody));
+    // axios
+    //   .post('https://houseof-books.herokuapp.com/books/purchase', {
+    //     data: dataBody,
+    //   })
+    //   .then(function (response) {
+    //     console.log(response.data);
+    //     history('/', { replace: true }); //to be changed to cart
+    //   });
   };
 
   const rentBook = (title, bookId, quantity, price, imageUrl) => {
@@ -110,7 +112,7 @@ const BookDetails = (props) => {
     let dataBody = {
       email: user.email,
       name: title,
-      price: isNaN(price) ? getRandomFloat(20) : price,
+      price: 7.0,
       bookId: bookId,
       quantity: quantity,
       totalPrice: quantity * price,
@@ -119,15 +121,16 @@ const BookDetails = (props) => {
       startDate: todayDate,
       endDate: endDate,
     };
-    axios
-      .post('https://houseof-books.herokuapp.com/library', {
-        data: dataBody,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        alertFunc(endDate);
-        history('/', { replace: true }); //to be changed to cart
-      });
+    dispatch(addItemToCart(cartItems, dataBody));
+    // axios
+    //   .post('https://houseof-books.herokuapp.com/library', {
+    //     data: dataBody,
+    //   })
+    //   .then(function (response) {
+    //     console.log(response.data);
+    //     alertFunc(endDate);
+    //     history('/', { replace: true }); //to be changed to cart
+    //   });
   };
 
   useEffect(() => {
@@ -161,6 +164,7 @@ const BookDetails = (props) => {
       </div>
     );
   } else {
+    const price = parseFloat(bookDetailsData.price);
     return (
       <Grid item xs={20} sm={11} md={5} lg={5} xl={9} key={bookDetailsData._id}>
         <Card className={classes.card} variant='outlined'>
@@ -259,37 +263,38 @@ const BookDetails = (props) => {
               </dl>
             </Typography>
           </CardContent>
-          <button
-            type='button'
-            className='button'
-            onClick={() =>
-              buyBook(
-                bookDetailsData.title,
-                bookDetailsData._id,
-                1,
-                bookDetailsData.price,
-                bookDetailsData.url
-              )
-            }
-          >
-            Buy
-          </button>
-          <br></br>
-          <br></br>
-          <button
-            className='button'
-            onClick={() =>
-              rentBook(
-                bookDetailsData.title,
-                bookDetailsData._id,
-                1,
-                bookDetailsData.price,
-                bookDetailsData.url
-              )
-            }
-          >
-            Rent
-          </button>
+          {isNaN(price) ? (
+            <button
+              className='button'
+              onClick={() =>
+                rentBook(
+                  bookDetailsData.title,
+                  bookDetailsData._id,
+                  1,
+                  bookDetailsData.price,
+                  bookDetailsData.url
+                )
+              }
+            >
+              Rent
+            </button>
+          ) : (
+            <button
+              type='button'
+              className='button'
+              onClick={() =>
+                buyBook(
+                  bookDetailsData.title,
+                  bookDetailsData._id,
+                  1,
+                  bookDetailsData.price,
+                  bookDetailsData.url
+                )
+              }
+            >
+              Buy
+            </button>
+          )}
         </Card>
       </Grid>
     );
