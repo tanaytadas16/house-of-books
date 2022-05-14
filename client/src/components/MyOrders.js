@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../contexts/userContext';
 import noImage from '../assets/images/no-image.jpeg';
 import {
@@ -50,9 +50,8 @@ const MyOrders = () => {
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
   let card = null;
-  const history = useNavigate();
 
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
   console.log('Current user is ', currentUser.email);
 
   useEffect(() => {
@@ -60,7 +59,7 @@ const MyOrders = () => {
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `http://localhost:4000/users/profile`;
+        const url = `http://localhost:4000/users/myOrders`;
         const { data } = await axios.post(url, { data: currentUser.email });
         console.log(data);
         setBookDetailsData(data);
@@ -73,36 +72,6 @@ const MyOrders = () => {
     fetchData();
   }, []);
 
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
-  }
-  function formatDate(date) {
-    return [
-      padTo2Digits(date.getMonth() + 1),
-      padTo2Digits(date.getDate()),
-      date.getFullYear(),
-    ].join('-');
-  }
-
-  const buyBook = (customerId, bookId, quantity, price) => {
-    let todayDate = formatDate(new Date());
-    console.log(todayDate);
-    console.log(customerId, bookId);
-    let dataBody = {
-      customerId: customerId,
-      bookId: bookId,
-      quantity: quantity,
-      totalPrice: quantity * price,
-    };
-    axios
-      .post('http://localhost:4000/books/purchase', {
-        data: dataBody,
-      })
-      .then(function (response) {
-        console.log(response.data);
-        history('/', { replace: true }); //to be changed to cart
-      });
-  };
   const buildCard = (book) => {
     return (
       <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
@@ -115,7 +84,6 @@ const MyOrders = () => {
                 image={book.url ? book.url : noImage}
                 title='book image'
               />
-
               <CardContent>
                 <Typography
                   variant='body2'
@@ -133,9 +101,25 @@ const MyOrders = () => {
                       )}
                     </p>
                     <p>
-                      <dt className='title'>Price:</dt>
-                      {book && book.price ? (
-                        <dd>$ {book.price}</dd>
+                      <dt className='title'>Total Price:</dt>
+                      {book && book.totalPrice ? (
+                        <dd>{book.totalPrice}</dd>
+                      ) : (
+                        <dd>N/A</dd>
+                      )}
+                    </p>
+                    <p>
+                      <dt className='title'>Quantity:</dt>
+                      {book && book.quantity ? (
+                        <dd>{book.quantity}</dd>
+                      ) : (
+                        <dd>N/A</dd>
+                      )}
+                    </p>
+                    <p>
+                      <dt className='title'>Date of Order:</dt>
+                      {book && book.dateOfPurchase ? (
+                        <dd>{book.dateOfPurchase}</dd>
                       ) : (
                         <dd>N/A</dd>
                       )}
@@ -145,15 +129,6 @@ const MyOrders = () => {
               </CardContent>
             </Link>
           </CardActionArea>
-          <button
-            type='button'
-            className='button'
-            onClick={() =>
-              buyBook('627161da17f0455539944549', book._id, 2, book.price)
-            }
-          >
-            Buy
-          </button>
         </Card>
       </Grid>
     );
@@ -163,7 +138,7 @@ const MyOrders = () => {
     if (error) {
       return (
         <div>
-          <h2>No books are present in the popular list</h2>
+          <h2>No orders found</h2>
         </div>
       );
     } else {
