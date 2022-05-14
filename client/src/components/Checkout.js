@@ -1,7 +1,8 @@
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { UserContext } from '../contexts/userContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { clearCart } from '../store/actions/cartAction';
 import axios from 'axios';
 
 import {
@@ -18,8 +19,8 @@ const Checkout = () => {
   const { currentUser } = useContext(UserContext);
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  console.log('Cart Items:', cartItems);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -35,21 +36,26 @@ const Checkout = () => {
 
   const handlePurchase = () => {
     let url = '';
-    cartItems.map((cartItem) => {
-      if (cartItem.flag === 'B') {
-        url = 'http://localhost:4000/books/purchase';
-      } else {
-        url = 'http://localhost:4000/library';
-      }
-      axios
-        .post(url, {
-          data: cartItem,
-        })
-        .then(function (response) {
-          console.log(response.data);
-          navigate('/', { replace: true });
-        });
-    });
+    try {
+      cartItems.map((cartItem) => {
+        if (cartItem.flag === 'B') {
+          url = 'http://localhost:4000/books/purchase';
+        } else {
+          url = 'http://localhost:4000/library';
+        }
+        axios
+          .post(url, {
+            data: cartItem,
+          })
+          .then(function (response) {
+            console.log(response.data);
+            // navigate('/', { replace: true });
+          });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    dispatch(clearCart([]));
   };
 
   return (
