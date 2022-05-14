@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
+import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
   makeStyles,
   Card,
@@ -51,6 +53,8 @@ const BooksList = () => {
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
+  const { currentUser } = useContext(UserContext);
+  const user = auth.currentUser;
   let card = null;
 
   const getRandomFloat = (max) => {
@@ -72,7 +76,7 @@ const BooksList = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -88,15 +92,7 @@ const BooksList = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (
-    customerId,
-    title,
-    bookId,
-    quantity,
-    price,
-    imageUrl,
-    flag
-  ) => {
+  const buyBook = (customerId, title, bookId, quantity, price, imageUrl) => {
     price = parseFloat(price);
     console.log(isNaN(price));
     let todayDate = formatDate(new Date());
@@ -110,7 +106,7 @@ const BooksList = () => {
       quantity: quantity,
       totalPrice: quantity * price,
       imageUrl: imageUrl,
-      flag: flag,
+      flag: 'B',
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
@@ -157,23 +153,24 @@ const BooksList = () => {
               </CardContent>
             </Link>
           </CardActionArea>
-          <button
-            type='button'
-            className='button'
-            onClick={() =>
-              buyBook(
-                '627161da17f0455539944549',
-                book.title,
-                book._id,
-                2,
-                book.price,
-                book.url,
-                'b'
-              )
-            }
-          >
-            Buy
-          </button>
+          {user && (
+            <button
+              type='button'
+              className='button'
+              onClick={() =>
+                buyBook(
+                  '627161da17f0455539944549',
+                  book.title,
+                  book._id,
+                  1,
+                  book.price,
+                  book.url
+                )
+              }
+            >
+              Buy
+            </button>
+          )}
         </Card>
       </Grid>
     );
