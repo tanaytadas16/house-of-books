@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
+import { getAuth, updateEmail } from 'firebase/auth';
 import '../styles/Signup.scss';
 
 const ProfilePage = () => {
@@ -14,6 +15,7 @@ const ProfilePage = () => {
   const [oldUsername, setOldUsername] = useState(undefined);
 
   const { currentUser } = useContext(UserContext);
+  const auth = getAuth();
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -43,29 +45,41 @@ const ProfilePage = () => {
 
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+    const {
+      password,
+      confirmPassword,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      username,
+      address,
+      city,
+      state,
+      zip,
+    } = event.target.elements;
 
-    if (
-      event.target.elements.password.value !==
-      event.target.elements.confirmPassword.value
-    ) {
+    if (password.value !== confirmPassword.value) {
       alert('Passwords do not match');
       return;
     }
 
     let dataBody = {
-      firstName: event.target.elements.firstName.value,
-      lastName: event.target.elements.lastName.value,
-      email: event.target.elements.email.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
       oldEmail: currentUser.email,
-      phoneNumber: event.target.elements.phoneNumber.value,
-      username: event.target.elements.username.value,
+      phoneNumber: phoneNumber.value,
+      username: username.value,
       oldUsername: oldUsername,
-      password: event.target.elements.password.value,
-      address: event.target.elements.address.value,
-      city: event.target.elements.city.value,
-      state: event.target.elements.state.value,
-      zip: event.target.elements.zip.value,
+      password: password.value,
+      address: address.value,
+      city: city.value,
+      state: state.value,
+      zip: zip.value,
     };
+
+    await updateEmail(auth.currentUser, email.value);
 
     axios
       .put('http://localhost:4000/users/profile/', {
