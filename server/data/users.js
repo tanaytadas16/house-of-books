@@ -236,7 +236,7 @@ async function getUser(emailId) {
 
     const userCollection = await users();
     const singleUserId = await userCollection.findOne({email: emailId});
-    if (singleUserId === null) return null;
+    if (singleUserId === null) throw "Id not found";
     console.log(singleUserId);
     return {...singleUserId, _id: singleUserId._id.toString()};
 }
