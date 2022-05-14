@@ -8,7 +8,7 @@ const addCartItem = (cartItems, productToAdd) => {
 
   if (existingCartItem) {
     return cartItems.map((cartItem) =>
-      cartItem.bookId === productToAdd.bookId
+      cartItem.bookId === productToAdd.bookId && cartItem.flag !== 'R'
         ? { ...cartItem, quantity: cartItem.quantity + 1 }
         : cartItem
     );
