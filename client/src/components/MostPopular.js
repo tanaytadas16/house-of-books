@@ -63,7 +63,7 @@ const MostPopular = () => {
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `https://houseof-books.herokuapp.com/books/mostPopular`;
+        const url = `http://localhost:4000/books/mostPopular`;
         const { data } = await axios.get(url);
         console.log(data);
         setBookDetailsData(data);
@@ -90,15 +90,14 @@ const MostPopular = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (title, bookId, quantity, price, imageUrl) => {
+  const buyBook = (title, bookId, price, imageUrl) => {
+    console.log('Quantity inside cart is', quantity);
     price = parseFloat(price);
     let dataBody = {
       email: user.email,
       name: title,
       bookId: bookId,
       price: price,
-      quantity: quantity,
-      totalPrice: quantity * price,
       imageUrl: imageUrl,
       flag: 'B',
     };
@@ -152,12 +151,7 @@ const MostPopular = () => {
             className='button'
             onClick={() => {
               if (auth.currentUser) {
-                buyBook(
-                  auth.currentUser.email,
-                  book._id,
-                  cartItems.quantity,
-                  book.price
-                );
+                buyBook(book.title, book._id, book.price, book.url);
               } else {
                 alert('You need to sign in first to buy the book');
               }
