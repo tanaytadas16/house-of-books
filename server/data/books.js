@@ -134,7 +134,9 @@ async function getAll() {
   }
   const booksCollection = await books();
 
-  const booksList = await booksCollection.find({}).toArray();
+  const booksList = await booksCollection
+    .find({ price: { $ne: 'Not For Sale' } })
+    .toArray();
   if (booksList.length === 0) {
     return [];
   }
@@ -142,7 +144,6 @@ async function getAll() {
     let id = book['_id'];
     book['_id'] = id.toString();
   }
-  console.log(booksList);
   return booksList;
 }
 
@@ -165,7 +166,6 @@ async function getNewAddition() {
     let id = book['_id'];
     book['_id'] = id.toString();
   }
-  console.log(booksList);
   return booksList;
 }
 
@@ -188,7 +188,6 @@ async function getBooksForRent() {
     let id = book['_id'];
     book['_id'] = id.toString();
   }
-  console.log(booksList);
   return booksList;
 }
 function validateBookCreations(
@@ -291,7 +290,6 @@ async function addNewBook(
   const insertedBookId = insertedDatadetails.insertedId.toString();
 
   const bookDetails = await getById(insertedBookId);
-  console.log(bookDetails);
   return bookDetails;
 }
 function validateCreations(email, bookId, startDate, endDate, flag) {
@@ -324,7 +322,6 @@ async function addRentedBook(email, bookId, startDate, endDate, flag) {
   const insertedBookId = insertedDatadetails.insertedId.toString();
 
   const bookDetails = await getRentedBookById(insertedBookId);
-  console.log(bookDetails);
 
   const userCollection = await users();
 
@@ -368,13 +365,11 @@ async function getRentedBookById(searchId) {
 
 async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
   //   validateCreations(customerId, bookId);
-  console.log('Inside buybook function');
   let totalCount = 0;
   email = email.trim();
   bookId = bookId.trim();
 
   const checkBookDetails = await getById(bookId);
-  console.log('Check book details are ', checkBookDetails.count);
   const booksCollection = await books();
   const userCollection = await users();
   totalCount = checkBookDetails.count + quantity;
@@ -410,7 +405,6 @@ async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
 }
 
 async function getMostPopular() {
-  console.log('Inside most popular');
   let len = arguments.length;
   if (len > 0) {
     throw `Error: getAll does not accept arguments`;
@@ -429,7 +423,7 @@ async function getMostPopular() {
     let id = book['_id'];
     book['_id'] = id.toString();
   }
-  console.log(booksList);
+  booksList.sort((a, b) => b.count - a.count);
   return booksList;
 }
 
