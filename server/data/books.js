@@ -23,15 +23,6 @@ function validateBoolParams(param, paramName) {
         throw `Type Error: Argument ${param} passed is not a boolean ${paramName}`;
     }
 }
-function validateArray(arryparam, arrname) {
-    if (!arryparam) {
-        throw `Error: No ${arrname} argument passed to the function`;
-    } else if (!Array.isArray(arryparam)) {
-        throw `Type Error: Argument ${arrname} passed is not an array`;
-    } else if (arryparam.length == 0) {
-        throw `Error: No element present in array ${arrname}`;
-    }
-}
 
 function validateNumberParams(param, paramName) {
     if (typeof param !== "number" || !Number.isInteger(param)) {
@@ -52,54 +43,11 @@ function validateRating(element) {
     }
 }
 
-function validateObject(objParam) {
-    if (!objParam) {
-        throw "Error: Argument serviceOptions not passed to the function";
-    } else if (
-        typeof objParam !== "object" ||
-        Array.isArray(objParam) ||
-        objParam === null
-    ) {
-        throw "Type Error: Argument serviceOptions passed is not an object";
-    } else if (Object.keys(objParam).length === 0) {
-        throw "Error: No element present in object serviceOptions";
-    } else if (Object.keys(objParam).length > 3) {
-        throw "More than 3 options available in serviceOptions";
-    }
-}
-function trimObjectKeys(object) {
-    for (let key in object) {
-        if (key !== key.trim()) {
-            object[key.trim()] = object[key];
-            delete object[key];
-        }
-    }
-    return object;
-}
-function validatePhone(phoneNumber) {
-    const validPhone = /^\d{3}-\d{3}-\d{4}$/;
-    phoneNumber = phoneNumber.trim();
-    if (!phoneNumber.match(validPhone)) {
-        throw `Error: ${phoneNumber} is not a valid phone number`;
-    }
-}
-
 function validateWebsite(websiteLink) {
     const validLink = /^http(s)/;
     websiteLink = websiteLink.trim().toLowerCase();
     if (!websiteLink.match(validLink)) {
         throw `Error: ${websiteLink} is not a valid web site link`;
-    }
-}
-function validatePriceRange(priceRange) {
-    if (priceRange.length < 0 || priceRange.length > 4) {
-        throw `Error: Price Range is not in valid range`;
-    } else {
-        for (let priceChar of priceRange) {
-            if (priceChar !== "$") {
-                throw ` Error : Price Range has invalid characters`;
-            }
-        }
     }
 }
 
@@ -108,6 +56,18 @@ function validateDate(dateParams) {
     if (!dateParams.match(validDateFormat)) {
         throw "date is not in valid format";
     }
+}
+
+function validateDateOfPurchase(dateParams) {
+    const validDateFormat = /^\d{1}\/\d{2}\/\d{4}$/;
+    if (!dateParams.match(validDateFormat)) {
+        throw "purchase date is not in valid format";
+    }
+}
+
+function validateEmail(email) {
+    const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    if (!emailRegex.test(email)) throw "Given email id is invalid";
 }
 
 async function getById(searchId) {
@@ -149,7 +109,7 @@ async function getAll() {
 async function getNewAddition() {
     let len = arguments.length;
     if (len > 0) {
-        throw `Error: getAll does not accept arguments`;
+        throw `Error: getNewAddition does not accept arguments`;
     }
     const booksCollection = await books();
 
@@ -165,7 +125,6 @@ async function getNewAddition() {
         let id = book["_id"];
         book["_id"] = id.toString();
     }
-    console.log(booksList);
     return booksList;
 }
 
@@ -188,7 +147,6 @@ async function getBooksForRent() {
         let id = book["_id"];
         book["_id"] = id.toString();
     }
-    console.log(booksList);
     return booksList;
 }
 function validateBookCreations(
@@ -295,8 +253,11 @@ async function addNewBook(
     return bookDetails;
 }
 function validateCreations(email, bookId, startDate, endDate, flag) {
-    validateStringParams(email, "email");
+    validateEmail(email);
     validateStringParams(bookId, "bookId");
+    if (!ObjectId.isValid(bookId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
     validateStringParams(flag, "flag");
     validateStringParams(startDate, "startDate");
     validateStringParams(endDate, "endDate");
@@ -324,7 +285,6 @@ async function addRentedBook(email, bookId, startDate, endDate, flag) {
     const insertedBookId = insertedDatadetails.insertedId.toString();
 
     const bookDetails = await getRentedBookById(insertedBookId);
-    console.log(bookDetails);
 
     const userCollection = await users();
 
@@ -367,8 +327,14 @@ async function getRentedBookById(searchId) {
 }
 
 async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
-    //   validateCreations(customerId, bookId);
-    console.log("Inside buybook function");
+    validateEmail(email);
+    validateStringParams(bookId, "bookId");
+    if (!ObjectId.isValid(bookId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
+    validateNumberParams(quantity, "quantity");
+    validateNumberParams(totalPrice, "totalPrice");
+    validateDateOfPurchase(dateOfPurchase);
     email = email.trim();
     bookId = bookId.trim();
 
@@ -400,7 +366,7 @@ async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
 async function getMostPopular() {
     let len = arguments.length;
     if (len > 0) {
-        throw `Error: getAll does not accept arguments`;
+        throw `Error: getMostPopular does not accept arguments`;
     }
 
     const booksCollection = await books();
