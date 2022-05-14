@@ -329,6 +329,9 @@ async function getRentedBookById(searchId) {
 async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
     validateEmail(email);
     validateStringParams(bookId, "bookId");
+    if (!ObjectId.isValid(bookId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
     validateNumberParams(quantity, "quantity");
     validateNumberParams(totalPrice, "totalPrice");
     validateDateOfPurchase(dateOfPurchase);

@@ -110,6 +110,9 @@ router.post("/purchase", async (req, res) => {
         }
         validateEmail(bookToBePurchased.email);
         validateStringParams(bookToBePurchased.bookId, "bookId");
+        if (!ObjectId.isValid(bookToBePurchased.bookId)) {
+            throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+        }
         validateNumberParams(bookToBePurchased.quantity, "quantity");
         validateNumberParams(bookToBePurchased.totalPrice, "totalPrice");
     } catch (e) {
