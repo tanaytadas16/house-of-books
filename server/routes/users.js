@@ -84,8 +84,8 @@ function checkIsUsername(s) {
 
 router.get("/rentedbooks/:email", async (req, res) => {
     try {
-        console.log("got request", req.params.email);
         checkIsString(req.params.email);
+        checkIsEmail(req.params.email);
         req.params.email = req.params.email.trim();
         if (!req.params.email) throw "must provide user email";
     } catch (e) {
@@ -104,14 +104,13 @@ router.get("/rentedbooks/:email", async (req, res) => {
 });
 
 router.post("/profile", async (req, res) => {
-    // error check
     try {
         if (!req.body.data) throw "must provide email Id";
+        checkIsEmail(req.body.data);
     } catch (e) {
         return res.status(400).send(String(e));
     }
     try {
-        console.log("Before function call");
         res.status(200).json(await userData.getUser(req.body.data));
     } catch (e) {
         console.log(e);
@@ -120,14 +119,13 @@ router.post("/profile", async (req, res) => {
 });
 
 router.post("/myOrders", async (req, res) => {
-    // error check
     try {
         if (!req.body.data) throw "must provide email Id";
+        checkIsEmail(req.body.data);
     } catch (e) {
         return res.status(400).send(String(e));
     }
     try {
-        console.log("Before function call");
         const myOrders = await userData.myOrders(req.body.data);
         console.log("In routes my orders are ", myOrders);
         res.status(200).json(myOrders);
@@ -152,7 +150,6 @@ router.post("/signup", async (req, res) => {
         zip,
         flag,
     } = req.body.data;
-    // console.log(userInfo);
 
     console.log("flag is ", flag);
     if (flag === "G") {
