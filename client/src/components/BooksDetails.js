@@ -12,7 +12,6 @@ import {
   CardMedia,
   Typography,
 } from '@material-ui/core';
-import { auth } from '../firebase/firebase';
 const useStyles = makeStyles({
   card: {
     maxWidth: 550,
@@ -108,7 +107,7 @@ const BookDetails = (props) => {
   const buyBook = (title, bookId, quantity, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     console.log(todayDate);
-    console.log(customerId, bookId);
+
     let dataBody = {
       email: user.email,
       name: title,
