@@ -109,7 +109,6 @@ router.post('/profile', async (req, res) => {
     return res.status(400).send(String(e));
   }
   try {
-    console.log('Before function call');
     res.status(200).json(await userData.getUser(req.body.data));
   } catch (e) {
     console.log(e);
@@ -125,9 +124,7 @@ router.post('/myOrders', async (req, res) => {
     return res.status(400).send(String(e));
   }
   try {
-    console.log('Before function call');
     const myOrders = await userData.myOrders(req.body.data);
-    console.log('In routes my orders are ', myOrders);
     res.status(200).json(myOrders);
   } catch (e) {
     console.log(e);
@@ -136,7 +133,6 @@ router.post('/myOrders', async (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-  console.log(req.body.data);
   let {
     firstName,
     lastName,
@@ -150,9 +146,7 @@ router.post('/signup', async (req, res) => {
     zip,
     flag,
   } = req.body.data;
-  // console.log(userInfo);
 
-  console.log('flag is ', flag);
   if (flag === 'G') {
     if (!email) {
       return res.status(400).send('You must provide email for google sign in.');
@@ -303,7 +297,6 @@ router.put('/profile', async (req, res) => {
     zip,
   } = req.body.data;
 
-  console.log(req.body.data);
   try {
     if (!firstName) throw 'Must provide the first name';
     if (!lastName) throw 'Must provide the last name';

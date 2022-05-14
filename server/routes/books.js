@@ -47,7 +47,6 @@ router.get('/', async (req, res) => {
 router.get('/newAdditions', async (req, res) => {
   try {
     let books = await booksData.getNewAddition();
-    console.log(books);
     res.status(200).json(books);
     return books;
   } catch (e) {
@@ -58,9 +57,7 @@ router.get('/newAdditions', async (req, res) => {
 
 router.get('/mostPopular', async (req, res) => {
   try {
-    console.log('Inside most popular');
     let books = await booksData.getMostPopular();
-    console.log(books);
     res.status(200).json(books);
     return books;
   } catch (e) {
