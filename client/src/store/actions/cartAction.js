@@ -9,12 +9,23 @@ const addCartItem = (cartItems, productToAdd) => {
   if (existingCartItem) {
     return cartItems.map((cartItem) =>
       cartItem.bookId === productToAdd.bookId && cartItem.flag !== 'R'
-        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+        ? {
+            ...cartItem,
+            quantity: cartItem.quantity + 1,
+            totalPrice: (cartItem.quantity + 1) * cartItem.price,
+          }
         : cartItem
     );
   }
 
-  return [...cartItems, { ...productToAdd, quantity: 1 }];
+  return [
+    ...cartItems,
+    {
+      ...productToAdd,
+      quantity: 1,
+      totalPrice: productToAdd.price,
+    },
+  ];
 };
 
 const removeCartItem = (cartItems, cartItemToRemove) => {
@@ -33,7 +44,11 @@ const removeCartItem = (cartItems, cartItemToRemove) => {
   // return back cartitems with matching cart item with reduced quantity
   return cartItems.map((cartItem) =>
     cartItem.bookId === cartItemToRemove.bookId
-      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+      ? {
+          ...cartItem,
+          quantity: cartItem.quantity - 1,
+          totalPrice: (cartItem.quantity - 1) * cartItem.price,
+        }
       : cartItem
   );
 };
