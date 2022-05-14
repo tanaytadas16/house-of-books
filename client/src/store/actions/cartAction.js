@@ -41,6 +41,8 @@ const removeCartItem = (cartItems, cartItemToRemove) => {
 const clearCartItem = (cartItems, cartItemToClear) =>
   cartItems.filter((cartItem) => cartItem.bookId !== cartItemToClear.bookId);
 
+const emptyCart = (cartItems) => (cartItems = []);
+
 export const addItemToCart = (cartItems, productToAdd) => {
   const newCartItems = addCartItem(cartItems, productToAdd);
   return createAction(CART_ACTION_TYPES.SET_CART_ITEMS, newCartItems);
@@ -58,3 +60,8 @@ export const clearItemFromCart = (cartItems, cartItemToClear) => {
 
 export const setIsCartOpen = (boolean) =>
   createAction(CART_ACTION_TYPES.SET_IS_CART_OPEN, boolean);
+
+export const clearCart = (cartItems) => {
+  const newCartItems = emptyCart(cartItems);
+  return createAction(CART_ACTION_TYPES.CLEAR_CART, cartItems);
+};
