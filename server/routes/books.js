@@ -2,18 +2,6 @@ const express = require('express');
 const router = express.Router();
 const booksData = require('../data/books');
 const { ObjectId } = require('mongodb');
-// const redis = require('redis');
-
-// const client = redis.createClient({
-//     url: process.env.REDIS_URL,
-//     socket: {
-//         rejectUnauthorized: false,
-//     },
-// });
-
-// (async () => {
-//     await client.connect();
-// })();
 
 const ErrorCode = {
   BAD_REQUEST: 400,
@@ -30,6 +18,19 @@ function validateStringParams(param, paramName) {
     throw ` No ${paramName} entered`;
   } else if (!param.trim()) {
     throw ` Empty spaces entered to ${paramName}`;
+  }
+}
+
+function validateEmail(email) {
+  const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
+  if (!emailRegex.test(email)) throw 'Given email id is invalid';
+}
+function validateNumberParams(param, paramName) {
+  if (typeof param !== 'number' || !Number.isInteger(param)) {
+    throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
+  }
+  if (param < 0) {
+    throw `${paramName} can not be negative`;
   }
 }
 
@@ -91,36 +92,14 @@ router.get('/:id', async (req, res) => {
     res.status(400).json({ error: e });
     return;
   }
-  // try {
-  //     let redisFlag = false;
-  let books = await booksData.getById(req.params.id);
-  //     // console.log(books);
-  //     console.log('Before LRange');
-  //     // const recentList = await client.lRange('recents', 0, 19);
-  //     // console.log(recentList);
-  //     if (recentList.length > 0) {
-  //         for (let i = 0; i < recentList.length; i++) {
-  //             console.log(books._id);
-  //             let redisId = JSON.parse(recentList[i]);
-  //             console.log(redisId._id);
-  //             if (books._id === redisId._id) {
-  //                 redisFlag = true;
-  //                 break;
-  //             } else {
-  //                 continue;
-  //             }
-  //         }
-  //     }
-  //     if (!redisFlag) {
-  //         console.log('Inside redis else');
-  //         await client.lPush('recents', JSON.stringify(books));
-  //     }
-  res.status(200).json(books);
-  return books;
-  // } catch (e) {
-  //     res.status(404).json({ error: e });
-  //     return e.message;
-  // }
+  try {
+    let books = await booksData.getById(req.params.id);
+    res.status(200).json(books);
+    return books;
+  } catch (e) {
+    res.status(404).json({ error: e });
+    return e.message;
+  }
 });
 
 router.post('/purchase', async (req, res) => {
@@ -129,8 +108,13 @@ router.post('/purchase', async (req, res) => {
     if (Object.keys(req.body.data).length === 0) {
       throw `No data provided for buying book`;
     }
-
-    // validateCreations(bookToBePurchased.customerId, bookToBePurchased.bookId);
+    validateEmail(bookToBePurchased.email);
+    validateStringParams(bookToBePurchased.bookId, 'bookId');
+    if (!ObjectId.isValid(bookToBePurchased.bookId)) {
+      throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
+    validateNumberParams(bookToBePurchased.quantity, 'quantity');
+    validateNumberParams(bookToBePurchased.totalPrice, 'totalPrice');
   } catch (e) {
     console.log(e);
     res.status(400).json({ error: e });

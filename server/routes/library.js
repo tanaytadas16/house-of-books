@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const booksData = require("../data/books");
+const {ObjectId} = require("mongodb");
 
 function validateStringParams(param, paramName) {
     if (!param) {
@@ -13,14 +14,7 @@ function validateStringParams(param, paramName) {
         throw `Error: Empty spaces passed to string ${paramName}`;
     }
 }
-function validateBoolParams(param, paramName) {
-    if (!param) {
-        throw `Error: No ${paramName} passed to the function`;
-    }
-    if (typeof param != "boolean") {
-        throw `Type Error: Argument ${param} passed is not a boolean ${paramName}`;
-    }
-}
+
 function validateDate(dateParams) {
     const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
     if (!dateParams.match(validDateFormat)) {
@@ -28,9 +22,17 @@ function validateDate(dateParams) {
     }
 }
 
+function validateEmail(email) {
+    const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    if (!emailRegex.test(email)) throw "Given email id is invalid";
+}
+
 function validateCreations(email, bookId, startDate, endDate, flag) {
-    validateStringParams(email, "email");
+    validateEmail(email);
     validateStringParams(bookId, "bookId");
+    if (!ObjectId.isValid(bookId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
     validateStringParams(flag, "flag");
     validateStringParams(startDate, "startDate");
     validateStringParams(endDate, "endDate");
@@ -41,7 +43,6 @@ function validateCreations(email, bookId, startDate, endDate, flag) {
 router.get("/", async (req, res) => {
     try {
         let books = await booksData.getBooksForRent();
-        console.log(books);
         res.status(200).json(books);
         return books;
     } catch (e) {
@@ -69,7 +70,6 @@ router.post("/", async (req, res) => {
         return;
     }
     try {
-        console.log(req.body);
         let books = await booksData.addRentedBook(
             bookToBeRented.email,
             bookToBeRented.bookId,
@@ -77,7 +77,6 @@ router.post("/", async (req, res) => {
             bookToBeRented.endDate,
             bookToBeRented.flag
         );
-        console.log(books);
         res.status(200).json(books);
         return books;
     } catch (e) {
