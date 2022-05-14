@@ -225,8 +225,6 @@ async function createUser(
 }
 
 async function getUser(emailId) {
-    console.log("After function call");
-
     if (
         typeof emailId !== "string" ||
         emailId.length === 0 ||
@@ -236,11 +234,9 @@ async function getUser(emailId) {
 
     checkIsEmail(emailId);
 
-    console.log("Before DB call");
-
     const userCollection = await users();
     const singleUserId = await userCollection.findOne({email: emailId});
-    if (singleUserId === null) return null;
+    if (singleUserId === null) throw "Id not found";
     console.log(singleUserId);
     return {...singleUserId, _id: singleUserId._id.toString()};
 }
@@ -551,6 +547,7 @@ function formatDate(date) {
 async function getRentedBooks(userEmail) {
     const userCollection = await users();
     let user = await getUser(userEmail);
+    if (user === null) throw `No user with that id.`;
     let rentedBooks = user.bookRenting;
     let rentedBooksCollection = [];
     let todayDate = formatDate(new Date());
