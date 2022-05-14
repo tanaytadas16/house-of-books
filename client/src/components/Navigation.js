@@ -12,7 +12,7 @@ import '../styles/Navigation.scss';
 const Navigation = () => {
     const { currentUser, setCurrentUser } = useContext(UserContext);
     const isCartOpen = useSelector(selectIsCartOpen);
-    console.log(currentUser);
+    // console.log(currentUser);
     const history = useNavigate();
 
     const signOutHandler = async () => {
@@ -45,6 +45,11 @@ const Navigation = () => {
                         {/* <Link className="nav-link" to="/books/recents">
                             RECENTLY VIEWED
                         </Link> */}
+                        {currentUser ? (
+                            <Link className="nav-link" to="/users/bookshelf">
+                                BOOKSHELF
+                            </Link>
+                        ) : null}
                         {currentUser ? (
                             <span className="nav-link" onClick={signOutHandler}>
                                 SIGN OUT

@@ -38,7 +38,7 @@ const App = () => {
                 />
                 <Route exact path="/books/recents" element={<RecentBooks />} />
                 <Route exact path="/users/profile" element={<ProfilePage />} />
-                <Route exact path="/bookshelf" element={<Bookshelf />} />
+                <Route exact path="/users/bookshelf" element={<Bookshelf />} />
 
                 <Route
                     exact

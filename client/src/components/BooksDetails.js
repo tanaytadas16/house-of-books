@@ -137,9 +137,7 @@ const BookDetails = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -151,7 +149,7 @@ const BookDetails = (props) => {
         return (
             <Grid
                 item
-                xs={20}
+                xs={12}
                 sm={11}
                 md={5}
                 lg={5}

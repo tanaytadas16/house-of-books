@@ -1,110 +1,110 @@
-const mongoCollections = require("../config/mongoCollection");
+const mongoCollections = require('../config/mongoCollection');
 const users = mongoCollections.users;
 const books = mongoCollections.books;
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 const saltRounds = 16;
-const {ObjectId} = require("mongodb");
-const e = require("express");
-const booksFunctions = require("./books");
+const { ObjectId } = require('mongodb');
+const e = require('express');
+const booksFunctions = require('./books');
 
 stateList = [
-    "AL",
-    "AK",
-    "AZ",
-    "AR",
-    "CA",
-    "CO",
-    "CT",
-    "DE",
-    "DC",
-    "FL",
-    "GA",
-    "HI",
-    "ID",
-    "IL",
-    "IN",
-    "IA",
-    "KS",
-    "KY",
-    "LA",
-    "ME",
-    "MD",
-    "MA",
-    "MI",
-    "MN",
-    "MS",
-    "MO",
-    "MT",
-    "NE",
-    "NV",
-    "NH",
-    "NJ",
-    "NM",
-    "NY",
-    "NC",
-    "ND",
-    "OH",
-    "OK",
-    "OR",
-    "PA",
-    "PR",
-    "RI",
-    "SC",
-    "SD",
-    "TN",
-    "TX",
-    "UT",
-    "VT",
-    "VA",
-    "WA",
-    "WV",
-    "WI",
-    "WY",
+    'AL',
+    'AK',
+    'AZ',
+    'AR',
+    'CA',
+    'CO',
+    'CT',
+    'DE',
+    'DC',
+    'FL',
+    'GA',
+    'HI',
+    'ID',
+    'IL',
+    'IN',
+    'IA',
+    'KS',
+    'KY',
+    'LA',
+    'ME',
+    'MD',
+    'MA',
+    'MI',
+    'MN',
+    'MS',
+    'MO',
+    'MT',
+    'NE',
+    'NV',
+    'NH',
+    'NJ',
+    'NM',
+    'NY',
+    'NC',
+    'ND',
+    'OH',
+    'OK',
+    'OR',
+    'PA',
+    'PR',
+    'RI',
+    'SC',
+    'SD',
+    'TN',
+    'TX',
+    'UT',
+    'VT',
+    'VA',
+    'WA',
+    'WV',
+    'WI',
+    'WY',
 ];
 
 function checkIsString(s) {
-    if (typeof s !== "string") throw "Given input is invalid";
-    if (s.length < 1) throw "Given input is empty";
-    if (s.trim().length === 0) throw "Given input is all white spaces";
+    if (typeof s !== 'string') throw 'Given input is invalid';
+    if (s.length < 1) throw 'Given input is empty';
+    if (s.trim().length === 0) throw 'Given input is all white spaces';
 }
 
 function checkIsName(s) {
     const nameRegex = /[^a-zA-Z]/;
-    if (nameRegex.test(s)) throw "Given input is not only letters";
+    if (nameRegex.test(s)) throw 'Given input is not only letters';
 }
 
 function checkIsPassword(s) {
-    if (s.length < 8) throw "Given password size is less than 8";
+    if (s.length < 8) throw 'Given password size is less than 8';
 }
 
 function checkIsEmail(s) {
     const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
-    if (!emailRegex.test(s)) throw "Given email id is invalid";
+    if (!emailRegex.test(s)) throw 'Given email id is invalid';
 }
 
 function checkIsUsername(s) {
-    if (s.length < 4) throw "Given username size is less than 4";
+    if (s.length < 4) throw 'Given username size is less than 4';
 }
 
 function checkPhoneNumber(s) {
     const phoneRegex = /^\d{10}$/im;
-    if (!phoneRegex.test(s)) throw "Incorrect phone number format";
+    if (!phoneRegex.test(s)) throw 'Incorrect phone number format';
 }
 
 function checkZip(s) {
     const zipRegex = /(^\d{5}$)|(^\d{5}-\d{4}$)/;
-    if (!zipRegex.test(s)) throw "Incorrect zip code format";
+    if (!zipRegex.test(s)) throw 'Incorrect zip code format';
 }
 
 function validateID(id) {
-    if (typeof id != "string") {
-        throw "Argument of type string expected";
+    if (typeof id != 'string') {
+        throw 'Argument of type string expected';
     }
     if (id.trim().length === 0) {
-        throw "String cannot be blanks or empty";
+        throw 'String cannot be blanks or empty';
     }
     if (!ObjectId.isValid(id)) {
-        throw "Object Id is not valid";
+        throw 'Object Id is not valid';
     }
 }
 
@@ -119,11 +119,11 @@ async function createUser(
     city,
     state,
     zip,
-    flag
-    // image
+    flag,
+    image
 ) {
-    if (flag === "G") {
-        if (!email) throw "Must provide the email";
+    if (flag === 'G') {
+        if (!email) throw 'Must provide the email';
         email = email.toLowerCase().trim();
         try {
             checkIsEmail(email);
@@ -131,16 +131,16 @@ async function createUser(
             throw String(e);
         }
     } else {
-        if (!firstName) throw "Must provide the first name";
-        if (!lastName) throw "Must provide the last name";
-        if (!email) throw "Must provide the email";
-        if (!username) throw "Must provide the username";
-        if (!password) throw "Must provide the password";
-        if (!phoneNumber) throw "Must provide the phone number";
-        if (!address) throw "Must provide the address";
-        if (!city) throw "Must provide the city";
-        if (!state) throw "Must provide the state";
-        if (!zip) throw "Must provide the zip";
+        if (!firstName) throw 'Must provide the first name';
+        if (!lastName) throw 'Must provide the last name';
+        if (!email) throw 'Must provide the email';
+        if (!username) throw 'Must provide the username';
+        if (!password) throw 'Must provide the password';
+        if (!phoneNumber) throw 'Must provide the phone number';
+        if (!address) throw 'Must provide the address';
+        if (!city) throw 'Must provide the city';
+        if (!state) throw 'Must provide the state';
+        if (!zip) throw 'Must provide the zip';
 
         firstName = firstName.trim();
         lastName = lastName.trim();
@@ -179,11 +179,11 @@ async function createUser(
 
     const userCollection = await users();
 
-    if (await userCollection.findOne({email: email}))
-        throw "Username is taken.";
+    if (await userCollection.findOne({ email: email }))
+        throw 'Username is taken.';
 
     let hash = null;
-    if (flag !== "G") {
+    if (flag !== 'G') {
         hash = await bcrypt.hash(password, saltRounds);
         found = false;
 
@@ -210,13 +210,14 @@ async function createUser(
         bookRenting: [],
         purchasedBooks: [],
         reviews: [],
-        // image: image,
+        wishlist: [],
+        image: image,
     };
 
     const insertInfo = await userCollection
         .insertOne(newUser)
         .catch(function (e) {
-            throw "Username already exists";
+            throw 'Username already exists';
         });
     if (insertInfo.insertedCount === 0) throw `Could not add user`;
 
@@ -224,24 +225,24 @@ async function createUser(
 }
 
 async function getUser(emailId) {
-    console.log("After function call");
+    console.log('After function call');
 
     if (
-        typeof emailId !== "string" ||
+        typeof emailId !== 'string' ||
         emailId.length === 0 ||
-        emailId === " ".repeat(emailId.length)
+        emailId === ' '.repeat(emailId.length)
     )
-        throw "Error: emailId must be a non-empty string.";
+        throw 'Error: emailId must be a non-empty string.';
 
     checkIsEmail(emailId);
 
-    console.log("Before DB call");
+    console.log('Before DB call');
 
     const userCollection = await users();
-    const singleUserId = await userCollection.findOne({email: emailId});
+    const singleUserId = await userCollection.findOne({ email: emailId });
     if (singleUserId === null) return null;
     console.log(singleUserId);
-    return {...singleUserId, _id: singleUserId._id.toString()};
+    return { ...singleUserId, _id: singleUserId._id.toString() };
 }
 
 async function updateUser(
@@ -258,20 +259,20 @@ async function updateUser(
     state,
     zip
 ) {
-    if (!firstName) throw "Must provide the first name";
-    if (!lastName) throw "Must provide the last name";
-    if (!email) throw "Must provide the email";
-    if (!oldEmail) throw "Must provide the email";
-    if (!username) throw "Must provide the username";
-    if (!oldUsername) throw "Must provide the username";
+    if (!firstName) throw 'Must provide the first name';
+    if (!lastName) throw 'Must provide the last name';
+    if (!email) throw 'Must provide the email';
+    if (!oldEmail) throw 'Must provide the email';
+    if (!username) throw 'Must provide the username';
+    if (!oldUsername) throw 'Must provide the username';
 
-    if (!password) throw "Must provide the password";
+    if (!password) throw 'Must provide the password';
 
-    if (!phoneNumber) throw "Must provide the phone number";
-    if (!address) throw "Must provide the address";
-    if (!city) throw "Must provide the city";
-    if (!state) throw "Must provide the state";
-    if (!zip) throw "Must provide the zip";
+    if (!phoneNumber) throw 'Must provide the phone number';
+    if (!address) throw 'Must provide the address';
+    if (!city) throw 'Must provide the city';
+    if (!state) throw 'Must provide the state';
+    if (!zip) throw 'Must provide the zip';
 
     firstName = firstName.trim();
     lastName = lastName.trim();
@@ -317,14 +318,14 @@ async function updateUser(
 
     if (oldEmail !== email) {
         // check if email exists
-        if (await userCollection.findOne({email: email}))
-            throw "Email address is taken.";
+        if (await userCollection.findOne({ email: email }))
+            throw 'Email address is taken.';
     }
 
     if (oldUsername !== username) {
         // check if username exists
-        if (await userCollection.findOne({username: username}))
-            throw "Username is taken.";
+        if (await userCollection.findOne({ username: username }))
+            throw 'Username is taken.';
     }
 
     found = false;
@@ -357,7 +358,7 @@ async function updateUser(
     const insertInfo = await userCollection
         .insertOne(newUser)
         .catch(function (e) {
-            throw "Username already exists";
+            throw 'Username already exists';
         });
     if (insertInfo.insertedCount === 0) throw `Could not add user`;
 
@@ -366,17 +367,17 @@ async function updateUser(
 
 async function getUser(emailId) {
     if (
-        typeof emailId !== "string" ||
+        typeof emailId !== 'string' ||
         emailId.length === 0 ||
-        emailId === " ".repeat(emailId.length)
+        emailId === ' '.repeat(emailId.length)
     )
-        throw "Error: emailId must be a non-empty string.";
+        throw 'Error: emailId must be a non-empty string.';
 
     checkIsEmail(emailId);
     const userCollection = await users();
-    const singleUserId = await userCollection.findOne({email: emailId});
+    const singleUserId = await userCollection.findOne({ email: emailId });
     if (singleUserId === null) return null;
-    return {...singleUserId, _id: singleUserId._id.toString()};
+    return { ...singleUserId, _id: singleUserId._id.toString() };
 }
 
 async function updateUser(
@@ -393,20 +394,20 @@ async function updateUser(
     state,
     zip
 ) {
-    if (!firstName) throw "Must provide the first name";
-    if (!lastName) throw "Must provide the last name";
-    if (!email) throw "Must provide the email";
-    if (!oldEmail) throw "Must provide the email";
-    if (!username) throw "Must provide the username";
-    if (!oldUsername) throw "Must provide the username";
+    if (!firstName) throw 'Must provide the first name';
+    if (!lastName) throw 'Must provide the last name';
+    if (!email) throw 'Must provide the email';
+    if (!oldEmail) throw 'Must provide the email';
+    if (!username) throw 'Must provide the username';
+    if (!oldUsername) throw 'Must provide the username';
 
-    if (!password) throw "Must provide the password";
+    if (!password) throw 'Must provide the password';
 
-    if (!phoneNumber) throw "Must provide the phone number";
-    if (!address) throw "Must provide the address";
-    if (!city) throw "Must provide the city";
-    if (!state) throw "Must provide the state";
-    if (!zip) throw "Must provide the zip";
+    if (!phoneNumber) throw 'Must provide the phone number';
+    if (!address) throw 'Must provide the address';
+    if (!city) throw 'Must provide the city';
+    if (!state) throw 'Must provide the state';
+    if (!zip) throw 'Must provide the zip';
 
     firstName = firstName.trim();
     lastName = lastName.trim();
@@ -452,14 +453,14 @@ async function updateUser(
 
     if (oldEmail !== email) {
         // check if email exists
-        if (await userCollection.findOne({email: email}))
-            throw "Email address is taken.";
+        if (await userCollection.findOne({ email: email }))
+            throw 'Email address is taken.';
     }
 
     if (oldUsername !== username) {
         // check if username exists
-        if (await userCollection.findOne({username: username}))
-            throw "Username is taken.";
+        if (await userCollection.findOne({ username: username }))
+            throw 'Username is taken.';
     }
 
     found = false;
@@ -488,11 +489,11 @@ async function updateUser(
     };
 
     const updateUser = await userCollection.updateOne(
-        {email: oldEmail},
-        {$set: updatedUser}
+        { email: oldEmail },
+        { $set: updatedUser }
     );
 
-    if (updateUser.modifiedCount === 0) throw "User could not be updated";
+    if (updateUser.modifiedCount === 0) throw 'User could not be updated';
     return updateUser;
 }
 
@@ -519,8 +520,8 @@ async function updateUser(
 
 async function checkUser(username, password) {
     // error check
-    if (!username) throw "You must provide a username";
-    if (!password) throw "You must provide a password";
+    if (!username) throw 'You must provide a username';
+    if (!password) throw 'You must provide a password';
 
     username = username.toLowerCase().trim();
 
@@ -535,11 +536,11 @@ async function checkUser(username, password) {
 
     // get user by username or email
     const userCollection = await users();
-    let user = await userCollection.findOne({username: username});
+    let user = await userCollection.findOne({ username: username });
 
     // authenticate user
     if (!user || !bcrypt.compareSync(password, user.password))
-        return {authenticated: false};
+        return { authenticated: false };
 
     return {
         authenticated: true,
@@ -548,7 +549,7 @@ async function checkUser(username, password) {
     };
 }
 function padTo2Digits(num) {
-    return num.toString().padStart(2, "0");
+    return num.toString().padStart(2, '0');
 }
 
 function formatDate(date) {
@@ -556,7 +557,7 @@ function formatDate(date) {
         padTo2Digits(date.getMonth() + 1),
         padTo2Digits(date.getDate()),
         date.getFullYear(),
-    ].join("-");
+    ].join('-');
 }
 
 async function getRentedBooks(userEmail) {
@@ -567,10 +568,10 @@ async function getRentedBooks(userEmail) {
     let todayDate = formatDate(new Date());
     for (let book of rentedBooks) {
         if (book.endDate >= todayDate) {
-            let id = book["_id"].toString();
+            let id = book['_id'].toString();
             const bookDetail = await booksFunctions.getById(id);
-            bookDetail["startDate"] = book.startDate;
-            bookDetail["endDate"] = book.endDate;
+            bookDetail['startDate'] = book.startDate;
+            bookDetail['endDate'] = book.endDate;
             rentedBooksCollection.push(bookDetail);
         }
     }
@@ -579,15 +580,15 @@ async function getRentedBooks(userEmail) {
 }
 
 async function myOrders(emailId) {
-    console.log("Inside my orders function");
+    console.log('Inside my orders function');
 
     let myOrdersArr = [];
     let bookFound;
     const userCollection = await users();
     const booksCollection = await books();
 
-    let user = await userCollection.findOne({email: emailId});
-    if (user === null) throw "No users present with given Email Id";
+    let user = await userCollection.findOne({ email: emailId });
+    if (user === null) throw 'No users present with given Email Id';
 
     console.log(user.purchasedBooks[0]);
 
@@ -605,7 +606,7 @@ async function myOrders(emailId) {
         })
     );
 
-    console.log("D is ", d);
+    console.log('D is ', d);
     // myOrdersArr = d;
     // console.log('Array of book found is ', myOrdersArr);
     return myOrdersArr;

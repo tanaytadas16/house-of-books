@@ -1,13 +1,13 @@
-const mongoCollections = require("../config/mongoCollection");
+const mongoCollections = require('../config/mongoCollection');
 const books = mongoCollections.books;
 const library = mongoCollections.library;
-const {ObjectId} = require("mongodb");
+const { ObjectId } = require('mongodb');
 const users = mongoCollections.users;
 
 function validateStringParams(param, paramName) {
     if (!param) {
         throw `Error: No ${paramName} passed to the function`;
-    } else if (typeof param !== "string") {
+    } else if (typeof param !== 'string') {
         throw `Type Error: Argument ${param} passed is not a string ${paramName}`;
     } else if (param.length === 0) {
         throw `Error: No element present in string ${paramName}`;
@@ -19,7 +19,7 @@ function validateBoolParams(param, paramName) {
     if (!param) {
         throw `Error: No ${paramName} passed to the function`;
     }
-    if (typeof param != "boolean") {
+    if (typeof param != 'boolean') {
         throw `Type Error: Argument ${param} passed is not a boolean ${paramName}`;
     }
 }
@@ -34,7 +34,7 @@ function validateArray(arryparam, arrname) {
 }
 
 function validateNumberParams(param, paramName) {
-    if (typeof param !== "number" || !Number.isInteger(param)) {
+    if (typeof param !== 'number' || !Number.isInteger(param)) {
         throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
     }
     if (param < 0) {
@@ -43,7 +43,7 @@ function validateNumberParams(param, paramName) {
 }
 
 function validateRating(element) {
-    if (element !== 0 && (!element || typeof element !== "number")) {
+    if (element !== 0 && (!element || typeof element !== 'number')) {
         throw `Error : Ratings passed is not a number`;
     }
 
@@ -54,17 +54,17 @@ function validateRating(element) {
 
 function validateObject(objParam) {
     if (!objParam) {
-        throw "Error: Argument serviceOptions not passed to the function";
+        throw 'Error: Argument serviceOptions not passed to the function';
     } else if (
-        typeof objParam !== "object" ||
+        typeof objParam !== 'object' ||
         Array.isArray(objParam) ||
         objParam === null
     ) {
-        throw "Type Error: Argument serviceOptions passed is not an object";
+        throw 'Type Error: Argument serviceOptions passed is not an object';
     } else if (Object.keys(objParam).length === 0) {
-        throw "Error: No element present in object serviceOptions";
+        throw 'Error: No element present in object serviceOptions';
     } else if (Object.keys(objParam).length > 3) {
-        throw "More than 3 options available in serviceOptions";
+        throw 'More than 3 options available in serviceOptions';
     }
 }
 function trimObjectKeys(object) {
@@ -96,7 +96,7 @@ function validatePriceRange(priceRange) {
         throw `Error: Price Range is not in valid range`;
     } else {
         for (let priceChar of priceRange) {
-            if (priceChar !== "$") {
+            if (priceChar !== '$') {
                 throw ` Error : Price Range has invalid characters`;
             }
         }
@@ -106,23 +106,23 @@ function validatePriceRange(priceRange) {
 function validateDate(dateParams) {
     const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
     if (!dateParams.match(validDateFormat)) {
-        throw "date is not in valid format";
+        throw 'date is not in valid format';
     }
 }
 
 async function getById(searchId) {
-    validateStringParams(searchId, "Id");
+    validateStringParams(searchId, 'Id');
     searchId = searchId.trim();
     if (!ObjectId.isValid(searchId)) {
         throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
     }
     let parseId = ObjectId(searchId);
     const booksCollection = await books();
-    const bookFound = await booksCollection.findOne({_id: parseId});
+    const bookFound = await booksCollection.findOne({ _id: parseId });
     if (bookFound === null) {
         throw `No book found with the id ${searchId}`;
     } else {
-        bookFound["_id"] = searchId;
+        bookFound['_id'] = searchId;
     }
     return bookFound;
 }
@@ -139,10 +139,10 @@ async function getAll() {
         return [];
     }
     for (let book of booksList) {
-        let id = book["_id"];
-        book["_id"] = id.toString();
+        let id = book['_id'];
+        book['_id'] = id.toString();
     }
-    console.log(booksList);
+    // console.log(booksList);
     return booksList;
 }
 
@@ -155,15 +155,15 @@ async function getNewAddition() {
 
     const booksList = await booksCollection
         .find({
-            originalPublicationYear: {$gte: 2016},
+            originalPublicationYear: { $gte: 2016 },
         })
         .toArray();
     if (booksList.length === 0) {
         return [];
     }
     for (let book of booksList) {
-        let id = book["_id"];
-        book["_id"] = id.toString();
+        let id = book['_id'];
+        book['_id'] = id.toString();
     }
     console.log(booksList);
     return booksList;
@@ -185,8 +185,8 @@ async function getBooksForRent() {
         return [];
     }
     for (let book of booksList) {
-        let id = book["_id"];
-        book["_id"] = id.toString();
+        let id = book['_id'];
+        book['_id'] = id.toString();
     }
     console.log(booksList);
     return booksList;
@@ -208,21 +208,21 @@ function validateBookCreations(
     popular,
     availableForRent
 ) {
-    validateStringParams(ISBN, "ISBN");
-    validateWebsite(url, "url");
-    validateStringParams(description, "description");
-    validateStringParams(author, "author");
-    validateStringParams(binding, "binding");
-    validateStringParams(genre, "genre");
-    validateStringParams(publisher, "publisher");
-    validateStringParams(title, "title");
-    validateRating(averageRating, "averageRating");
-    validateNumberParams(numberofPages, "numberofPages");
-    validateNumberParams(originalPublicationYear, "originalPublicationYear");
-    validateNumberParams(price, "price");
-    validateNumberParams(yearPublished, "yearPublished");
-    validateBoolParams(popular, "popular");
-    validateBoolParams(availableForRent, "availableForRent");
+    validateStringParams(ISBN, 'ISBN');
+    validateWebsite(url, 'url');
+    validateStringParams(description, 'description');
+    validateStringParams(author, 'author');
+    validateStringParams(binding, 'binding');
+    validateStringParams(genre, 'genre');
+    validateStringParams(publisher, 'publisher');
+    validateStringParams(title, 'title');
+    validateRating(averageRating, 'averageRating');
+    validateNumberParams(numberofPages, 'numberofPages');
+    validateNumberParams(originalPublicationYear, 'originalPublicationYear');
+    validateNumberParams(price, 'price');
+    validateNumberParams(yearPublished, 'yearPublished');
+    validateBoolParams(popular, 'popular');
+    validateBoolParams(availableForRent, 'availableForRent');
 }
 async function addNewBook(
     ISBN,
@@ -285,7 +285,7 @@ async function addNewBook(
     };
     const insertedDatadetails = await booksCollection.insertOne(newBook);
     if (insertedDatadetails.insertedCount === 0) {
-        throw "Book could not be inserted ";
+        throw 'Book could not be inserted ';
     }
 
     const insertedBookId = insertedDatadetails.insertedId.toString();
@@ -295,11 +295,11 @@ async function addNewBook(
     return bookDetails;
 }
 function validateCreations(email, bookId, startDate, endDate, rentedFlag) {
-    validateStringParams(email, "email");
-    validateStringParams(bookId, "bookId");
-    validateBoolParams(rentedFlag, "rentedFlag");
-    validateStringParams(startDate, "startDate");
-    validateStringParams(endDate, "endDate");
+    validateStringParams(email, 'email');
+    validateStringParams(bookId, 'bookId');
+    validateBoolParams(rentedFlag, 'rentedFlag');
+    validateStringParams(startDate, 'startDate');
+    validateStringParams(endDate, 'endDate');
     validateDate(startDate);
     validateDate(endDate);
 }
@@ -318,7 +318,7 @@ async function addRentedBook(email, bookId, startDate, endDate, rentedFlag) {
     };
     const insertedDatadetails = await libraryCollection.insertOne(newBook);
     if (insertedDatadetails.insertedCount === 0) {
-        throw "Book could not be inserted to rent";
+        throw 'Book could not be inserted to rent';
     }
 
     const insertedBookId = insertedDatadetails.insertedId.toString();
@@ -340,8 +340,8 @@ async function addRentedBook(email, bookId, startDate, endDate, rentedFlag) {
     };
 
     const booksArrUpdated = await userCollection.updateOne(
-        {email: email},
-        {$push: {bookRenting: newRentedBook}}
+        { email: email },
+        { $push: { bookRenting: newRentedBook } }
     );
     if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
         throw `Could not add rented book to the user db.`;
@@ -350,25 +350,25 @@ async function addRentedBook(email, bookId, startDate, endDate, rentedFlag) {
 }
 
 async function getRentedBookById(searchId) {
-    validateStringParams(searchId, "Id");
+    validateStringParams(searchId, 'Id');
     searchId = searchId.trim();
     if (!ObjectId.isValid(searchId)) {
         throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
     }
     let parseId = ObjectId(searchId);
     const libraryCollection = await library();
-    const bookFound = await libraryCollection.findOne({_id: parseId});
+    const bookFound = await libraryCollection.findOne({ _id: parseId });
     if (bookFound === null) {
         throw `No book found with the id ${searchId}`;
     } else {
-        bookFound["_id"] = searchId;
+        bookFound['_id'] = searchId;
     }
     return bookFound;
 }
 
 async function buyBook(customerId, bookId, quantity, totalPrice) {
     //   validateCreations(customerId, bookId);
-    console.log("Inside buybook function");
+    console.log('Inside buybook function');
     customerId = customerId.trim();
     bookId = bookId.trim();
 
@@ -387,8 +387,8 @@ async function buyBook(customerId, bookId, quantity, totalPrice) {
     };
 
     const booksArrUpdated = await userCollection.updateOne(
-        {_id: ObjectId(customerId)},
-        {$push: {purchasedBooks: newBook}}
+        { _id: ObjectId(customerId) },
+        { $push: { purchasedBooks: newBook } }
     );
     if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
         throw `Could not add purchased book to the user db.`;
@@ -413,8 +413,8 @@ async function getMostPopular() {
         return [];
     }
     for (let book of booksList) {
-        let id = book["_id"];
-        book["_id"] = id.toString();
+        let id = book['_id'];
+        book['_id'] = id.toString();
     }
     console.log(booksList);
     return booksList;
