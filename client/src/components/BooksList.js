@@ -92,14 +92,11 @@ const BooksList = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (customerId, title, bookId, quantity, price, imageUrl) => {
+  const buyBook = (title, bookId, quantity, price, imageUrl) => {
     price = parseFloat(price);
-    console.log(isNaN(price));
     let todayDate = formatDate(new Date());
-    console.log(todayDate);
-    console.log(customerId, bookId);
     let dataBody = {
-      customerId: customerId,
+      email: user.email,
       name: title,
       bookId: bookId,
       price: isNaN(price) ? getRandomFloat(20) : price,
@@ -158,14 +155,7 @@ const BooksList = () => {
               type='button'
               className='button'
               onClick={() =>
-                buyBook(
-                  '627161da17f0455539944549',
-                  book.title,
-                  book._id,
-                  1,
-                  book.price,
-                  book.url
-                )
+                buyBook(book.title, book._id, 1, book.price, book.url)
               }
             >
               Buy
