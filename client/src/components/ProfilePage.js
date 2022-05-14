@@ -14,7 +14,6 @@ const ProfilePage = () => {
     const [oldUsername, setOldUsername] = useState(undefined);
 
     const { currentUser } = useContext(UserContext);
-    console.log('Current user is ', currentUser.email);
 
     useEffect(() => {
         console.log('useEffect fired');
