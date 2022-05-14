@@ -236,7 +236,7 @@ router.post("/signup", async (req, res) => {
             state,
             zip,
             flag,
-            "/server/imgs/" + email + ".png"
+            "/img/" + email + ".png"
         );
         res.status(200).json(newUser);
     } catch (e) {

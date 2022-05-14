@@ -1,8 +1,10 @@
 var fs = require("fs"),
-    gm = require("gm");
+    gm = require("gm"),
+    path = require("path");
 
-var dir = __dirname + "/imgs/";
+var dir = path.join(__dirname, "../client/src/img/");
 function createImage(text, email) {
+    console.log(dir);
     gm(150, 100, "#84defaaa")
         .fontSize(68)
         .stroke("#efe", 3)
