@@ -147,7 +147,6 @@ async function getBooksForRent() {
         let id = book["_id"];
         book["_id"] = id.toString();
     }
-    console.log(booksList);
     return booksList;
 }
 function validateBookCreations(
@@ -256,6 +255,9 @@ async function addNewBook(
 function validateCreations(email, bookId, startDate, endDate, flag) {
     validateEmail(email);
     validateStringParams(bookId, "bookId");
+    if (!ObjectId.isValid(bookId)) {
+        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+    }
     validateStringParams(flag, "flag");
     validateStringParams(startDate, "startDate");
     validateStringParams(endDate, "endDate");
@@ -283,7 +285,6 @@ async function addRentedBook(email, bookId, startDate, endDate, flag) {
     const insertedBookId = insertedDatadetails.insertedId.toString();
 
     const bookDetails = await getRentedBookById(insertedBookId);
-    console.log(bookDetails);
 
     const userCollection = await users();
 
