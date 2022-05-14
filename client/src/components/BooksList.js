@@ -57,10 +57,6 @@ const BooksList = () => {
   const user = auth.currentUser;
   let card = null;
 
-  const getRandomFloat = (max) => {
-    return (Math.random() * max).toFixed(2);
-  };
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -98,7 +94,7 @@ const BooksList = () => {
       email: user.email,
       name: title,
       bookId: bookId,
-      price: isNaN(price) ? getRandomFloat(20) : price,
+      price: price,
       quantity: quantity,
       totalPrice: quantity * price,
       imageUrl: imageUrl,
