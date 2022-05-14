@@ -164,7 +164,7 @@ router.post('/purchase', async (req, res) => {
     return e.message;
   }
 });
-/////////////////////////////////////////////////////////////////////////////  tanay code starts
+
 router.get('/genres', async (request, response) => {
   try {
     restrictRequestQuery(request, response);
@@ -191,5 +191,5 @@ const restrictRequestQuery = (request, response) => {
     throw { code: 400, message: 'Request query not allowed.' };
   }
 };
-//////////////////////////////////////////////////////////////////////////////  tanay code ends
+
 module.exports = router;

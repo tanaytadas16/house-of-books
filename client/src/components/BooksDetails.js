@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
   makeStyles,
   Card,
@@ -55,8 +56,13 @@ const BookDetails = (props) => {
   const { review, rating } = reviewDetails;
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
+  const user = auth.currentUser;
   let { id } = useParams();
   const history = useNavigate();
+
+  const getRandomFloat = (max) => {
+    return (Math.random() * max).toFixed(2);
+  };
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -99,15 +105,19 @@ const BookDetails = (props) => {
         date
     );
   }
-  const buyBook = (customerId, bookId, quantity, price) => {
+  const buyBook = (title, bookId, quantity, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     console.log(todayDate);
     console.log(customerId, bookId);
     let dataBody = {
-      customerId: customerId,
+      email: user.email,
+      name: title,
+      price: isNaN(price) ? getRandomFloat(20) : price,
       bookId: bookId,
       quantity: quantity,
       totalPrice: quantity * price,
+      imageUrl: imageUrl,
+      flag: 'B',
     };
     axios
       .post('https://houseof-books.herokuapp.com/books/purchase', {
@@ -119,16 +129,21 @@ const BookDetails = (props) => {
       });
   };
 
-  const rentBook = (customerId, bookId) => {
+  const rentBook = (title, bookId, quantity, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     let endDate = formatDateNextMonth(new Date());
     console.log(todayDate);
     let dataBody = {
-      customerId: customerId,
+      email: user.email,
+      name: title,
+      price: isNaN(price) ? getRandomFloat(20) : price,
       bookId: bookId,
+      quantity: quantity,
+      totalPrice: quantity * price,
+      imageUrl: imageUrl,
+      flag: 'B',
       startDate: todayDate,
       endDate: endDate,
-      rentedFlag: true,
     };
     axios
       .post('https://houseof-books.herokuapp.com/library', {
@@ -136,7 +151,6 @@ const BookDetails = (props) => {
       })
       .then(function (response) {
         console.log(response.data);
-        alertFunc(endDate);
         history('/', { replace: true }); //to be changed to cart
       });
   };
@@ -318,10 +332,11 @@ const BookDetails = (props) => {
               className='button'
               onClick={() =>
                 buyBook(
-                  '627161da17f0455539944549',
+                  bookDetailsData.title,
                   bookDetailsData._id,
-                  2,
-                  bookDetailsData.price
+                  1,
+                  bookDetailsData.price,
+                  bookDetailsData.url
                 )
               }
             >
@@ -332,7 +347,13 @@ const BookDetails = (props) => {
             <button
               className='button'
               onClick={() =>
-                rentBook('627161da17f0455539944549', bookDetailsData._id)
+                rentBook(
+                  bookDetailsData.title,
+                  bookDetailsData._id,
+                  1,
+                  bookDetailsData.price,
+                  bookDetailsData.url
+                )
               }
             >
               Rent

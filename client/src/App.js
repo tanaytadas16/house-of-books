@@ -10,6 +10,8 @@ import RecentBooks from './components/RecentBooks';
 import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
 import ProfilePage from './components/ProfilePage';
+import Checkout from './components/Checkout';
+import RentedBooks from './components/RentedBooks';
 import './App.css';
 import MyOrders from './components/MyOrders';
 
@@ -29,6 +31,8 @@ const App = () => {
         <Route exact path='/books/recents' element={<RecentBooks />} />
         <Route exact path='/users/profile' element={<ProfilePage />} />
         <Route exact path='/users/myOrders' element={<MyOrders />} />
+        <Route path='/checkout' element={<Checkout />} />
+        <Route exact path='/users/rentedbooks' element={<RentedBooks />} />
       </Routes>
     </div>
   );

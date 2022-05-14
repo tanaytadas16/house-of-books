@@ -81,6 +81,27 @@ function checkIsUsername(s) {
   if (s.length < 4) throw 'Given username size is less than 4';
 }
 
+router.get('/rentedbooks/:email', async (req, res) => {
+  try {
+    console.log('got request', req.params.email);
+    checkIsString(req.params.email);
+    req.params.email = req.params.email.trim();
+    if (!req.params.email) throw 'must provide user email';
+  } catch (e) {
+    res.status(400).send(String(e));
+    return;
+  }
+  try {
+    req.params.email = req.params.email.trim();
+    let rentedBooks = await userData.getRentedBooks(req.params.email);
+    console.log(rentedBooks);
+    res.status(200).json(rentedBooks);
+  } catch (e) {
+    res.status(500).send(String(e));
+    return;
+  }
+});
+
 router.post('/profile', async (req, res) => {
   // error check
   try {
@@ -144,7 +165,6 @@ router.post('/signup', async (req, res) => {
       return res.status(400).send(String(e));
     }
   } else {
-    console.log('Inside else of sign up');
     if (
       !(
         firstName &&
@@ -217,8 +237,7 @@ router.post('/signup', async (req, res) => {
     );
     res.status(200).json(newUser);
   } catch (e) {
-    console.log(e);
-    return res.status(500).json({ error: e });
+    return res.status(500).send(String(e));
   }
 });
 

@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebase';
+import React, { useState, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
   makeStyles,
   Card,
@@ -50,10 +53,13 @@ const BooksList = () => {
   const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
-  let card = null;
-  const history = useNavigate();
-
   const { currentUser } = useContext(UserContext);
+  const user = auth.currentUser;
+  let card = null;
+
+  const getRandomFloat = (max) => {
+    return (Math.random() * max).toFixed(2);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -69,7 +75,7 @@ const BooksList = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -81,29 +87,24 @@ const BooksList = () => {
       date.getFullYear(),
     ].join('-');
   }
-  const buyBook = (email, bookId, quantity, price) => {
-    if (currentUser.email) {
-      let todayDate = formatDate(new Date());
-      console.log(todayDate);
-      console.log(email, bookId);
-      let dataBody = {
-        email: email,
-        bookId: bookId,
-        quantity: quantity,
-        totalPrice: quantity * price,
-      };
-      axios
-        .post('http://localhost:4000/books/purchase', {
-          data: dataBody,
-        })
-        .then(function (response) {
-          console.log(response.data);
-          history('/', { replace: true }); //to be changed to cart
-        });
-    } else {
-      alert('Please sign to buy the book');
-      return;
-    }
+
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+
+  const buyBook = (title, bookId, quantity, price, imageUrl) => {
+    price = parseFloat(price);
+    let todayDate = formatDate(new Date());
+    let dataBody = {
+      email: user.email,
+      name: title,
+      bookId: bookId,
+      price: isNaN(price) ? getRandomFloat(20) : price,
+      quantity: quantity,
+      totalPrice: quantity * price,
+      imageUrl: imageUrl,
+      flag: 'B',
+    };
+    dispatch(addItemToCart(cartItems, dataBody));
   };
 
   const buildCard = (book) => {
@@ -147,19 +148,17 @@ const BooksList = () => {
               </CardContent>
             </Link>
           </CardActionArea>
-          <button
-            type='button'
-            className='button'
-            onClick={() => {
-              if (auth.currentUser) {
-                buyBook(auth.currentUser.email, book._id, 2, book.price);
-              } else {
-                alert('You need to sign in first to buy the book');
+          {user && (
+            <button
+              type='button'
+              className='button'
+              onClick={() =>
+                buyBook(book.title, book._id, 1, book.price, book.url)
               }
-            }}
-          >
-            Buy
-          </button>
+            >
+              Buy
+            </button>
+          )}
         </Card>
       </Grid>
     );
@@ -193,5 +192,4 @@ const BooksList = () => {
     );
   }
 };
-
 export default BooksList;

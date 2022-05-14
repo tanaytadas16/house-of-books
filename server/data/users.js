@@ -224,6 +224,141 @@ async function createUser(
 }
 
 async function getUser(emailId) {
+  console.log('After function call');
+
+  if (
+    typeof emailId !== 'string' ||
+    emailId.length === 0 ||
+    emailId === ' '.repeat(emailId.length)
+  )
+    throw 'Error: emailId must be a non-empty string.';
+
+  checkIsEmail(emailId);
+
+  console.log('Before DB call');
+
+  const userCollection = await users();
+  const singleUserId = await userCollection.findOne({ email: emailId });
+  if (singleUserId === null) return null;
+  console.log(singleUserId);
+  return { ...singleUserId, _id: singleUserId._id.toString() };
+}
+
+async function updateUser(
+  firstName,
+  lastName,
+  email,
+  oldEmail,
+  phoneNumber,
+  username,
+  oldUsername,
+  password,
+  address,
+  city,
+  state,
+  zip
+) {
+  if (!firstName) throw 'Must provide the first name';
+  if (!lastName) throw 'Must provide the last name';
+  if (!email) throw 'Must provide the email';
+  if (!username) throw 'Must provide the username';
+
+  if (!password) throw 'Must provide the password';
+
+  if (!phoneNumber) throw 'Must provide the phone number';
+  if (!address) throw 'Must provide the address';
+  if (!city) throw 'Must provide the city';
+  if (!state) throw 'Must provide the state';
+  if (!zip) throw 'Must provide the zip';
+
+  firstName = firstName.trim();
+  lastName = lastName.trim();
+  email = email.toLowerCase().trim();
+  username = username.toLowerCase().trim();
+  password = password.trim();
+  phoneNumber = phoneNumber.trim();
+  address = address.trim();
+  city = city.trim();
+  state = state.trim();
+  zip = zip.trim();
+
+  try {
+    checkIsString(firstName);
+    checkIsString(lastName);
+    checkIsString(email);
+    checkIsString(username);
+    checkIsString(password);
+
+    checkIsString(address);
+    checkIsString(city);
+    checkIsString(state);
+    checkIsString(zip);
+    checkZip(zip);
+
+    checkIsName(firstName);
+    checkIsName(lastName);
+
+    checkIsEmail(email);
+
+    checkPhoneNumber(phoneNumber);
+    checkIsUsername(username);
+    checkIsPassword(password);
+  } catch (e) {
+    throw String(e);
+  }
+
+  const userCollection = await users();
+
+  if (oldEmail !== email) {
+    // check if email exists
+    if (await userCollection.findOne({ email: email }))
+      throw 'Email address is taken.';
+  }
+
+  if (oldUsername !== username) {
+    // check if username exists
+    if (await userCollection.findOne({ username: username }))
+      throw 'Username is taken.';
+  }
+
+  found = false;
+
+  for (let i = 0; i < stateList.length; i++) {
+    if (state == stateList[i]) found = true;
+  }
+
+  if (found == false) {
+    throw `State not found`;
+  }
+
+  let newUser = {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    phoneNumber: phoneNumber,
+    username: username,
+    password: hash,
+    address: address,
+    city: city,
+    state: state,
+    zip: zip,
+    bookRenting: [],
+    purchasedBooks: [],
+    reviews: [],
+    // image: image,
+  };
+
+  const insertInfo = await userCollection
+    .insertOne(newUser)
+    .catch(function (e) {
+      throw 'Username already exists';
+    });
+  if (insertInfo.insertedCount === 0) throw `Could not add user`;
+
+  return insertInfo.insertedId.toString();
+}
+
+async function getUser(emailId) {
   if (
     typeof emailId !== 'string' ||
     emailId.length === 0 ||
@@ -400,6 +535,36 @@ async function checkUser(username, password) {
     username: username,
   };
 }
+function padTo2Digits(num) {
+  return num.toString().padStart(2, '0');
+}
+
+function formatDate(date) {
+  return [
+    padTo2Digits(date.getMonth() + 1),
+    padTo2Digits(date.getDate()),
+    date.getFullYear(),
+  ].join('-');
+}
+
+async function getRentedBooks(userEmail) {
+  const userCollection = await users();
+  let user = await getUser(userEmail);
+  let rentedBooks = user.bookRenting;
+  let rentedBooksCollection = [];
+  let todayDate = formatDate(new Date());
+  for (let book of rentedBooks) {
+    if (book.endDate >= todayDate) {
+      let id = book['_id'].toString();
+      const bookDetail = await booksFunctions.getById(id);
+      bookDetail['startDate'] = book.startDate;
+      bookDetail['endDate'] = book.endDate;
+      rentedBooksCollection.push(bookDetail);
+    }
+  }
+  console.log(rentedBooksCollection);
+  return rentedBooksCollection;
+}
 
 async function myOrders(emailId) {
   let myOrdersArr = [];
@@ -429,4 +594,11 @@ async function myOrders(emailId) {
   return myOrdersArr;
 }
 
-module.exports = { createUser, getUser, updateUser, checkUser, myOrders };
+module.exports = {
+  createUser,
+  getUser,
+  updateUser,
+  checkUser,
+  myOrders,
+  getRentedBooks,
+};

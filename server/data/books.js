@@ -294,33 +294,27 @@ async function addNewBook(
   console.log(bookDetails);
   return bookDetails;
 }
-function validateCreations(customerId, bookId, startDate, endDate, rentedFlag) {
-  validateStringParams(customerId, 'customerId');
+function validateCreations(email, bookId, startDate, endDate, flag) {
+  validateStringParams(email, 'email');
   validateStringParams(bookId, 'bookId');
-  validateBoolParams(rentedFlag, 'rentedFlag');
+  validateBoolParams(flag, 'flag');
   validateStringParams(startDate, 'startDate');
   validateStringParams(endDate, 'endDate');
   validateDate(startDate);
   validateDate(endDate);
 }
 
-async function addRentedBook(
-  customerId,
-  bookId,
-  startDate,
-  endDate,
-  rentedFlag
-) {
-  validateCreations(customerId, bookId, startDate, endDate, rentedFlag);
-  customerId = customerId.trim();
+async function addRentedBook(email, bookId, startDate, endDate, flag) {
+  validateCreations(email, bookId, startDate, endDate, flag);
+  email = email.trim();
   bookId = bookId.trim();
   const libraryCollection = await library();
   let newBook = {
-    customerId: customerId,
+    email: email,
     bookId: bookId,
     startDate: startDate,
     endDate: endDate,
-    rentedFlag: rentedFlag,
+    flag: flag,
   };
   const insertedDatadetails = await libraryCollection.insertOne(newBook);
   if (insertedDatadetails.insertedCount === 0) {
@@ -335,9 +329,9 @@ async function addRentedBook(
   const userCollection = await users();
 
   let constUserId = await userCollection.findOne({
-    _id: ObjectId(customerId),
+    email: email,
   });
-  if (constUserId === null) throw `No user with that id.`;
+  if (constUserId === null) throw `No user with that email.`;
 
   const newRentedBook = {
     _id: ObjectId(bookId),
@@ -346,7 +340,7 @@ async function addRentedBook(
   };
 
   const booksArrUpdated = await userCollection.updateOne(
-    { _id: ObjectId(customerId) },
+    { email: email },
     { $push: { bookRenting: newRentedBook } }
   );
   if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
@@ -375,7 +369,6 @@ async function getRentedBookById(searchId) {
 async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
   //   validateCreations(customerId, bookId);
   console.log('Inside buybook function');
-  console.log(email);
   email = email.trim();
   bookId = bookId.trim();
 
