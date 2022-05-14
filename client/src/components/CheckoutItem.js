@@ -28,14 +28,14 @@ const CheckoutItem = ({ cartItem }) => {
       <span className='base-span'>{name}</span>
       <span className='quantity'>
         <span className='arrow' onClick={removeItemHandler}>
-          &#10094;
+          -
         </span>
         <span className='value'>{quantity}</span>
         <span className='arrow' onClick={addItemHandler}>
-          &#10095;
+          +
         </span>
       </span>
-      <span className='base-span'>{price}</span>
+      <span className='base-span'>{quantity * price}</span>
       <div className='remove-button' onClick={clearItemHandler}>
         &#10005;
       </div>
