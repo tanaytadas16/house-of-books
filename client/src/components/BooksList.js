@@ -89,7 +89,6 @@ const BooksList = () => {
 
   const buyBook = (title, bookId, quantity, price, imageUrl) => {
     price = parseFloat(price);
-    let todayDate = formatDate(new Date());
     let dataBody = {
       email: user.email,
       name: title,
@@ -149,7 +148,13 @@ const BooksList = () => {
               type='button'
               className='button'
               onClick={() =>
-                buyBook(book.title, book._id, 1, book.price, book.url)
+                buyBook(
+                  auth.currentUser.email,
+                  book._id,
+                  cartItems.quantity,
+                  book.price,
+                  book.url
+                )
               }
             >
               Buy
