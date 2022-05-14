@@ -6,6 +6,7 @@ import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import { getAuth, updateEmail } from 'firebase/auth';
 import '../styles/Signup.scss';
+import { auth } from '../firebase/firebase';
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(undefined);
@@ -31,7 +32,7 @@ const ProfilePage = () => {
         setLoading(false);
       } catch (e) {
         setError(true);
-        console.log(e);
+        // console.log(e);
       }
     }
     fetchData();
@@ -96,6 +97,12 @@ const ProfilePage = () => {
       return (
         <div>
           <h2>No User found, Please sign in</h2>
+        </div>
+      );
+    } else if (!auth.currentUser) {
+      return (
+        <div>
+          <h2>Please sign in to view the profile page</h2>
         </div>
       );
     } else {

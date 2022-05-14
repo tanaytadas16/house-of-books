@@ -67,7 +67,6 @@ const BooksList = () => {
         setLoading(false);
       } catch (e) {
         setError(true);
-
         console.log(e);
       }
     }
@@ -116,7 +115,6 @@ const BooksList = () => {
                 image={book.url ? book.url : noImage}
                 title='book image'
               />
-
               <CardContent>
                 <Typography
                   variant='body2'

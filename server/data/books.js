@@ -366,7 +366,7 @@ async function getRentedBookById(searchId) {
   return bookFound;
 }
 
-async function buyBook(email, bookId, quantity, totalPrice) {
+async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
   //   validateCreations(customerId, bookId);
   console.log('Inside buybook function');
   email = email.trim();
@@ -376,7 +376,7 @@ async function buyBook(email, bookId, quantity, totalPrice) {
   const userCollection = await users();
 
   let constUserId = await userCollection.findOne({
-    _id: ObjectId(customerId),
+    email: email,
   });
   if (constUserId === null) throw `No user with that id.`;
 
@@ -384,16 +384,16 @@ async function buyBook(email, bookId, quantity, totalPrice) {
     _id: ObjectId(bookId),
     quantity: quantity,
     totalPrice: totalPrice,
+    dateOfPurchase: dateOfPurchase,
   };
 
   const booksArrUpdated = await userCollection.updateOne(
-    { _id: ObjectId(customerId) },
+    { email: email },
     { $push: { purchasedBooks: newBook } }
   );
   if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
     throw `Could not add purchased book to the user db.`;
   }
-
   return newBook;
 }
 
@@ -402,8 +402,8 @@ async function getMostPopular() {
   if (len > 0) {
     throw `Error: getAll does not accept arguments`;
   }
-  const booksCollection = await books();
 
+  const booksCollection = await books();
   const booksList = await booksCollection
     .find({
       popular: true,

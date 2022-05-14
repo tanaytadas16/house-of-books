@@ -140,11 +140,21 @@ router.post('/purchase', async (req, res) => {
     return;
   }
   try {
+    const currentDate = new Date();
+    const dateOfPurchase =
+      currentDate.getMonth() +
+      1 +
+      '/' +
+      currentDate.getDate() +
+      '/' +
+      currentDate.getFullYear();
+
     let books = await booksData.buyBook(
       bookToBePurchased.email,
       bookToBePurchased.bookId,
       bookToBePurchased.quantity,
-      bookToBePurchased.totalPrice
+      bookToBePurchased.totalPrice,
+      dateOfPurchase.trim()
     );
     res.status(200).json(books);
     return books;

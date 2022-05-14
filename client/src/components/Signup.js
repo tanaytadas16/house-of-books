@@ -87,7 +87,7 @@ const Signup = () => {
       })
       .then(function (response) {
         console.log(response.data);
-        history('/', { replace: true }); //to be changed to cart
+        history('/', { replace: true });
       });
   };
 
