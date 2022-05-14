@@ -5,6 +5,7 @@ import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import '../styles/Signup.scss';
+import { auth } from '../firebase/firebase';
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(undefined);
@@ -14,8 +15,9 @@ const ProfilePage = () => {
   const [oldUsername, setOldUsername] = useState(undefined);
 
   const { currentUser } = useContext(UserContext);
-  console.log('Current user is ', currentUser.email);
-
+  const user = auth.currentUser;
+  console.log('Current user is ', user);
+  console.log('context user is ', currentUser);
   useEffect(() => {
     console.log('useEffect fired');
     async function fetchData() {
@@ -30,7 +32,7 @@ const ProfilePage = () => {
         setLoading(false);
       } catch (e) {
         setError(true);
-        console.log(e);
+        // console.log(e);
       }
     }
     fetchData();
@@ -83,6 +85,12 @@ const ProfilePage = () => {
       return (
         <div>
           <h2>No User found, Please sign in</h2>
+        </div>
+      );
+    } else if (!auth.currentUser) {
+      return (
+        <div>
+          <h2>Please sign in to view the profile page</h2>
         </div>
       );
     } else {

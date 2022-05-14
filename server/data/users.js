@@ -255,9 +255,7 @@ async function updateUser(
   if (!firstName) throw 'Must provide the first name';
   if (!lastName) throw 'Must provide the last name';
   if (!email) throw 'Must provide the email';
-  if (!oldEmail) throw 'Must provide the email';
   if (!username) throw 'Must provide the username';
-  if (!oldUsername) throw 'Must provide the username';
 
   if (!password) throw 'Must provide the password';
 
@@ -270,9 +268,7 @@ async function updateUser(
   firstName = firstName.trim();
   lastName = lastName.trim();
   email = email.toLowerCase().trim();
-  oldEmail = oldEmail.toLowerCase().trim();
   username = username.toLowerCase().trim();
-  oldUsername = oldUsername.toLowerCase().trim();
   password = password.trim();
   phoneNumber = phoneNumber.trim();
   address = address.trim();
@@ -285,7 +281,6 @@ async function updateUser(
     checkIsString(lastName);
     checkIsString(email);
     checkIsString(username);
-    checkIsString(oldUsername);
     checkIsString(password);
 
     checkIsString(address);
@@ -298,7 +293,6 @@ async function updateUser(
     checkIsName(lastName);
 
     checkIsEmail(email);
-    checkIsEmail(oldEmail);
 
     checkPhoneNumber(phoneNumber);
     checkIsUsername(username);

@@ -290,10 +290,8 @@ router.put('/profile', async (req, res) => {
     if (!firstName) throw 'Must provide the first name';
     if (!lastName) throw 'Must provide the last name';
     if (!email) throw 'Must provide the email';
-    if (!oldEmail) throw 'Must provide the email';
 
     if (!username) throw 'Must provide the username';
-    if (!oldUsername) throw 'Must provide the username';
     if (!password) throw 'Must provide the password';
     if (!phoneNumber) throw 'Must provide the phone number';
     if (!address) throw 'Must provide the address';
@@ -305,7 +303,6 @@ router.put('/profile', async (req, res) => {
     checkIsString(lastName);
     checkIsString(email);
     checkIsString(username);
-    checkIsString(oldUsername);
     checkIsString(password);
 
     checkIsString(address);
@@ -317,7 +314,6 @@ router.put('/profile', async (req, res) => {
     checkIsName(lastName);
 
     checkIsEmail(email);
-    checkIsEmail(oldEmail);
 
     checkIsUsername(username);
     checkIsPassword(password);
@@ -342,6 +338,7 @@ router.put('/profile', async (req, res) => {
     );
     res.status(200).json(updatedUser);
   } catch (e) {
+    console.log(e);
     res.status(500).send(String(e));
   }
 });
