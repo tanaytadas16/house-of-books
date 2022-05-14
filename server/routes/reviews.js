@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const booksData = require('../data/books');
 const reviewData = require('../data/reviews');
+const usersData = require('../data/users');
 const errorCheck = require('../data/errorCheck');
 
 router.get('/:id', async (req, res) => {
@@ -46,8 +47,8 @@ router.get('/bookreviews/:id', async (req, res) => {
   }
 });
 
-router.post('/:id', async (req, res) => {
-  let reviewInfo = req.body;
+router.post('/review', async (req, res) => {
+  let reviewInfo = req.body.data;
 
   const currentDate = new Date();
   const dateOfReview =
@@ -61,7 +62,7 @@ router.post('/:id', async (req, res) => {
   console.log(dateOfReview);
   reviewInfo.rating = parseInt(reviewInfo.rating);
 
-  if (!errorCheck.checkId(req.params.id.trim())) {
+  if (!errorCheck.checkId(reviewInfo.bookId.trim())) {
     res.status(400).json({ error: 'You must supply a valid Book Id' });
     return;
   }
@@ -85,25 +86,32 @@ router.post('/:id', async (req, res) => {
   }
 
   try {
-    await booksData.getById(req.params.id);
+    await booksData.getById(reviewInfo.bookId);
   } catch (e) {
     console.log(e);
     res.status(404).json({ error: 'Book not found' });
     return;
   }
 
+  console.log(reviewInfo.email.trim());
+  const user = await usersData.getUser(reviewInfo.email.trim());
+  if (user === null) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  console.log('After first try');
+  console.log(user);
   try {
     const newReview = await reviewData.createReview(
-      req.params.id,
-      reviewInfo.userId.trim(),
+      reviewInfo.bookId,
+      reviewInfo.email.trim(),
       reviewInfo.rating,
       dateOfReview.trim(),
       reviewInfo.comment.trim(),
-      reviewInfo.username.trim()
+      user.username.trim()
     );
     res.status(200).json(newReview);
-    // const redirectUrl = '/books/' + req.params.id;
-    // res.redirect(redirectUrl);
   } catch (e) {
     console.log(e);
     res.status(500).json({ error: e });
@@ -125,7 +133,7 @@ router.get('/editReview/:id', async (req, res) => {
 });
 
 router.put('/updateReview/', async (req, res) => {
-  let updateReviewInfo = req.body;
+  let updateReviewInfo = req.body.data;
   updateReviewInfo.rating = parseInt(updateReviewInfo.rating);
 
   if (!errorCheck.checkId(updateReviewInfo.reviewId.trim())) {
@@ -161,21 +169,23 @@ router.put('/updateReview/', async (req, res) => {
   }
 });
 
-router.delete('/deleteReview/:id', async (req, res) => {
-  if (!errorCheck.checkId(req.params.id.trim())) {
+router.delete('/deleteReview/:reviewId', async (req, res) => {
+  console.log(req.params.reviewId);
+  // const { reviewId } = req.body.data;
+  if (!errorCheck.checkId(req.params.reviewId.trim())) {
     res.status(400).json({ error: 'You must supply a valid Book Id' });
     return;
   }
 
   try {
-    await reviewData.getReview(req.params.id);
+    await reviewData.getReview(req.params.reviewId);
   } catch (e) {
+    console.log(e);
     res.status(404).json({ error: 'Review not found' });
     return;
   }
   try {
-    const deletedReview = await reviewData.removeReview(req.params.id);
-    // res.redirect('/books/' + deletedReview.bookId);
+    const deletedReview = await reviewData.removeReview(req.params.reviewId);
     res.status(200).json(deletedReview);
   } catch (e) {
     console.log(e);

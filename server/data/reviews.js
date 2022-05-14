@@ -17,14 +17,13 @@ const updateRating = (checkBook, rating) => {
 
 async function createReview(
   bookId,
-  userId,
+  email,
   rating,
   dateOfReview,
   comment,
   username
 ) {
   if (!errorCheck.checkId(bookId)) throw 'Book Id is not a valid input';
-  if (!errorCheck.checkId(userId)) throw 'userId is not a valid input';
   if (!errorCheck.checkRating(rating)) throw 'Rating is not a valid input';
   if (!errorCheck.checkString(comment)) throw 'Comment is not a valid input';
   if (!errorCheck.checkDate(dateOfReview))
@@ -32,7 +31,7 @@ async function createReview(
   if (!errorCheck.checkString(comment)) throw 'Username is not a valid input';
 
   const userCollection = await users();
-  const userData = await userCollection.findOne({ _id: ObjectId(userId) });
+  const userData = await userCollection.findOne({ email: email });
 
   if (userData === null) throw 'User does not exist';
 
@@ -48,7 +47,7 @@ async function createReview(
   const newReview = {
     _id: new ObjectId(),
     bookId: bookId,
-    userId: userId,
+    email: email,
     rating: rating,
     dateOfReview: dateOfReview,
     comment: comment,
@@ -67,7 +66,7 @@ async function createReview(
     throw 'Creating reviews have been failed';
 
   const userUpdate = await userCollection.updateOne(
-    { _id: ObjectId(userId) },
+    { email: email },
     { $push: { reviews: newReview } }
   );
 
@@ -98,7 +97,7 @@ async function getReview(reviewId) {
         resultData = {
           _id: data._id,
           bookId: data.bookId,
-          userId: data.userId,
+          email: data.email,
           rating: data.rating,
           dateOfReview: data.dateOfReview,
           comment: data.comment,
