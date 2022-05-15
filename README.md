@@ -92,3 +92,12 @@ View your previous orders at:
 http://localhost:3000/users/myOrders
 
 You can view details of a book by clicking on that particular book
+
+Search any book at:
+http://localhost:3000/books/search
+
+View the books in your wishlist:
+http://localhost:3000/users/bookshelf
+
+You can checkout the order:
+http://localhost:3000/checkout
