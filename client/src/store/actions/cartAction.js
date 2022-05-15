@@ -9,12 +9,23 @@ const addCartItem = (cartItems, productToAdd) => {
   if (existingCartItem) {
     return cartItems.map((cartItem) =>
       cartItem.bookId === productToAdd.bookId && cartItem.flag !== 'R'
-        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+        ? {
+            ...cartItem,
+            quantity: cartItem.quantity + 1,
+            totalPrice: (cartItem.quantity + 1) * cartItem.price,
+          }
         : cartItem
     );
   }
 
-  return [...cartItems, { ...productToAdd, quantity: 1 }];
+  return [
+    ...cartItems,
+    {
+      ...productToAdd,
+      quantity: 1,
+      totalPrice: productToAdd.price,
+    },
+  ];
 };
 
 const removeCartItem = (cartItems, cartItemToRemove) => {
@@ -33,13 +44,19 @@ const removeCartItem = (cartItems, cartItemToRemove) => {
   // return back cartitems with matching cart item with reduced quantity
   return cartItems.map((cartItem) =>
     cartItem.bookId === cartItemToRemove.bookId
-      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+      ? {
+          ...cartItem,
+          quantity: cartItem.quantity - 1,
+          totalPrice: (cartItem.quantity - 1) * cartItem.price,
+        }
       : cartItem
   );
 };
 
 const clearCartItem = (cartItems, cartItemToClear) =>
   cartItems.filter((cartItem) => cartItem.bookId !== cartItemToClear.bookId);
+
+const emptyCart = (cartItems) => (cartItems = []);
 
 export const addItemToCart = (cartItems, productToAdd) => {
   const newCartItems = addCartItem(cartItems, productToAdd);
@@ -58,3 +75,8 @@ export const clearItemFromCart = (cartItems, cartItemToClear) => {
 
 export const setIsCartOpen = (boolean) =>
   createAction(CART_ACTION_TYPES.SET_IS_CART_OPEN, boolean);
+
+export const clearCart = (cartItems) => {
+  const newCartItems = emptyCart(cartItems);
+  return createAction(CART_ACTION_TYPES.CLEAR_CART, cartItems);
+};

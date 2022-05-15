@@ -1,15 +1,16 @@
 var fs = require('fs'),
-    gm = require('gm');
+    gm = require('gm'),
+    path = require('path');
 
-var dir = __dirname + '/imgs';
-function createImage(text) {
-    console.log('inside graphics');
+var dir = path.join(__dirname, '../client/src/img/');
+function createImage(text, email) {
+    console.log(dir);
     gm(150, 100, '#84defaaa')
         .fontSize(68)
         .stroke('#efe', 3)
         .fill('#000000')
         .drawText(20, 72, text)
-        .write(dir + '/initials.png', function (err) {
+        .write(dir + email + '.png', function (err) {
             if (err) return console.dir(arguments);
             console.log(this.outname + ' created  :: ' + arguments[3]);
         });

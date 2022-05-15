@@ -71,42 +71,28 @@ const BooksList = () => {
             try {
                 const url = `https://houseof-books.herokuapp.com/books`;
                 const { data } = await axios.get(url);
+                console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
                 setError(true);
-
                 console.log(e);
             }
         }
         fetchData();
     }, [currentUser]);
 
-    function padTo2Digits(num) {
-        return num.toString().padStart(2, '0');
-    }
-    function formatDate(date) {
-        return [
-            padTo2Digits(date.getMonth() + 1),
-            padTo2Digits(date.getDate()),
-            date.getFullYear(),
-        ].join('-');
-    }
-
     const dispatch = useDispatch();
     const cartItems = useSelector(selectCartItems);
 
-    const buyBook = (customerId, title, bookId, quantity, price, imageUrl) => {
+    const buyBook = (title, bookId, quantity, price, imageUrl) => {
         price = parseFloat(price);
-        // console.log(isNaN(price));
         let todayDate = formatDate(new Date());
-        // console.log(todayDate);
-        // console.log(customerId, bookId);
         let dataBody = {
-            customerId: customerId,
+            email: user.email,
             name: title,
             bookId: bookId,
-            price: isNaN(price) ? getRandomFloat(20) : price,
+            price: price,
             quantity: quantity,
             totalPrice: quantity * price,
             imageUrl: imageUrl,
@@ -147,7 +133,6 @@ const BooksList = () => {
             console.log(e);
         }
     };
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -169,7 +154,6 @@ const BooksList = () => {
         const checkBook = userWishlistData.some((post, index) => {
             return post.bookId === book._id;
         });
-
         return (
             <Grid
                 item
@@ -190,7 +174,6 @@ const BooksList = () => {
                                 image={book.url ? book.url : noImage}
                                 title="book image"
                             />
-
                             <CardContent>
                                 <Typography
                                     variant="body2"
@@ -226,7 +209,6 @@ const BooksList = () => {
                             className="button"
                             onClick={() =>
                                 buyBook(
-                                    '627161da17f0455539944549',
                                     book.title,
                                     book._id,
                                     1,

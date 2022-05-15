@@ -84,8 +84,8 @@ function checkIsUsername(s) {
 
 router.get('/rentedbooks/:email', async (req, res) => {
     try {
-        console.log('got request', req.params.email);
         checkIsString(req.params.email);
+        checkIsEmail(req.params.email);
         req.params.email = req.params.email.trim();
         if (!req.params.email) throw 'must provide user email';
     } catch (e) {
@@ -104,15 +104,31 @@ router.get('/rentedbooks/:email', async (req, res) => {
 });
 
 router.post('/profile', async (req, res) => {
-    // error check
     try {
         if (!req.body.data) throw 'must provide email Id';
+        checkIsEmail(req.body.data);
     } catch (e) {
         return res.status(400).send(String(e));
     }
     try {
-        console.log('Before function call');
         res.status(200).json(await userData.getUser(req.body.data));
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(String(e));
+    }
+});
+
+router.post('/myOrders', async (req, res) => {
+    try {
+        if (!req.body.data) throw 'must provide email Id';
+        checkIsEmail(req.body.data);
+    } catch (e) {
+        return res.status(400).send(String(e));
+    }
+    try {
+        const myOrders = await userData.myOrders(req.body.data);
+        console.log('In routes my orders are ', myOrders);
+        res.status(200).json(myOrders);
     } catch (e) {
         console.log(e);
         res.status(500).send(String(e));
@@ -134,7 +150,6 @@ router.post('/signup', async (req, res) => {
         zip,
         flag,
     } = req.body.data;
-    // console.log(userInfo);
 
     console.log('flag is ', flag);
     if (flag === 'G') {
@@ -204,7 +219,7 @@ router.post('/signup', async (req, res) => {
         if (flag !== 'G') {
             let initials = firstName[0] + lastName[0];
             console.log(initials);
-            var image = imageData.createImage(initials);
+            let image = imageData.createImage(initials, email);
         }
         const newUser = await userData.createUser(
             firstName,
@@ -218,7 +233,7 @@ router.post('/signup', async (req, res) => {
             state,
             zip,
             flag,
-            '/server/imgs/initials.png'
+            '/img/' + email + '.png'
         );
         res.status(200).json(newUser);
     } catch (e) {
@@ -294,10 +309,8 @@ router.put('/profile', async (req, res) => {
         if (!firstName) throw 'Must provide the first name';
         if (!lastName) throw 'Must provide the last name';
         if (!email) throw 'Must provide the email';
-        if (!oldEmail) throw 'Must provide the email';
 
         if (!username) throw 'Must provide the username';
-        if (!oldUsername) throw 'Must provide the username';
         if (!password) throw 'Must provide the password';
         if (!phoneNumber) throw 'Must provide the phone number';
         if (!address) throw 'Must provide the address';
@@ -309,7 +322,6 @@ router.put('/profile', async (req, res) => {
         checkIsString(lastName);
         checkIsString(email);
         checkIsString(username);
-        checkIsString(oldUsername);
         checkIsString(password);
 
         checkIsString(address);
@@ -321,7 +333,6 @@ router.put('/profile', async (req, res) => {
         checkIsName(lastName);
 
         checkIsEmail(email);
-        checkIsEmail(oldEmail);
 
         checkIsUsername(username);
         checkIsPassword(password);
@@ -346,6 +357,7 @@ router.put('/profile', async (req, res) => {
         );
         res.status(200).json(updatedUser);
     } catch (e) {
+        console.log(e);
         res.status(500).send(String(e));
     }
 });
