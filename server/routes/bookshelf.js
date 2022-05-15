@@ -75,7 +75,7 @@ router.post('/add', async (request, response) => {
                 'Error: Could not add to wishlist '
             );
         }
-        console.log(bookShelf);
+        // console.log(bookShelf);
         // console.log('add to wishlist clicked');
         response.json({ inserted: true });
     } catch (error) {

@@ -50,7 +50,7 @@ async function addBooktoBookshelf(bookId, email, title) {
                 }
             }
         }
-        console.log('inside add data');
+
         const wishlistArrUpdate = await userCollection.updateOne(
             { email: validatedEmail },
             {
@@ -62,7 +62,7 @@ async function addBooktoBookshelf(bookId, email, title) {
                 },
             }
         );
-        console.log('inside add data');
+
         if (
             !wishlistArrUpdate.matchedCount &&
             !wishlistArrUpdate.modifiedCount
