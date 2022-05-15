@@ -92,6 +92,11 @@ const MyOrders = () => {
                 >
                   <p className='title1'>{book.title}</p>
                   <dl>
+                    {book && book.totalPrice ? null : (
+                      <p>
+                        <dt className='title'>Rented Book</dt>
+                      </p>
+                    )}
                     <p>
                       <dt className='title'>Genre:</dt>
                       {book && book.genre ? (
@@ -105,7 +110,7 @@ const MyOrders = () => {
                       {book && book.totalPrice ? (
                         <dd>{book.totalPrice}</dd>
                       ) : (
-                        <dd>N/A</dd>
+                        <dd>7</dd>
                       )}
                     </p>
                     <p>
@@ -113,17 +118,38 @@ const MyOrders = () => {
                       {book && book.quantity ? (
                         <dd>{book.quantity}</dd>
                       ) : (
-                        <dd>N/A</dd>
+                        <dd>1</dd>
                       )}
                     </p>
-                    <p>
-                      <dt className='title'>Date of Order:</dt>
-                      {book && book.dateOfPurchase ? (
-                        <dd>{book.dateOfPurchase}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
+                    {book && book.dateOfPurchase ? (
+                      <p>
+                        <dt className='title'>Date of Order:</dt>
+                        {book && book.dateOfPurchase ? (
+                          <dd>{book.dateOfPurchase}</dd>
+                        ) : (
+                          <dd>N/A</dd>
+                        )}
+                      </p>
+                    ) : (
+                      <p>
+                        <dt className='title'>Start Date:</dt>
+                        {book && book.startDate ? (
+                          <dd>{book.startDate}</dd>
+                        ) : (
+                          <dd>N/A</dd>
+                        )}
+                      </p>
+                    )}
+                    {book && book.endDate ? (
+                      <p>
+                        <dt className='title'>End Date:</dt>
+                        {book && book.endDate ? (
+                          <dd>{book.endDate}</dd>
+                        ) : (
+                          <dd>N/A</dd>
+                        )}
+                      </p>
+                    ) : null}
                   </dl>
                 </Typography>
               </CardContent>

@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-// import { Button } from 'react-bootstrap';
 import '../styles/BookList.scss';
 
 const BookList = () => {
@@ -20,7 +19,7 @@ const BookList = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const url = `https://houseof-books.herokuapp.com/books`;
+        const url = `http://localhost:4000/books`;
         const { data } = await axios.get(url);
         setBookDetailsData(data);
         setLoading(false);
@@ -31,17 +30,6 @@ const BookList = () => {
     }
     fetchData();
   }, [currentUser]);
-
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
-  }
-  function formatDate(date) {
-    return [
-      padTo2Digits(date.getMonth() + 1),
-      padTo2Digits(date.getDate()),
-      date.getFullYear(),
-    ].join('-');
-  }
 
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
@@ -81,12 +69,6 @@ const BookList = () => {
               <img src={url ? url : noImage} alt={`${title}`} />
             </Link>
             <span className='title'>{title}</span>
-            {/* <span className='price-text'>
-              Price:{' '}
-              <span className='price'>
-                ${isNaN(parseInt(price)) ? 7.0 : price}
-              </span>
-            </span> */}
             {user && (
               <button
                 className='btn'
