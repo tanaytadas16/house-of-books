@@ -68,7 +68,8 @@ const main = async () => {
     // }
 
     try {
-        const rentBooks = await books.searchBooks("In");
+        const rentBooks = await books.getBooksByGenre("thriller");
+        console.log(rentBooks);
     } catch (e) {
         console.log(e);
     }

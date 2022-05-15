@@ -16,7 +16,7 @@ import RentedBooks from './components/RentedBooks';
 import MyOrders from './components/MyOrders';
 import './App.scss';
 import BookSearchDetails from './components/SearchBook';
-import AddNewBook from './components/AddNewBook';
+import BookGenres from './components/Genres';
 
 const App = () => {
     return (
@@ -53,6 +53,11 @@ const App = () => {
                     exact
                     path="/books/search/"
                     element={<BookSearchDetails />}
+                />
+                <Route
+                    exact
+                    path="/books/genres/:genre"
+                    element={<BookGenres />}
                 />
             </Routes>
         </div>

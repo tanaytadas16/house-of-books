@@ -143,7 +143,7 @@ async function getNewAddition() {
 async function getBooksForRent() {
     let len = arguments.length;
     if (len > 0) {
-        throw `Error: getAll does not accept arguments`;
+        throw `Error: getBooksForRent does not accept arguments`;
     }
     const booksCollection = await books();
 
@@ -425,6 +425,24 @@ async function searchBooks(searchVal) {
     return booksList;
 }
 
+async function getBooksByGenre(genre) {
+    validateStringParams(genre, "genre");
+    const booksCollection = await books();
+    const booksList = await booksCollection
+        .find({
+            genre: genre,
+        })
+        .toArray();
+    if (booksList.length === 0) {
+        return [];
+    }
+    for (let book of booksList) {
+        let id = book["_id"];
+        book["_id"] = id.toString();
+    }
+    return booksList;
+}
+
 module.exports = {
     addNewBook,
     getAll,
@@ -435,4 +453,5 @@ module.exports = {
     buyBook,
     getMostPopular,
     searchBooks,
+    getBooksByGenre,
 };

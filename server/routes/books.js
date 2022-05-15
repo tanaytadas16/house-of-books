@@ -217,23 +217,40 @@ router.post('/purchase', async (req, res) => {
     }
 });
 
-router.get('/genres', async (request, response) => {
-    try {
-        restrictRequestQuery(request, response);
+// router.get("/genres", async (request, response) => {
+//     try {
+//         restrictRequestQuery(request, response);
 
-        if (Object.keys(request.body).length !== 0) {
-            throwError(
-                ErrorCode.BAD_REQUEST,
-                "Error: Doesn't require fields to be passed."
-            );
-        }
-    } catch (error) {
-        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
-            serverResponse: error.message || 'Internal server error.',
-        });
+//         if (Object.keys(request.body).length !== 0) {
+//             throwError(
+//                 ErrorCode.BAD_REQUEST,
+//                 "Error: Doesn't require fields to be passed."
+//             );
+//         }
+//     } catch (error) {
+//         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+//             serverResponse: error.message || "Internal server error.",
+//         });
+//     }
+// });
+
+router.get('/genres/:genre', async (req, res) => {
+    try {
+        validateStringParams(req.params.genre, 'genre');
+        req.params.genre = req.params.genre.trim();
+    } catch (e) {
+        res.status(400).json({ error: e });
+        return;
+    }
+    try {
+        let books = await booksData.getBooksByGenre(req.params.genre);
+        res.status(200).json(books);
+        return books;
+    } catch (e) {
+        res.status(404).json({ error: e });
+        return e.message;
     }
 });
-router.get('/genres/:genre', async (request, response) => {});
 
 const throwError = (code = 404, message = 'Not found') => {
     throw { code, message };
