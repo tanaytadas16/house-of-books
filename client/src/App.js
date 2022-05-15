@@ -13,8 +13,8 @@ import Bookshelf from './components/Bookshelf';
 import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
 import RentedBooks from './components/RentedBooks';
-import './App.css';
 import MyOrders from './components/MyOrders';
+import './App.scss';
 import BookSearchDetails from './components/SearchBook';
 import AddNewBook from './components/AddNewBook';
 
@@ -43,7 +43,6 @@ const App = () => {
                 <Route exact path="/users/profile" element={<ProfilePage />} />
                 <Route exact path="/users/myOrders" element={<MyOrders />} />
                 <Route exact path="/users/bookshelf" element={<Bookshelf />} />
-                <Route exact path="/addNewBook" element={<AddNewBook />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route
                     exact

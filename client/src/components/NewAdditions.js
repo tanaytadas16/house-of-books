@@ -1,67 +1,27 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
-import AddToWishlist from './AddToWishlist';
+import { auth } from '../firebase/firebase';
 import axios from 'axios';
+import AddToWishlist from './AddToWishlist';
 import { Link, useParams } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
-import { auth } from '../firebase/firebase';
-import {
-    makeStyles,
-    Card,
-    CardActionArea,
-    Grid,
-    CardContent,
-    CardMedia,
-    Typography,
-} from '@material-ui/core';
-import { Button } from '@mui/material';
-const useStyles = makeStyles({
-    card: {
-        maxWidth: 550,
-        height: 'auto',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        borderRadius: 5,
-        border: '1px solid #222',
-        boxShadow:
-            '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-        color: '#222',
-    },
-    titleHead: {
-        borderBottom: '1px solid #222',
-        fontWeight: 'bold',
-        color: '#222',
-        fontSize: 'large',
-    },
-    grid: {
-        flexGrow: 1,
-        flexDirection: 'row',
-    },
-    media: {
-        height: '100%',
-        width: '100%',
-    },
-    button: {
-        color: '#222',
-        fontWeight: 'bold',
-        fontSize: 12,
-    },
-});
+import { Button } from 'react-bootstrap';
+import '../styles/NewAdditions.scss';
 
 const NewAdditions = (props) => {
     const [loading, setLoading] = useState(true);
-    const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     const [error, setError] = useState(false);
     const { currentUser } = useContext(UserContext);
+    const dispatch = useDispatch();
+    const cartItems = useSelector(selectCartItems);
     const user = auth.currentUser;
     const [userWishlistData, setUserWishlistData] = useState([]);
     const [isInserted, setIsInserted] = useState(0);
     let { id } = useParams();
-    let card = null;
     useEffect(() => {
         console.log('useEffect fired');
         async function fetchData() {
@@ -77,7 +37,7 @@ const NewAdditions = (props) => {
             }
         }
         fetchData();
-    }, [id]);
+    }, [id, currentUser]);
     let onClickWishlist = async (bookId, title) => {
         try {
             // console.log(bookId);
@@ -129,139 +89,87 @@ const NewAdditions = (props) => {
         fetchData();
     }, [currentUser, isInserted]);
 
-    const dispatch = useDispatch();
-    const cartItems = useSelector(selectCartItems);
-
     const buyBook = (title, bookId, price, imageUrl) => {
         price = parseFloat(price);
         let dataBody = {
             email: user.email,
             name: title,
             bookId: bookId,
-            price: price,
+            price: isNaN(parseInt(price)) ? 7.0 : price,
             imageUrl: imageUrl,
             flag: 'B',
         };
         dispatch(addItemToCart(cartItems, dataBody));
     };
 
-    let checkBook;
-    const buildCard = (book) => {
-        checkBook = userWishlistData.some((post, index) => {
-            return post.bookId === book._id;
+    const checkBook = (id) => {
+        return userWishlistData.some((post, index) => {
+            return post.bookId === id;
         });
-        return (
-            <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-                <Card className={classes.card} variant="outlined">
-                    <CardActionArea>
-                        <Link to={`/books/${book._id}`}>
-                            <CardMedia
-                                className={classes.media}
-                                component="img"
-                                image={book.url ? book.url : noImage}
-                                title="book image"
-                            />
-
-                            <CardContent>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    component="span"
-                                >
-                                    <p className="title1">{book.title}</p>
-                                    <dl>
-                                        <p>
-                                            <dt className="title">Genre:</dt>
-                                            {book && book.genre ? (
-                                                <dd>{book.genre}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                        <p>
-                                            <dt className="title">Price:</dt>
-                                            {book && book.price ? (
-                                                <dd>$ {book.price}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                    </dl>
-                                </Typography>
-                            </CardContent>
-                        </Link>
-                    </CardActionArea>
-                    {user && (
-                        <button
-                            type="button"
-                            className="button"
-                            onClick={() =>
-                                buyBook(
-                                    book.title,
-                                    book._id,
-                                    book.price,
-                                    book.url
-                                )
-                            }
-                        >
-                            Buy
-                        </button>
-                    )}
-                    {user && !checkBook && (
-                        <AddToWishlist
-                            bookid={book._id}
-                            handleOnClick={() =>
-                                onClickWishlist(book._id, book.title)
-                            }
-                        />
-                    )}
-                    {user && checkBook && (
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() =>
-                                handleRemoveWishlist(book._id, book.title)
-                            }
-                        >
-                            Remove from Wishlist
-                        </Button>
-                    )}
-                </Card>
-            </Grid>
-        );
     };
 
     if (loading) {
-        if (error) {
-            return (
-                <div>
-                    <h2>No books are present are present in the list</h2>
-                </div>
-            );
-        } else {
-            return (
-                <div>
-                    <h2>Loading....</h2>
-                </div>
-            );
-        }
-    } else if (bookDetailsData && bookDetailsData.length === 0) {
         return (
             <div>
-                <h2>No new books are found</h2>
+                {isNaN(bookDetailsData) ? (
+                    <p>
+                        <h1>Error 404: Page not found</h1>
+                    </p>
+                ) : (
+                    <div>
+                        <h2>Loading....</h2>
+                    </div>
+                )}
             </div>
         );
     } else {
-        card =
-            bookDetailsData &&
-            bookDetailsData.map((book) => {
-                return buildCard(book);
-            });
         return (
-            <div>
-                <Grid container className={classes.grid} spacing={5}>
-                    {card}
-                </Grid>
+            <div className="new-additions-container">
+                {bookDetailsData &&
+                    bookDetailsData.map(({ _id, url, title, price }) => (
+                        <div className="new-additions-card-container" key={_id}>
+                            <Link to={`/books/${_id}`}>
+                                <img
+                                    src={url ? url : noImage}
+                                    alt={`${title}`}
+                                />
+                            </Link>
+                            <span className="title">{title}</span>
+                            {user && (
+                                <Button
+                                    className="btn"
+                                    variant="primary"
+                                    onClick={() =>
+                                        buyBook(title, _id, price, url)
+                                    }
+                                >
+                                    <span className="price">
+                                        ${isNaN(parseInt(price)) ? 7.0 : price}
+                                    </span>
+                                    <span>Add to Cart</span>
+                                </Button>
+                            )}
+                            {user && !checkBook(_id) && (
+                                <AddToWishlist
+                                    bookid={_id}
+                                    handleOnClick={() =>
+                                        onClickWishlist(_id, title)
+                                    }
+                                />
+                            )}
+                            {user && checkBook(_id) && (
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() =>
+                                        handleRemoveWishlist(_id, title)
+                                    }
+                                >
+                                    Remove from Wishlist
+                                </Button>
+                            )}
+                        </div>
+                    ))}
             </div>
         );
     }
