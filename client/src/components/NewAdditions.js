@@ -1,4 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import AddToWishlist from './AddToWishlist';
 import axios from 'axios';
@@ -63,7 +66,7 @@ const NewAdditions = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books/newAdditions`;
+                const url = `http://localhost:4000/books/newAdditions`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -125,6 +128,22 @@ const NewAdditions = (props) => {
         fetchData();
     }, [currentUser, isInserted]);
 
+    const dispatch = useDispatch();
+    const cartItems = useSelector(selectCartItems);
+
+    const buyBook = (title, bookId, price, imageUrl) => {
+        price = parseFloat(price);
+        let dataBody = {
+            email: user.email,
+            name: title,
+            bookId: bookId,
+            price: price,
+            imageUrl: imageUrl,
+            flag: 'B',
+        };
+        dispatch(addItemToCart(cartItems, dataBody));
+    };
+
     let checkBook;
     const buildCard = (book) => {
         checkBook = userWishlistData.some((post, index) => {
@@ -132,26 +151,26 @@ const NewAdditions = (props) => {
         });
         return (
             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-                <Card className={classes.card} variant="outlined">
+                <Card className={classes.card} variant='outlined'>
                     <CardActionArea>
                         <Link to={`/books/${book._id}`}>
                             <CardMedia
                                 className={classes.media}
-                                component="img"
+                                component='img'
                                 image={book.url ? book.url : noImage}
-                                title="book image"
+                                title='book image'
                             />
 
                             <CardContent>
                                 <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    component="span"
+                                    variant='body2'
+                                    color='textSecondary'
+                                    component='span'
                                 >
-                                    <p className="title1">{book.title}</p>
+                                    <p className='title1'>{book.title}</p>
                                     <dl>
                                         <p>
-                                            <dt className="title">Genre:</dt>
+                                            <dt className='title'>Genre:</dt>
                                             {book && book.genre ? (
                                                 <dd>{book.genre}</dd>
                                             ) : (
@@ -159,7 +178,7 @@ const NewAdditions = (props) => {
                                             )}
                                         </p>
                                         <p>
-                                            <dt className="title">Price:</dt>
+                                            <dt className='title'>Price:</dt>
                                             {book && book.price ? (
                                                 <dd>$ {book.price}</dd>
                                             ) : (
@@ -171,6 +190,23 @@ const NewAdditions = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
+                    {user && (
+                        <button
+                            type='button'
+                            className='button'
+                            onClick={() =>
+                                buyBook(
+                                    book.title,
+                                    book._id,
+                                    1,
+                                    book.price,
+                                    book.url
+                                )
+                            }
+                        >
+                            Buy
+                        </button>
+                    )}
                     {user && !checkBook && (
                         <AddToWishlist
                             bookid={book._id}
@@ -181,8 +217,8 @@ const NewAdditions = (props) => {
                     )}
                     {user && checkBook && (
                         <Button
-                            variant="contained"
-                            color="error"
+                            variant='contained'
+                            color='error'
                             onClick={() =>
                                 handleRemoveWishlist(book._id, book.title)
                             }
