@@ -14,6 +14,8 @@ const ProfilePage = () => {
   const [error, setError] = useState(false);
   const history = useNavigate();
   const [oldUsername, setOldUsername] = useState(undefined);
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const { currentUser } = useContext(UserContext);
   const auth = getAuth();
@@ -36,6 +38,47 @@ const ProfilePage = () => {
     fetchData();
   }, [currentUser]);
 
+  useEffect(() => {
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+    }
+  }, [formErrors]);
+
+  const validate = (values) => {
+    const errors = {};
+    const nameRegex = /[^a-zA-Z]/;
+    const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    const phoneRegex = /^\d{10}$/im;
+    const zipRegex = /(^\d{5}$)|(^\d{5}-\d{4}$)/;
+
+    console.log(values.firstName);
+    if (nameRegex.test(values.firstName)) {
+      errors.firstName = 'First name should contain only letters';
+    }
+    if (nameRegex.test(values.lastName)) {
+      errors.lastName = 'Last name should contain only letters';
+    }
+    if (!emailRegex.test(values.email)) {
+      errors.email = 'Given email id is invalid';
+    }
+    if (values.password.length < 6) {
+      errors.password = 'Password should not be less than 6 characters';
+    }
+    if (values.confirmPassword.length < 6) {
+      errors.confirmPassword =
+        'Confirm Password should not be less than 6 characters';
+    }
+    if (values.username.length < 4) {
+      errors.username = 'Username should not be less than 4 characters';
+    }
+    if (!phoneRegex.test(values.phoneNumber)) {
+      errors.phoneNumber = 'Please enter phone number in correct format';
+    }
+    if (!zipRegex.test(values.zip)) {
+      errors.zip = 'Please enter zip code in correct format';
+    }
+    return errors;
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -57,6 +100,8 @@ const ProfilePage = () => {
       state,
       zip,
     } = event.target.elements;
+    setFormErrors(validate(userData));
+    setIsSubmit(true);
 
     if (password.value !== confirmPassword.value) {
       alert('Passwords do not match');
@@ -129,6 +174,7 @@ const ProfilePage = () => {
             value={userData.firstName ? userData.firstName : ''}
             name='firstName'
           />
+          <p>{formErrors.firstName}</p>
           <FormInput
             label='Last Name'
             type='text'
@@ -137,6 +183,7 @@ const ProfilePage = () => {
             value={userData.lastName ? userData.lastName : ''}
             name='lastName'
           />
+          <p>{formErrors.lastName}</p>
           <FormInput
             label='Email'
             type='email'
@@ -144,8 +191,8 @@ const ProfilePage = () => {
             onChange={handleChange}
             value={userData.email ? userData.email : ''}
             name='email'
-            disabled
           />
+          <p>{formErrors.email}</p>
           <FormInput
             label='Phone Number'
             type='text'
@@ -154,6 +201,7 @@ const ProfilePage = () => {
             value={userData.phoneNumber ? userData.phoneNumber : ''}
             name='phoneNumber'
           />
+          <p>{formErrors.phoneNumber}</p>
           <FormInput
             label='Username'
             type='text'
@@ -162,6 +210,7 @@ const ProfilePage = () => {
             value={userData.username ? userData.username : ''}
             name='username'
           />
+          <p>{formErrors.username}</p>
           <FormInput
             label='Password'
             type='password'
@@ -170,6 +219,7 @@ const ProfilePage = () => {
             value={userData.password ? userData.password : ''}
             name='password'
           />
+          <p>{formErrors.password}</p>
           <FormInput
             label='Confirm Password'
             type='password'
@@ -178,6 +228,7 @@ const ProfilePage = () => {
             value={userData.confirmPassword ? userData.confirmPassword : ''}
             name='confirmPassword'
           />
+          <p>{formErrors.ConfirmPassword}</p>
           <FormInput
             label='Address'
             type='text'
@@ -271,6 +322,7 @@ const ProfilePage = () => {
             value={userData.zip ? userData.zip : ''}
             name='zip'
           />
+          <p>{formErrors.zip}</p>
           <Button type='submit'>Update</Button>
         </form>
       </div>

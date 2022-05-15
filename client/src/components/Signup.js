@@ -6,7 +6,6 @@ import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import '../styles/Signup.scss';
-import { validateCallback } from '@firebase/util';
 
 const defaultFormFields = {
   firstName: '',
@@ -45,7 +44,6 @@ const Signup = () => {
   const history = useNavigate();
 
   useEffect(() => {
-    console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
     }
   }, [formErrors]);
@@ -91,12 +89,6 @@ const Signup = () => {
     }
     if (!zipRegex.test(values.zip)) {
       errors.zip = 'Please enter zip code in correct format';
-    }
-    if (values.address.length < 2) {
-      errors.address = 'Address cannot be one character ';
-    }
-    if (values.city.length < 2) {
-      errors.city = 'City name cannot be one character ';
     }
     return errors;
   };
@@ -217,6 +209,7 @@ const Signup = () => {
           value={confirmPassword}
           name='confirmPassword'
         />
+        <p>{formErrors.ConfirmPassword}</p>
         <FormInput
           label='Address'
           type='text'
@@ -225,7 +218,6 @@ const Signup = () => {
           value={address}
           name='address'
         />
-        <p>{formErrors.ConfirmPassword}</p>
         <p>{formErrors.address}</p>
         <FormInput
           label='City'
@@ -297,14 +289,6 @@ const Signup = () => {
           <option value='WI'>Wisconsin</option>
           <option value='WY'>Wyoming</option>
         </select>
-        {/* <FormInput
-          label='State'
-          type='text'
-          required
-          onChange={handleChange}
-          value={state}
-          name='state'
-        /> */}
         <FormInput
           label='Zip'
           type='text'
