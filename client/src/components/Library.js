@@ -73,6 +73,7 @@ const Library = (props) => {
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
+                setError(true);
                 console.log(e);
             }
         }
@@ -274,15 +275,23 @@ const Library = (props) => {
     };
 
     if (loading) {
+        if (error) {
+            return (
+                <div>
+                    <h2>No books are present in the Library</h2>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <h2>Loading....</h2>
+                </div>
+            );
+        }
+    } else if (bookDetailsData && bookDetailsData.length === 0) {
         return (
             <div>
-                {isNaN(bookDetailsData) ? (
-                    <h1>Error 404: Page not found</h1>
-                ) : (
-                    <div>
-                        <h2>Loading....</h2>
-                    </div>
-                )}
+                <h2>No books found in Library</h2>
             </div>
         );
     } else {

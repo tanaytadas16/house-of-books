@@ -1,4 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import AddToWishlist from './AddToWishlist';
 import axios from 'axios';
@@ -63,12 +66,13 @@ const NewAdditions = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books/newAdditions`;
+                const url = `http://localhost:4000/books/newAdditions`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
+                setError(true);
                 console.log(e);
             }
         }
@@ -125,6 +129,22 @@ const NewAdditions = (props) => {
         fetchData();
     }, [currentUser, isInserted]);
 
+    const dispatch = useDispatch();
+    const cartItems = useSelector(selectCartItems);
+
+    const buyBook = (title, bookId, price, imageUrl) => {
+        price = parseFloat(price);
+        let dataBody = {
+            email: user.email,
+            name: title,
+            bookId: bookId,
+            price: price,
+            imageUrl: imageUrl,
+            flag: 'B',
+        };
+        dispatch(addItemToCart(cartItems, dataBody));
+    };
+
     let checkBook;
     const buildCard = (book) => {
         checkBook = userWishlistData.some((post, index) => {
@@ -171,6 +191,22 @@ const NewAdditions = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
+                    {user && (
+                        <button
+                            type="button"
+                            className="button"
+                            onClick={() =>
+                                buyBook(
+                                    book.title,
+                                    book._id,
+                                    book.price,
+                                    book.url
+                                )
+                            }
+                        >
+                            Buy
+                        </button>
+                    )}
                     {user && !checkBook && (
                         <AddToWishlist
                             bookid={book._id}
@@ -196,15 +232,23 @@ const NewAdditions = (props) => {
     };
 
     if (loading) {
+        if (error) {
+            return (
+                <div>
+                    <h2>No books are present are present in the list</h2>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <h2>Loading....</h2>
+                </div>
+            );
+        }
+    } else if (bookDetailsData && bookDetailsData.length === 0) {
         return (
             <div>
-                {isNaN(bookDetailsData) ? (
-                    <h1>Error 404: Page not found</h1>
-                ) : (
-                    <div>
-                        <h2>Loading....</h2>
-                    </div>
-                )}
+                <h2>No new books are found</h2>
             </div>
         );
     } else {

@@ -122,7 +122,12 @@ async function getNewAddition() {
 
     const booksList = await booksCollection
         .find({
-            originalPublicationYear: { $gte: 2016 },
+            $and: [
+                { originalPublicationYear: { $gte: 2016 } },
+                {
+                    price: { $ne: 'Not For Sale' },
+                },
+            ],
         })
         .toArray();
     if (booksList.length === 0) {

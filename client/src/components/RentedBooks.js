@@ -131,12 +131,20 @@ const RentedBooks = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <h1>Error 404: Page not found</h1>
+                    <p>
+                        <h1>Error 404: Page not found</h1>
+                    </p>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
                     </div>
                 )}
+            </div>
+        );
+    } else if (bookDetailsData && bookDetailsData.length === 0) {
+        return (
+            <div>
+                <h2>No books found in the Rented book list</h2>
             </div>
         );
     } else {

@@ -59,7 +59,6 @@ router.post('/review', async (req, res) => {
     '/' +
     currentDate.getFullYear();
 
-  console.log(dateOfReview);
   reviewInfo.rating = parseInt(reviewInfo.rating);
 
   if (!errorCheck.checkId(reviewInfo.bookId.trim())) {
@@ -88,20 +87,16 @@ router.post('/review', async (req, res) => {
   try {
     await booksData.getById(reviewInfo.bookId);
   } catch (e) {
-    console.log(e);
     res.status(404).json({ error: 'Book not found' });
     return;
   }
 
-  console.log(reviewInfo.email.trim());
   const user = await usersData.getUser(reviewInfo.email.trim());
   if (user === null) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
 
-  console.log('After first try');
-  console.log(user);
   try {
     const newReview = await reviewData.createReview(
       reviewInfo.bookId,
@@ -113,8 +108,8 @@ router.post('/review', async (req, res) => {
     );
     res.status(200).json(newReview);
   } catch (e) {
-    console.log(e);
     res.status(500).json({ error: e });
+    return;
   }
 });
 
@@ -163,15 +158,13 @@ router.put('/updateReview/', async (req, res) => {
       updateReviewInfo.rating,
       updateReviewInfo.comment
     );
-    res.redirect('/books/' + updatedReview.bookId);
+    res.status(200).json(updatedReview);
   } catch (e) {
     res.status(404).json({ error: e });
   }
 });
 
 router.delete('/deleteReview/:reviewId', async (req, res) => {
-  console.log(req.params.reviewId);
-  // const { reviewId } = req.body.data;
   if (!errorCheck.checkId(req.params.reviewId.trim())) {
     res.status(400).json({ error: 'You must supply a valid Book Id' });
     return;
@@ -180,7 +173,6 @@ router.delete('/deleteReview/:reviewId', async (req, res) => {
   try {
     await reviewData.getReview(req.params.reviewId);
   } catch (e) {
-    console.log(e);
     res.status(404).json({ error: 'Review not found' });
     return;
   }
@@ -188,7 +180,6 @@ router.delete('/deleteReview/:reviewId', async (req, res) => {
     const deletedReview = await reviewData.removeReview(req.params.reviewId);
     res.status(200).json(deletedReview);
   } catch (e) {
-    console.log(e);
     res
       .status(404)
       .json({ error: 'Review cannot be deleted due to some error' });
