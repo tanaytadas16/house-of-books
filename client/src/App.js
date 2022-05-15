@@ -13,49 +13,33 @@ import Bookshelf from './components/Bookshelf';
 import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
 import RentedBooks from './components/RentedBooks';
-import './App.css';
 import MyOrders from './components/MyOrders';
+import './App.scss';
 import BookSearchDetails from './components/SearchBook';
 
 const App = () => {
-    return (
-        <div>
-            <Navigation />
+  return (
+    <div>
+      <Navigation />
 
-            <Routes>
-                <Route exact path="/" element={<Home />} />
-                <Route exact path="/books" element={<BooksList />} />
-                <Route exact path="/books/:id" element={<BookDetails />} />
-                <Route path="/auth" element={<Authentication />} />
-                <Route
-                    exact
-                    path="/books/newAdditions"
-                    element={<NewAdditions />}
-                />
-                <Route exact path="/library" element={<Library />} />
-                <Route
-                    exact
-                    path="/books/mostPopular"
-                    element={<MostPopular />}
-                />
-                <Route exact path="/books/recents" element={<RecentBooks />} />
-                <Route exact path="/users/profile" element={<ProfilePage />} />
-                <Route exact path="/users/myOrders" element={<MyOrders />} />
-                <Route exact path="/users/bookshelf" element={<Bookshelf />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route
-                    exact
-                    path="/users/rentedbooks"
-                    element={<RentedBooks />}
-                />
-                <Route
-                    exact
-                    path="/books/search/"
-                    element={<BookSearchDetails />}
-                />
-            </Routes>
-        </div>
-    );
+      <Routes>
+        <Route exact path='/' element={<Home />} />
+        <Route exact path='/books' element={<BooksList />} />
+        <Route exact path='/books/:id' element={<BookDetails />} />
+        <Route path='/auth' element={<Authentication />} />
+        <Route exact path='/books/newAdditions' element={<NewAdditions />} />
+        <Route exact path='/library' element={<Library />} />
+        <Route exact path='/books/mostPopular' element={<MostPopular />} />
+        <Route exact path='/books/recents' element={<RecentBooks />} />
+        <Route exact path='/users/profile' element={<ProfilePage />} />
+        <Route exact path='/users/myOrders' element={<MyOrders />} />
+        <Route exact path='/users/bookshelf' element={<Bookshelf />} />
+        <Route path='/checkout' element={<Checkout />} />
+        <Route exact path='/users/rentedbooks' element={<RentedBooks />} />
+        <Route exact path='/books/search/' element={<BookSearchDetails />} />
+      </Routes>
+    </div>
+  );
 };
 
 export default App;
