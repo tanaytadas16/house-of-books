@@ -55,6 +55,22 @@ const Signin = () => {
   const handleOnSubmit = async (event) => {
     event.preventDefault();
 
+    let dataBody = {
+      email: email,
+      password: password,
+    };
+    try {
+      await axios
+        .post('http://localhost:4000/users/login', { data: dataBody })
+        .then(function (response) {
+          console.log(response.data);
+          history('/', { replace: true });
+        });
+    } catch (error) {
+      alert(error.response.data);
+      return;
+    }
+
     try {
       await NativeSignIn(email, password);
       resetFormFields();
@@ -67,6 +83,7 @@ const Signin = () => {
       }
       console.log('Error signing in', error);
     }
+    history('/', { replace: true });
   };
 
   return (
