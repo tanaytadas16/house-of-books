@@ -214,11 +214,10 @@ router.post('/signup', async (req, res) => {
     }
 
     try {
-        let image;
         if (flag !== 'G') {
             let initials = firstName[0] + lastName[0];
             console.log(initials);
-            image = imageData.createImage(initials, email);
+            let image = imageData.createImage(initials, email);
         }
         const newUser = await userData.createUser(
             firstName,
@@ -232,7 +231,7 @@ router.post('/signup', async (req, res) => {
             state,
             zip,
             flag,
-            image === undefined ? 'NA' : '/' + email + '.png'
+            '/' + email + '.png'
         );
         res.status(200).json(newUser);
     } catch (e) {
