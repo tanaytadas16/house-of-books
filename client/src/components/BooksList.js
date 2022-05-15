@@ -4,9 +4,11 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import { Link } from 'react-router-dom';
+import AddToWishlist from './AddToWishlist';
 import axios from 'axios';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
+import { Button } from 'react-bootstrap';
 import '../styles/BookList.scss';
 
 const BookList = () => {
@@ -15,6 +17,12 @@ const BookList = () => {
   const [error, setError] = useState(false);
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
+  const [userWishlistData, setUserWishlistData] = useState([]);
+  const [isInserted, setIsInserted] = useState(0);
+  let userdata = [];
+  const getRandomFloat = (max) => {
+    return (Math.random() * max).toFixed(2);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -45,6 +53,56 @@ const BookList = () => {
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
+  let onClickWishlist = async (bookId, title) => {
+    try {
+      const url = `http://localhost:4000/users/bookshelf/add`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let handleRemoveWishlist = async (bookId, title) => {
+    try {
+      const url = `http://localhost:4000/users/bookshelf/remove`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
+        //
+
+        setUserWishlistData(data.wishlist);
+        if (!userWishlistData.wishlist) setError(true);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [currentUser, isInserted]);
+
+  const checkBook = (id) => {
+    return userWishlistData.some((post, index) => {
+      return post.bookId === id;
+    });
+  };
 
   if (loading) {
     if (error) {
@@ -60,6 +118,12 @@ const BookList = () => {
         </div>
       );
     }
+  } else if (bookDetailsData && bookDetailsData.length === 0) {
+    return (
+      <div>
+        <h2>No books found in the list</h2>
+      </div>
+    );
   } else {
     return (
       <div className='books-container'>
@@ -80,6 +144,21 @@ const BookList = () => {
                 </span>
                 <span>Add to Cart</span>
               </button>
+            )}
+            {user && !checkBook(_id) && (
+              <AddToWishlist
+                bookid={book._id}
+                handleOnClick={() => onClickWishlist(book._id, book.title)}
+              />
+            )}
+            {user && checkBook(_id) && (
+              <Button
+                variant='contained'
+                color='error'
+                onClick={() => handleRemoveWishlist(book._id, book.title)}
+              >
+                Remove from Wishlist
+              </Button>
             )}
           </div>
         ))}

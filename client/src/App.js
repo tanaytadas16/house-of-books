@@ -9,11 +9,13 @@ import MostPopular from './components/MostPopular';
 import RecentBooks from './components/RecentBooks';
 import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
+import Bookshelf from './components/Bookshelf';
 import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
 import RentedBooks from './components/RentedBooks';
 import MyOrders from './components/MyOrders';
 import './App.scss';
+import BookSearchDetails from './components/SearchBook';
 
 const App = () => {
   return (
@@ -31,8 +33,10 @@ const App = () => {
         <Route exact path='/books/recents' element={<RecentBooks />} />
         <Route exact path='/users/profile' element={<ProfilePage />} />
         <Route exact path='/users/myOrders' element={<MyOrders />} />
+        <Route exact path='/users/bookshelf' element={<Bookshelf />} />
         <Route path='/checkout' element={<Checkout />} />
         <Route exact path='/users/rentedbooks' element={<RentedBooks />} />
+        <Route exact path='/books/search/' element={<BookSearchDetails />} />
       </Routes>
     </div>
   );

@@ -27,18 +27,12 @@ const Library = (props) => {
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
+        setError(true);
         console.log(e);
       }
     }
     fetchData();
   }, [currentUser]);
-
-  // function alertFunc(date) {
-  //     alert(
-  //         'Book has been rented. Please return it within 30 days. Your end date for return is ' +
-  //             date
-  //     );
-  // }
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -78,6 +72,57 @@ const Library = (props) => {
     };
     setToast(true);
     dispatch(addItemToCart(cartItems, dataBody));
+  };
+
+  let onClickWishlist = async (bookId, title) => {
+    try {
+      // console.log(bookId);
+      const url = `http://localhost:4000/users/bookshelf/add`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let handleRemoveWishlist = async (bookId, title) => {
+    try {
+      const url = `http://localhost:4000/users/bookshelf/remove`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
+
+        setUserWishlistData(data.wishlist);
+        if (!userWishlistData.wishlist) setError(true);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [currentUser, isInserted]);
+
+  const checkBook = (id) => {
+    return userWishlistData.some((post, index) => {
+      return post.bookId === id;
+    });
   };
 
   if (loading) {
@@ -120,7 +165,22 @@ const Library = (props) => {
                   <span>Add to Cart</span>
                 </button>
               )}
-              {/* <Toast
+              {user && !checkBook(_id) && (
+                <AddToWishlist
+                  bookid={book._id}
+                  handleOnClick={() => onClickWishlist(book._id, book.title)}
+                />
+              )}
+              {user && checkBook(_id) && (
+                <Button
+                  variant='contained'
+                  color='error'
+                  onClick={() => handleRemoveWishlist(book._id, book.title)}
+                >
+                  Remove from Wishlist
+                </Button>
+              )}
+              <Toast
                 onClose={() => setToast(false)}
                 show={toast}
                 delay={3000}
@@ -132,7 +192,7 @@ const Library = (props) => {
                 <Toast.Body>
                   Rented books are available only for 30 days!
                 </Toast.Body>
-              </Toast> */}
+              </Toast>
             </div>
           ))}
         </div>

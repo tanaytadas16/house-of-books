@@ -22,19 +22,71 @@ const NewAdditions = (props) => {
     console.log('useEffect fired');
     async function fetchData() {
       try {
-        const url = `https://houseof-books.herokuapp.com/books/newAdditions`;
+        const url = `http://localhost:4000/books/newAdditions`;
         const { data } = await axios.get(url);
         console.log(data);
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
+        setError(true);
         console.log(e);
       }
     }
     fetchData();
   }, [id, currentUser]);
+  let onClickWishlist = async (bookId, title) => {
+    try {
+      // console.log(bookId);
+      const url = `http://localhost:4000/users/bookshelf/add`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      // console.log(data);
+      if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+      // setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let handleRemoveWishlist = async (bookId, title) => {
+    try {
+      // console.log('inside remove onclick');
+      const url = `http://localhost:4000/users/bookshelf/remove`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      // console.log(data);
+      if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // console.log(bookId);.
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
+        //
+
+        setUserWishlistData(data.wishlist);
+        if (!userWishlistData.wishlist) setError(true);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [currentUser, isInserted]);
 
   const buyBook = (title, bookId, price, imageUrl) => {
+    price = parseFloat(price);
     let dataBody = {
       email: user.email,
       name: title,
@@ -44,6 +96,12 @@ const NewAdditions = (props) => {
       flag: 'B',
     };
     dispatch(addItemToCart(cartItems, dataBody));
+  };
+
+  const checkBook = (id) => {
+    return userWishlistData.some((post, index) => {
+      return post.bookId === id;
+    });
   };
 
   if (loading) {
@@ -79,6 +137,21 @@ const NewAdditions = (props) => {
                   ${isNaN(parseInt(price)) ? 7.0 : price}
                 </span>
                 <span>Add to Cart</span>
+              </Button>
+            )}
+            {user && !checkBook(_id) && (
+              <AddToWishlist
+                bookid={book._id}
+                handleOnClick={() => onClickWishlist(book._id, book.title)}
+              />
+            )}
+            {user && checkBook(_id) && (
+              <Button
+                variant='contained'
+                color='error'
+                onClick={() => handleRemoveWishlist(book._id, book.title)}
+              >
+                Remove from Wishlist
               </Button>
             )}
           </div>

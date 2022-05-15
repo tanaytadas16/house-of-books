@@ -44,6 +44,11 @@ const Navigation = () => {
                             RECENTLY VIEWED
                         </Link> */}
             {currentUser ? (
+              <Link className='nav-link' to='/users/bookshelf'>
+                BOOKSHELF
+              </Link>
+            ) : null}
+            {currentUser ? (
               <span className='nav-link' onClick={signOutHandler}>
                 SIGN OUT
               </span>

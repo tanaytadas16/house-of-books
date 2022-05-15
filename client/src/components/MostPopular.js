@@ -7,6 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebase';
 import { UserContext } from '../contexts/userContext';
 import noImage from '../assets/images/no-image.jpeg';
+import AddToWishlist from './AddToWishlist';
+import { Button } from '@mui/material';
 import {
   makeStyles,
   Card,
@@ -57,6 +59,8 @@ const MostPopular = () => {
   const history = useNavigate();
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
+  const [userWishlistData, setUserWishlistData] = useState([]);
+  const [isInserted, setIsInserted] = useState(0);
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -74,7 +78,7 @@ const MostPopular = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
@@ -91,8 +95,63 @@ const MostPopular = () => {
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
+  let onClickWishlist = async (bookId, title) => {
+    try {
+      // console.log(bookId);
+      const url = `http://localhost:4000/users/bookshelf/add`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      // console.log(data);
+      if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+      // setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let handleRemoveWishlist = async (bookId, title) => {
+    try {
+      // console.log('inside remove onclick');
+      const url = `http://localhost:4000/users/bookshelf/remove`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      // console.log(data);
+      if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // console.log(bookId);.
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
+        //
+
+        setUserWishlistData(data.wishlist);
+        if (!userWishlistData.wishlist) setError(true);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [currentUser, isInserted]);
+
+  let checkBook;
 
   const buildCard = (book) => {
+    checkBook = userWishlistData.some((post, index) => {
+      return post.bookId === book._id;
+    });
     return (
       <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
         <Card className={classes.card} variant='outlined'>
@@ -134,19 +193,36 @@ const MostPopular = () => {
               </CardContent>
             </Link>
           </CardActionArea>
-          <button
-            type='button'
-            className='button'
-            onClick={() => {
-              if (auth.currentUser) {
-                buyBook(book.title, book._id, book.price, book.url);
-              } else {
-                alert('You need to sign in first to buy the book');
-              }
-            }}
-          >
-            Buy
-          </button>
+          {user && (
+            <button
+              type='button'
+              className='button'
+              onClick={() => {
+                if (auth.currentUser) {
+                  buyBook(book.title, book._id, book.price, book.url);
+                } else {
+                  alert('You need to sign in first to buy the book');
+                }
+              }}
+            >
+              Buy
+            </button>
+          )}
+          {user && !checkBook && (
+            <AddToWishlist
+              bookid={book._id}
+              handleOnClick={() => onClickWishlist(book._id, book.title)}
+            />
+          )}
+          {user && checkBook && (
+            <Button
+              variant='contained'
+              color='error'
+              onClick={() => handleRemoveWishlist(book._id, book.title)}
+            >
+              Remove from Wishlist
+            </Button>
+          )}
         </Card>
       </Grid>
     );
@@ -166,6 +242,12 @@ const MostPopular = () => {
         </div>
       );
     }
+  } else if (bookDetailsData && bookDetailsData.length === 0) {
+    return (
+      <div>
+        <h2>No books found in the Popular list</h2>
+      </div>
+    );
   } else {
     card =
       bookDetailsData &&

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,9 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import Button from './Button';
+import { Button } from 'react-bootstrap';
+import AddToWishlist from './AddToWishlist';
+import { UserContext } from '../contexts/userContext';
 import { Toast } from 'react-bootstrap';
 import '../styles/BookDetails.scss';
 
@@ -26,12 +28,17 @@ const BookDetails = (props) => {
   const history = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
+  const [userWishlistData, setUserWishlistData] = useState([]);
+  const [isInserted, setIsInserted] = useState(0);
+  const { currentUser } = useContext(UserContext);
+  const [error, setError] = useState(false);
+  let checkBook;
 
   useEffect(() => {
     console.log('useEffect fired');
     async function fetchData() {
       try {
-        const url = `https://houseof-books.herokuapp.com/books/${id}`;
+        const url = `http://localhost:4000/books/${id}`;
         const { data } = await axios.get(url);
         console.log(data);
         setBookDetailsData(data);
@@ -62,13 +69,7 @@ const BookDetails = (props) => {
     ].join('-');
   }
 
-  //   function alertFunc(date) {
-  //     alert(
-  //       'Book has been rented. Please return it within 30 days. Your end date for return is ' +
-  //         date
-  //     );
-  //   }
-  const buyBook = (title, bookId, quantity, price, imageUrl) => {
+  const buyBook = (title, bookId, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     console.log(todayDate);
 
@@ -77,20 +78,10 @@ const BookDetails = (props) => {
       name: title,
       price: price,
       bookId: bookId,
-      quantity: quantity,
-      totalPrice: quantity * price,
       imageUrl: imageUrl,
       flag: 'B',
     };
     dispatch(addItemToCart(cartItems, dataBody));
-    // axios
-    //   .post('https://houseof-books.herokuapp.com/books/purchase', {
-    //     data: dataBody,
-    //   })
-    //   .then(function (response) {
-    //     console.log(response.data);
-    //     history('/', { replace: true }); //to be changed to cart
-    //   });
   };
 
   const rentBook = (title, bookId, quantity, price, imageUrl) => {
@@ -111,15 +102,6 @@ const BookDetails = (props) => {
     };
     setToast(true);
     dispatch(addItemToCart(cartItems, dataBody));
-    // axios
-    //   .post('https://houseof-books.herokuapp.com/library', {
-    //     data: dataBody,
-    //   })
-    //   .then(function (response) {
-    //     console.log(response.data);
-    //     alertFunc(endDate);
-    //     history('/', { replace: true }); //to be changed to cart
-    //   });
   };
 
   const handleChange = (event) => {
@@ -168,14 +150,54 @@ const BookDetails = (props) => {
   //       history(`/books/${bookDetailsData._id}`, { replace: true });
   //     });
   // };
+  let onClickWishlist = async (bookId, title) => {
+    try {
+      const url = `http://localhost:4000/users/bookshelf/add`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let handleRemoveWishlist = async (bookId, title) => {
+    try {
+      const url = `http://localhost:4000/users/bookshelf/remove`;
+      const { data } = await axios.post(url, {
+        email: currentUser.email,
+        bookId: bookId,
+        title: title,
+      });
+      if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `http://localhost:4000/users/profile`;
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
 
+        setUserWishlistData(data.wishlist);
+        if (!userWishlistData.wishlist) setError(true);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [currentUser, isInserted]);
   if (loading) {
     return (
       <div>
         {isNaN(bookDetailsData) ? (
-          <p>
-            <h1>Error 404: Page not found</h1>
-          </p>
+          <h1>Error 404: Page not found</h1>
         ) : (
           <div>
             <h2>Loading....</h2>
@@ -184,6 +206,9 @@ const BookDetails = (props) => {
       </div>
     );
   } else {
+    checkBook = userWishlistData.some((post, index) => {
+      return post.bookId === bookDetailsData._id;
+    });
     return (
       <>
         <div className='book-details-container' key={bookDetailsData._id}>
@@ -213,6 +238,17 @@ const BookDetails = (props) => {
               </span>
               <span>Add to Cart</span>
             </button>
+          )}
+          {user && checkBook && (
+            <Button
+              variant='contained'
+              color='error'
+              onClick={() =>
+                handleRemoveWishlist(bookDetailsData._id, bookDetailsData.title)
+              }
+            >
+              Remove from Wishlist
+            </Button>
           )}
           <Toast
             onClose={() => setToast(false)}
@@ -303,9 +339,7 @@ const BookDetails = (props) => {
                 <option value='5'>5 Stars</option>
               </select>
               <br></br> <br></br>
-              <Button buttonType='inverted' type='submit'>
-                Post Review
-              </Button>
+              <Button type='submit'>Post Review</Button>
             </form>
           </div>
         ) : null}
