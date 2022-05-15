@@ -60,7 +60,9 @@ const MyOrders = () => {
       try {
         console.log('Before axios call');
         const url = `http://localhost:4000/users/myOrders`;
-        const { data } = await axios.post(url, { data: currentUser.email });
+        const { data } = await axios.post(url, {
+          data: currentUser.email,
+        });
         console.log(data);
         setBookDetailsData(data);
         setLoading(false);
@@ -174,6 +176,12 @@ const MyOrders = () => {
         </div>
       );
     }
+  } else if (bookDetailsData && bookDetailsData.length === 0) {
+    return (
+      <div>
+        <h2>No orders found in the order history</h2>
+      </div>
+    );
   } else {
     card =
       bookDetailsData &&
