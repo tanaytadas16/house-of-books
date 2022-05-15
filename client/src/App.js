@@ -54,11 +54,7 @@ const App = () => {
                     path='/books/search/'
                     element={<BookSearchDetails />}
                 />
-                <Route
-                    exact
-                    path='/books/genres/:genre'
-                    element={<BookGenres />}
-                />
+                <Route exact path='/books/genres' element={<BookGenres />} />
             </Routes>
         </div>
     );
