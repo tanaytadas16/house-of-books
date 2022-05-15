@@ -38,6 +38,9 @@ const Navigation = () => {
             <Link className='nav-link' to='/books/newAdditions'>
               NEW ADDITIONS
             </Link>
+            <Link className='nav-link' to='/books/genres/fantasy'>
+              BOOKS BY GENRE
+            </Link>
             <Link className='nav-link' to='/library'>
               LIBRARY
             </Link>

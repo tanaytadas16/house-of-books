@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { createNativeUser } from '../firebase/firebase';
@@ -6,6 +6,7 @@ import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import '../styles/Signup.scss';
+import { validateCallback } from '@firebase/util';
 
 const defaultFormFields = {
   firstName: '',
@@ -37,8 +38,17 @@ const Signup = () => {
     zip,
   } = formFields;
 
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
+
   const { setCurrentUser } = useContext(UserContext);
   const history = useNavigate();
+
+  useEffect(() => {
+    console.log(formErrors);
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+    }
+  }, [formErrors]);
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -50,8 +60,51 @@ const Signup = () => {
     setFormFields({ ...formFields, [name]: value });
   };
 
+  const validate = (values) => {
+    const errors = {};
+    const nameRegex = /[^a-zA-Z]/;
+    const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    const phoneRegex = /^\d{10}$/im;
+    const zipRegex = /(^\d{5}$)|(^\d{5}-\d{4}$)/;
+
+    if (nameRegex.test(values.firstName)) {
+      errors.firstName = 'First name should contain only letters';
+    }
+    if (nameRegex.test(values.lastName)) {
+      errors.lastName = 'Last name should contain only letters';
+    }
+    if (!emailRegex.test(values.email)) {
+      errors.email = 'Given email id is invalid';
+    }
+    if (values.password.length < 6) {
+      errors.password = 'Password should not be less than 6 characters';
+    }
+    if (values.confirmPassword.length < 6) {
+      errors.confirmPassword =
+        'Confirm Password should not be less than 6 characters';
+    }
+    if (values.username.length < 4) {
+      errors.username = 'Username should not be less than 4 characters';
+    }
+    if (!phoneRegex.test(values.phoneNumber)) {
+      errors.phoneNumber = 'Please enter phone number in correct format';
+    }
+    if (!zipRegex.test(values.zip)) {
+      errors.zip = 'Please enter zip code in correct format';
+    }
+    if (values.address.length < 2) {
+      errors.address = 'Address cannot be one character ';
+    }
+    if (values.city.length < 2) {
+      errors.city = 'City name cannot be one character ';
+    }
+    return errors;
+  };
+
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+    setFormErrors(validate(formFields));
+    setIsSubmit(true);
 
     if (password !== confirmPassword) {
       alert('Passwords do not match');
@@ -80,7 +133,7 @@ const Signup = () => {
           history('/', { replace: true });
         });
     } catch (error) {
-      alert(error.response.data);
+      // alert(error.response.data);
       return;
     }
 
@@ -112,6 +165,7 @@ const Signup = () => {
           value={firstName}
           name='firstName'
         />
+        <p>{formErrors.firstName}</p>
         <FormInput
           label='Last Name'
           type='text'
@@ -120,6 +174,7 @@ const Signup = () => {
           value={lastName}
           name='lastName'
         />
+        <p>{formErrors.lastName}</p>
         <FormInput
           label='Email'
           type='email'
@@ -128,6 +183,7 @@ const Signup = () => {
           value={email}
           name='email'
         />
+        <p>{formErrors.email}</p>
         <FormInput
           label='Phone Number'
           type='text'
@@ -136,6 +192,7 @@ const Signup = () => {
           value={phoneNumber}
           name='phoneNumber'
         />
+        <p>{formErrors.phoneNumber}</p>
         <FormInput
           label='Username'
           type='text'
@@ -144,6 +201,7 @@ const Signup = () => {
           value={username}
           name='username'
         />
+        <p>{formErrors.username}</p>
         <FormInput
           label='Password'
           type='password'
@@ -152,6 +210,7 @@ const Signup = () => {
           value={password}
           name='password'
         />
+        <p>{formErrors.password}</p>
         <FormInput
           label='Confirm Password'
           type='password'
@@ -168,6 +227,8 @@ const Signup = () => {
           value={address}
           name='address'
         />
+        <p>{formErrors.ConfirmPassword}</p>
+        <p>{formErrors.address}</p>
         <FormInput
           label='City'
           type='text'
@@ -176,6 +237,7 @@ const Signup = () => {
           value={city}
           name='city'
         />
+        <p>{formErrors.city}</p>
         <label>State</label>
         <select
           className='form-input-label'
@@ -253,6 +315,7 @@ const Signup = () => {
           value={zip}
           name='zip'
         />
+        <p>{formErrors.zip}</p>
 
         <Button type='submit'>Sign Up</Button>
       </form>

@@ -73,7 +73,7 @@ function checkIsName(s) {
 }
 
 function checkIsPassword(s) {
-  if (s.length < 8) throw 'Given password size is less than 8';
+  if (s.length < 6) throw 'Given password size is less than 8';
 }
 
 function checkIsEmail(s) {
