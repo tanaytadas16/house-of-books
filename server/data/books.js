@@ -169,9 +169,7 @@ function validateBookCreations(
     price,
     publisher,
     title,
-    yearPublished,
-    popular,
-    availableForRent
+    yearPublished
 ) {
     validateStringParams(ISBN, 'ISBN');
     validateWebsite(url, 'url');
@@ -186,8 +184,8 @@ function validateBookCreations(
     validateNumberParams(originalPublicationYear, 'originalPublicationYear');
     validateNumberParams(price, 'price');
     validateNumberParams(yearPublished, 'yearPublished');
-    validateBoolParams(popular, 'popular');
-    validateBoolParams(availableForRent, 'availableForRent');
+    // validateBoolParams(popular, 'popular');
+    // validateBoolParams(availableForRent, 'availableForRent');
 }
 async function addNewBook(
     ISBN,
@@ -203,60 +201,62 @@ async function addNewBook(
     publisher,
     title,
     yearPublished,
-    popular,
-    availableForRent
+    count
 ) {
-    validateBookCreations(
-        ISBN,
-        url,
-        description,
-        author,
-        averageRating,
-        binding,
-        genre,
-        numberofPages,
-        originalPublicationYear,
-        price,
-        publisher,
-        title,
-        yearPublished,
-        popular,
-        availableForRent
-    );
-    ISBN = ISBN.trim();
-    description = description.trim();
-    author = author.trim();
-    binding = binding.trim();
-    genre = genre.trim();
-    publisher = publisher.trim();
-    title = title.trim();
-    const booksCollection = await books();
-    let newBook = {
-        ISBN: ISBN,
-        url: url,
-        description: description,
-        author: author,
-        averageRating: averageRating,
-        binding: binding,
-        genre: genre,
-        numberofPages: numberofPages,
-        originalPublicationYear: originalPublicationYear,
-        price: price,
-        publisher: publisher,
-        title: title,
-        yearPublished: yearPublished,
-        popular: popular,
-        availableForRent: availableForRent,
-    };
-    const insertedDatadetails = await booksCollection.insertOne(newBook);
-    if (insertedDatadetails.insertedCount === 0) {
-        throw 'Book could not be inserted ';
+    try {
+        validateBookCreations(
+            ISBN,
+            url,
+            description,
+            author,
+            averageRating,
+            binding,
+            genre,
+            numberofPages,
+            originalPublicationYear,
+            price,
+            publisher,
+            title,
+            yearPublished
+        );
+        console.log('add data');
+        ISBN = ISBN.trim();
+        description = description.trim();
+        author = author.trim();
+        binding = binding.trim();
+        genre = genre.trim();
+        publisher = publisher.trim();
+        title = title.trim();
+        const booksCollection = await books();
+        let newBook = {
+            ISBN: ISBN,
+            url: url,
+            description: description,
+            author: author,
+            averageRating: averageRating,
+            binding: binding,
+            genre: genre,
+            numberofPages: numberofPages,
+            originalPublicationYear: originalPublicationYear,
+            price: price,
+            publisher: publisher,
+            title: title,
+            yearPublished: yearPublished,
+            count: count,
+        };
+        const insertedDatadetails = await booksCollection.insertOne(newBook);
+        if (insertedDatadetails.insertedCount === 0) {
+            throw 'Book could not be inserted ';
+        }
+
+        const insertedBookId = insertedDatadetails.insertedId.toString();
+
+        const bookDetails = await getById(insertedBookId);
+        return bookDetails;
+    } catch (error) {
+        console.log(error);
+        throwCatchError(error);
     }
-
-    const insertedBookId = insertedDatadetails.insertedId.toString();
-
-    const bookDetails = await getById(insertedBookId);
-    return bookDetails;
 }
 function validateCreations(email, bookId, startDate, endDate, flag) {
     validateEmail(email);

@@ -16,6 +16,7 @@ import RentedBooks from './components/RentedBooks';
 import './App.css';
 import MyOrders from './components/MyOrders';
 import BookSearchDetails from './components/SearchBook';
+import AddNewBook from './components/AddNewBook';
 
 const App = () => {
     return (
@@ -42,6 +43,7 @@ const App = () => {
                 <Route exact path="/users/profile" element={<ProfilePage />} />
                 <Route exact path="/users/myOrders" element={<MyOrders />} />
                 <Route exact path="/users/bookshelf" element={<Bookshelf />} />
+                <Route exact path="/addNewBook" element={<AddNewBook />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route
                     exact
