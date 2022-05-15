@@ -404,12 +404,12 @@ async function getMostPopular() {
 }
 
 async function searchBooks(searchVal) {
+    validateStringParams(searchVal, "searchVal");
     const booksCollection = await books();
     var re = new RegExp("^" + searchVal + ".*", "i");
     const booksList = await booksCollection
         .find({title: {$regex: re}})
         .toArray();
-    console.log(booksList);
     if (booksList.length === 0) {
         return [];
     }

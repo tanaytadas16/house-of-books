@@ -60,7 +60,6 @@ const BookSearchDetails = (props) => {
                 const {data} = await axios.get(
                     " http://localhost:4000/books/search/" + searchTerm
                 );
-                console.log("searchdata", data);
                 setSearchData(data);
                 setLoading(false);
             } catch (e) {
