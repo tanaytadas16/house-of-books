@@ -112,66 +112,66 @@ const ProfilePage = () => {
         }
     } else {
         return (
-            <div className='sign-up-container'>
+            <div className="sign-up-container">
                 <h2>Profile Page</h2>
                 {userData && userData.image ? (
-                    <img alt='profile picture' src={userData.image} />
+                    <img alt="profile picture" src={userData.image} />
                 ) : (
-                    <img alt='profile picture' src='/defaultDp.png' />
+                    <img alt="profile picture" src="/defaultDp.png" />
                 )}
                 <form onSubmit={handleOnSubmit}>
                     <FormInput
-                        label='First Name'
-                        type='text'
+                        label="First Name"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.firstName ? userData.firstName : ''}
-                        name='firstName'
+                        name="firstName"
                     />
                     <FormInput
-                        label='Last Name'
-                        type='text'
+                        label="Last Name"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.lastName ? userData.lastName : ''}
-                        name='lastName'
+                        name="lastName"
                     />
                     <FormInput
-                        label='Email'
-                        type='email'
+                        label="Email"
+                        type="email"
                         required
                         onChange={handleChange}
                         value={userData.email ? userData.email : ''}
-                        name='email'
+                        name="email"
                         disabled
                     />
                     <FormInput
-                        label='Phone Number'
-                        type='text'
+                        label="Phone Number"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.phoneNumber ? userData.phoneNumber : ''}
-                        name='phoneNumber'
+                        name="phoneNumber"
                     />
                     <FormInput
-                        label='Username'
-                        type='text'
+                        label="Username"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.username ? userData.username : ''}
-                        name='username'
+                        name="username"
                     />
                     <FormInput
-                        label='Password'
-                        type='password'
+                        label="Password"
+                        type="password"
                         required
                         onChange={handleChange}
                         value={userData.password ? userData.password : ''}
-                        name='password'
+                        name="password"
                     />
                     <FormInput
-                        label='Confirm Password'
-                        type='password'
+                        label="Confirm Password"
+                        type="password"
                         required
                         onChange={handleChange}
                         value={
@@ -179,84 +179,84 @@ const ProfilePage = () => {
                                 ? userData.confirmPassword
                                 : ''
                         }
-                        name='confirmPassword'
+                        name="confirmPassword"
                     />
                     <FormInput
-                        label='Address'
-                        type='text'
+                        label="Address"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.address ? userData.address : ''}
-                        name='address'
+                        name="address"
                     />
                     <FormInput
-                        label='City'
-                        type='text'
+                        label="City"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.city ? userData.city : ''}
-                        name='city'
+                        name="city"
                     />
                     <label>State</label>
                     <select
-                        className='form-input-label'
-                        label='State'
+                        className="form-input-label"
+                        label="State"
                         required
                         onChange={handleChange}
                         value={userData.state ? userData.state : ''}
-                        name='state'
+                        name="state"
                     >
-                        <option value='AL'>Alabama</option>
-                        <option value='AK'>Alaska</option>
-                        <option value='AZ'>Arizona</option>
-                        <option value='AR'>Arkansas</option>
-                        <option value='CA'>California</option>
-                        <option value='CO'>Colorado</option>
-                        <option value='CT'>Connecticut</option>
-                        <option value='DE'>Delaware</option>
-                        <option value='DC'>District Of Columbia</option>
-                        <option value='FL'>Florida</option>
-                        <option value='GA'>Georgia</option>
-                        <option value='HI'>Hawaii</option>
-                        <option value='ID'>Idaho</option>
-                        <option value='IL'>Illinois</option>
-                        <option value='IN'>Indiana</option>
-                        <option value='IA'>Iowa</option>
-                        <option value='KS'>Kansas</option>
-                        <option value='KY'>Kentucky</option>
-                        <option value='LA'>Louisiana</option>
-                        <option value='ME'>Maine</option>
-                        <option value='MD'>Maryland</option>
-                        <option value='MA'>Massachusetts</option>
-                        <option value='MI'>Michigan</option>
-                        <option value='MN'>Minnesota</option>
-                        <option value='MS'>Mississippi</option>
-                        <option value='MO'>Missouri</option>
-                        <option value='MT'>Montana</option>
-                        <option value='NE'>Nebraska</option>
-                        <option value='NV'>Nevada</option>
-                        <option value='NH'>New Hampshire</option>
-                        <option value='NJ'>New Jersey</option>
-                        <option value='NM'>New Mexico</option>
-                        <option value='NY'>New York</option>
-                        <option value='NC'>North Carolina</option>
-                        <option value='ND'>North Dakota</option>
-                        <option value='OH'>Ohio</option>
-                        <option value='OK'>Oklahoma</option>
-                        <option value='OR'>Oregon</option>
-                        <option value='PA'>Pennsylvania</option>
-                        <option value='RI'>Rhode Island</option>
-                        <option value='SC'>South Carolina</option>
-                        <option value='SD'>South Dakota</option>
-                        <option value='TN'>Tennessee</option>
-                        <option value='TX'>Texas</option>
-                        <option value='UT'>Utah</option>
-                        <option value='VT'>Vermont</option>
-                        <option value='VA'>Virginia</option>
-                        <option value='WA'>Washington</option>
-                        <option value='WV'>West Virginia</option>
-                        <option value='WI'>Wisconsin</option>
-                        <option value='WY'>Wyoming</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="DC">District Of Columbia</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
                     </select>
                     {/* <FormInput
             label='State'
@@ -267,14 +267,14 @@ const ProfilePage = () => {
             name='state'
           /> */}
                     <FormInput
-                        label='Zip'
-                        type='text'
+                        label="Zip"
+                        type="text"
                         required
                         onChange={handleChange}
                         value={userData.zip ? userData.zip : ''}
-                        name='zip'
+                        name="zip"
                     />
-                    <Button type='submit'>Update</Button>
+                    <Button type="submit">Update</Button>
                 </form>
             </div>
         );

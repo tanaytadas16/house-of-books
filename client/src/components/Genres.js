@@ -1,42 +1,46 @@
-import React, {useState, useEffect, useContext} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCartItems} from "../store/selector/cartSelector";
-import {addItemToCart} from "../store/actions/cartAction";
-import {UserContext} from "../contexts/userContext";
-import {auth} from "../firebase/firebase";
-import axios from "axios";
-import AddToWishlist from "./AddToWishlist";
-import {Link, useParams} from "react-router-dom";
-import noImage from "../assets/images/no-image.jpeg";
-import {Button} from "react-bootstrap";
-import "../styles/NewAdditions.scss";
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
+import { UserContext } from '../contexts/userContext';
+import { auth } from '../firebase/firebase';
+import axios from 'axios';
+import AddToWishlist from './AddToWishlist';
+import { Link, useParams } from 'react-router-dom';
+import noImage from '../assets/images/no-image.jpeg';
+import { Button } from 'react-bootstrap';
+import '../styles/NewAdditions.scss';
 
 const BookGenres = (props) => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     const [error, setError] = useState(false);
-    const {currentUser} = useContext(UserContext);
+    const { currentUser } = useContext(UserContext);
     const dispatch = useDispatch();
     const cartItems = useSelector(selectCartItems);
     const user = auth.currentUser;
     const [userWishlistData, setUserWishlistData] = useState([]);
     const [isInserted, setIsInserted] = useState(0);
-    let {genre} = useParams();
+    let { genre } = useParams();
     const [genreNew, setGenre] = useState(undefined);
-    genre = genreNew;
+    // setGenre(genre);
+    // genre = genreNew;
 
     const handleChange = (event) => {
-        const {name, value} = event.target;
-        console.log("value", value);
+        const { name, value } = event.target;
+        console.log('value', value);
         setGenre(value);
+        navigate(`/books/genres/${value}`);
     };
 
     useEffect(() => {
-        console.log("useEffect fired");
+        console.log('useEffect fired');
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/books/genres/${genre}`;
-                const {data} = await axios.get(url);
+                const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
@@ -50,7 +54,7 @@ const BookGenres = (props) => {
     let onClickWishlist = async (bookId, title) => {
         try {
             const url = `http://localhost:4000/users/bookshelf/add`;
-            const {data} = await axios.post(url, {
+            const { data } = await axios.post(url, {
                 email: currentUser.email,
                 bookId: bookId,
                 title: title,
@@ -64,7 +68,7 @@ const BookGenres = (props) => {
         try {
             // console.log('inside remove onclick');
             const url = `http://localhost:4000/users/bookshelf/remove`;
-            const {data} = await axios.post(url, {
+            const { data } = await axios.post(url, {
                 email: currentUser.email,
                 bookId: bookId,
                 title: title,
@@ -80,7 +84,7 @@ const BookGenres = (props) => {
             try {
                 // console.log(bookId);.
                 const url = `http://localhost:4000/users/profile`;
-                const {data} = await axios.post(url, {
+                const { data } = await axios.post(url, {
                     data: currentUser.email,
                 });
                 //
@@ -103,7 +107,7 @@ const BookGenres = (props) => {
             bookId: bookId,
             price: isNaN(parseInt(price)) ? 7.0 : price,
             imageUrl: imageUrl,
-            flag: "B",
+            flag: 'B',
         };
         dispatch(addItemToCart(cartItems, dataBody));
     };
@@ -118,9 +122,7 @@ const BookGenres = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -130,46 +132,46 @@ const BookGenres = (props) => {
         );
     } else {
         return (
-            <div className='new-additions-container'>
+            <div className="new-additions-container">
                 <div>
                     <label>Genre</label>
                     <select
-                        className='form-input-label'
-                        label='Genre'
+                        className="form-input-label"
+                        label="Genre"
                         required
                         onChange={handleChange}
                         value={genre}
-                        name='Genre'
+                        name="Genre"
                     >
-                        {" "}
-                        <option value='thriller'>Thriller</option>
-                        <option value='fiction'>Fiction</option>
-                        <option value='fantasy'>Fantasy</option>
-                        <option value='self-help'>Self Help</option>
-                        <option value='biography'>Biography</option>
-                        <option value='romance'>Romance</option>
-                        <option value='humor'>Humor</option>
+                        {' '}
+                        <option value="thriller">Thriller</option>
+                        <option value="fiction">Fiction</option>
+                        <option value="fantasy">Fantasy</option>
+                        <option value="self-help">Self Help</option>
+                        <option value="biography">Biography</option>
+                        <option value="romance">Romance</option>
+                        <option value="humor">Humor</option>
                     </select>
                 </div>
                 {bookDetailsData &&
-                    bookDetailsData.map(({_id, url, title, price}) => (
-                        <div className='new-additions-card-container' key={_id}>
+                    bookDetailsData.map(({ _id, url, title, price }) => (
+                        <div className="new-additions-card-container" key={_id}>
                             <Link to={`/books/${_id}`}>
                                 <img
                                     src={url ? url : noImage}
                                     alt={`${title}`}
                                 />
                             </Link>
-                            <span className='title'>{title}</span>
+                            <span className="title">{title}</span>
                             {user && (
                                 <Button
-                                    className='btn'
-                                    variant='primary'
+                                    className="btn"
+                                    variant="primary"
                                     onClick={() =>
                                         buyBook(title, _id, price, url)
                                     }
                                 >
-                                    <span className='price'>
+                                    <span className="price">
                                         ${isNaN(parseInt(price)) ? 7.0 : price}
                                     </span>
                                     <span>Add to Cart</span>
@@ -185,8 +187,8 @@ const BookGenres = (props) => {
                             )}
                             {user && checkBook(_id) && (
                                 <Button
-                                    variant='contained'
-                                    color='error'
+                                    variant="contained"
+                                    color="error"
                                     onClick={() =>
                                         handleRemoveWishlist(_id, title)
                                     }
