@@ -77,7 +77,7 @@ const BookDetails = (props) => {
         console.log('useEffect fired');
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books/${id}`;
+                const url = `http://localhost:4000/books/${id}`;
                 const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
@@ -276,7 +276,6 @@ const BookDetails = (props) => {
             </div>
         );
     } else {
-        const price = parseFloat(bookDetailsData.price);
         checkBook = userWishlistData.some((post, index) => {
             return post.bookId === bookDetailsData._id;
         });
@@ -425,7 +424,7 @@ const BookDetails = (props) => {
                                 </dl>
                             </Typography>
                         </CardContent>
-                        {isNaN(price) ? (
+                        {isNaN(parseFloat(bookDetailsData.price)) ? (
                             <button
                                 className="button"
                                 onClick={() =>
