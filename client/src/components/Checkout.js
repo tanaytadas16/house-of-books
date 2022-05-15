@@ -18,6 +18,7 @@ import '../styles/Checkout.scss';
 const Checkout = () => {
   const { currentUser } = useContext(UserContext);
   const cartItems = useSelector(selectCartItems);
+  console.log('Cart Items:', cartItems);
   const cartTotal = useSelector(selectCartTotal);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const Checkout = () => {
     let url = '';
     try {
       cartItems.map((cartItem) => {
+        console.log('CART ITEM:', cartItems);
         if (cartItem.flag === 'B') {
           url = 'http://localhost:4000/books/purchase';
         } else {

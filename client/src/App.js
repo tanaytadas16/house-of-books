@@ -12,8 +12,8 @@ import Authentication from './components/Authentication';
 import ProfilePage from './components/ProfilePage';
 import Checkout from './components/Checkout';
 import RentedBooks from './components/RentedBooks';
-import './App.css';
 import MyOrders from './components/MyOrders';
+import './App.scss';
 
 const App = () => {
   return (

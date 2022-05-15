@@ -1,0 +1,62 @@
+.books-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 10px;
+  row-gap: 125px;
+  margin: 15px;
+  justify-items: center;
+}
+
+.book-card-container {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  img {
+    width: 200px;
+    height: 300px;
+    margin-bottom: 10px;
+    transition: all 0.6s ease-in-out;
+    background-color: #f8f8ff;
+  }
+
+  button {
+    width: 80%;
+    color: #f8f8ff;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    img {
+      background-color: white;
+      transform: scale(1.05);
+    }
+  }
+
+  .title {
+    width: 80%;
+    height: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .btn {
+    font-family: cursive;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #0d6efd;
+    border-radius: 7px;
+    border-color: #0d6efd;
+
+    .price {
+      background-color: white;
+      padding: 5px;
+      background-color: #0d6efd;
+    }
+  }
+}

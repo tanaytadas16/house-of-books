@@ -3,66 +3,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import {
-  makeStyles,
-  Card,
-  CardActionArea,
-  Grid,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@material-ui/core';
-const useStyles = makeStyles({
-  card: {
-    maxWidth: 550,
-    height: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    borderRadius: 5,
-    border: '1px solid #222',
-    boxShadow: '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-    color: '#222',
-  },
-  titleHead: {
-    borderBottom: '1px solid #222',
-    fontWeight: 'bold',
-    color: '#222',
-    fontSize: 'large',
-  },
-  grid: {
-    flexGrow: 1,
-    flexDirection: 'row',
-  },
-  media: {
-    height: '100%',
-    width: '100%',
-  },
-  button: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-});
+// import { Button } from 'react-bootstrap';
+import '../styles/BookList.scss';
 
-const BooksList = () => {
+const BookList = () => {
   const [loading, setLoading] = useState(true);
-  const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
-  let card = null;
 
   useEffect(() => {
     async function fetchData() {
       try {
         const url = `https://houseof-books.herokuapp.com/books`;
         const { data } = await axios.get(url);
-        console.log(data);
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
@@ -87,78 +46,18 @@ const BooksList = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (title, bookId, quantity, price, imageUrl) => {
-    price = parseFloat(price);
-    let todayDate = formatDate(new Date());
+  const buyBook = (title, bookId, price, imageUrl) => {
     let dataBody = {
       email: user.email,
       name: title,
       bookId: bookId,
-      price: price,
-      quantity: quantity,
-      totalPrice: quantity * price,
+      price: isNaN(parseInt(price)) ? 7.0 : price,
       imageUrl: imageUrl,
       flag: 'B',
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
 
-  const buildCard = (book) => {
-    return (
-      <Grid item xs={10} sm={7} md={5} lg={4} xl={3} height={45} key={book._id}>
-        <Card className={classes.card} variant='outlined'>
-          <CardActionArea>
-            <Link to={`/books/${book._id}`}>
-              <CardMedia
-                className={classes.media}
-                component='img'
-                image={book.url ? book.url : noImage}
-                title='book image'
-              />
-              <CardContent>
-                <Typography
-                  variant='body2'
-                  color='textSecondary'
-                  component='span'
-                >
-                  <p className='title1'>{book.title}</p>
-                  <dl>
-                    <p>
-                      <dt className='title'>Genre:</dt>
-                      {book && book.genre ? (
-                        <dd>{book.genre}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
-                    <p>
-                      <dt className='title'>Price:</dt>
-                      {book && book.price ? (
-                        <dd>{book.price}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
-                  </dl>
-                </Typography>
-              </CardContent>
-            </Link>
-          </CardActionArea>
-          {user && (
-            <button
-              type='button'
-              className='button'
-              onClick={() =>
-                buyBook(book.title, book._id, 1, book.price, book.url)
-              }
-            >
-              Buy
-            </button>
-          )}
-        </Card>
-      </Grid>
-    );
-  };
   if (loading) {
     if (error) {
       return (
@@ -174,18 +73,36 @@ const BooksList = () => {
       );
     }
   } else {
-    card =
-      bookDetailsData &&
-      bookDetailsData.map((book) => {
-        return buildCard(book);
-      });
     return (
-      <div>
-        <Grid container className={classes.grid} spacing={5}>
-          {card}
-        </Grid>
+      <div className='books-container'>
+        {bookDetailsData.map(({ _id, url, title, price }) => (
+          <div className='book-card-container' key={_id}>
+            <Link to={`/books/${_id}`}>
+              <img src={url ? url : noImage} alt={`${title}`} />
+            </Link>
+            <span className='title'>{title}</span>
+            {/* <span className='price-text'>
+              Price:{' '}
+              <span className='price'>
+                ${isNaN(parseInt(price)) ? 7.0 : price}
+              </span>
+            </span> */}
+            {user && (
+              <button
+                className='btn'
+                variant='primary'
+                onClick={() => buyBook(title, _id, price, url)}
+              >
+                <span className='price'>
+                  ${isNaN(parseInt(price)) ? 7.0 : price}
+                </span>
+                <span>Add to Cart</span>
+              </button>
+            )}
+          </div>
+        ))}
       </div>
     );
   }
 };
-export default BooksList;
+export default BookList;
