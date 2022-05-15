@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userData = require('../data/users');
+const { ObjectId } = require('mongodb');
 const imageData = require('../graphics');
 
 stateList = [
@@ -111,6 +112,7 @@ router.post('/profile', async (req, res) => {
   try {
     res.status(200).json(await userData.getUser(req.body.data));
   } catch (e) {
+    console.log(e);
     res.status(500).send(String(e));
   }
 });
@@ -123,9 +125,9 @@ router.post('/myOrders', async (req, res) => {
   } catch (e) {
     return res.status(400).send(String(e));
   }
-  let email = req.body.data.toLowerCase().trim();
+  req.body.data = req.body.data.toLowerCase().trim();
   try {
-    const myOrders = await userData.myOrders(email);
+    const myOrders = await userData.myOrders(req.body.data);
     res.status(200).json(myOrders);
   } catch (e) {
     return res.status(400).send(String(e));
@@ -213,6 +215,10 @@ router.post('/signup', async (req, res) => {
       let initials = firstName[0] + lastName[0];
       console.log(initials);
       let image = imageData.createImage(initials, email);
+    } else {
+      let initials = email[0] + email[1];
+      console.log(initials);
+      let image = imageData.createImage(initials, email);
     }
     const newUser = await userData.createUser(
       firstName,
@@ -256,9 +262,25 @@ router.post('/login', async (req, res) => {
     if (auth.authenticated) res.status(200).json(auth);
     else res.status(401).send('Invalid username or password');
   } catch (e) {
+    console.log(e);
     return res.status(400).json({ error: e });
   }
 });
+
+// router.delete("/delete/:id", async (req, res) => {
+//   if (!req.params.id) {
+//     res.status(400).json({ error: "You must supply a user Id" });
+//     return;
+//   }
+
+//   try {
+//     const deleteData = await userData.deleteUser(req.params.id);
+//     res.redirect("/users/logout");
+//   } catch (error) {
+//     res.status(404).json({ message: "Data not found " });
+//     return;
+//   }
+// });
 
 router.put('/profile', async (req, res) => {
   let {
@@ -312,6 +334,9 @@ router.put('/profile', async (req, res) => {
   }
 
   try {
+    let initials = firstName[0] + lastName[0];
+    console.log(initials);
+    let image = imageData.createImage(initials, email);
     updatedUser = await userData.updateUser(
       firstName,
       lastName,
@@ -324,10 +349,12 @@ router.put('/profile', async (req, res) => {
       address,
       city,
       state,
-      zip
+      zip,
+      '/' + email + '.png'
     );
     res.status(200).json(updatedUser);
   } catch (e) {
+    console.log(e);
     res.status(500).send(String(e));
   }
 });
