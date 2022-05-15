@@ -408,6 +408,23 @@ async function getMostPopular() {
     return booksList;
 }
 
+async function searchBooks(searchVal) {
+    validateStringParams(searchVal, 'searchVal');
+    const booksCollection = await books();
+    var re = new RegExp('^' + searchVal + '.*', 'i');
+    const booksList = await booksCollection
+        .find({ title: { $regex: re } })
+        .toArray();
+    if (booksList.length === 0) {
+        return [];
+    }
+    for (let book of booksList) {
+        let id = book['_id'];
+        book['_id'] = id.toString();
+    }
+    return booksList;
+}
+
 module.exports = {
     addNewBook,
     getAll,
@@ -417,4 +434,5 @@ module.exports = {
     addRentedBook,
     buyBook,
     getMostPopular,
+    searchBooks,
 };
