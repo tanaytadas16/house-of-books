@@ -49,16 +49,13 @@ const BookGenres = (props) => {
     }, [genre, currentUser]);
     let onClickWishlist = async (bookId, title) => {
         try {
-            // console.log(bookId);
             const url = `http://localhost:4000/users/bookshelf/add`;
             const {data} = await axios.post(url, {
                 email: currentUser.email,
                 bookId: bookId,
                 title: title,
             });
-            // console.log(data);
             if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
-            // setLoading(false);
         } catch (e) {
             console.log(e);
         }
