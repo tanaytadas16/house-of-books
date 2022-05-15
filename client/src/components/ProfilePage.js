@@ -1,12 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import FormInput from './FormInput';
-import Button from './Button';
-import { UserContext } from '../contexts/userContext';
-import { getAuth, updateEmail } from 'firebase/auth';
-import '../styles/Signup.scss';
-import { auth } from '../firebase/firebase';
+import React, {useState, useContext, useEffect} from "react";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
+import FormInput from "./FormInput";
+import Button from "./Button";
+import {UserContext} from "../contexts/userContext";
+import {getAuth, updateEmail} from "firebase/auth";
+import "../styles/Signup.scss";
+import {auth} from "../firebase/firebase";
 
 const ProfilePage = () => {
     const [userData, setUserData] = useState(undefined);
@@ -15,14 +15,14 @@ const ProfilePage = () => {
     const history = useNavigate();
     const [oldUsername, setOldUsername] = useState(undefined);
 
-    const { currentUser } = useContext(UserContext);
+    const {currentUser} = useContext(UserContext);
     const auth = getAuth();
 
     useEffect(() => {
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/users/profile`;
-                const { data } = await axios.post(url, {
+                const {data} = await axios.post(url, {
                     data: currentUser.email,
                 });
                 console.log(data);
@@ -37,9 +37,9 @@ const ProfilePage = () => {
     }, [currentUser]);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
+        const {name, value} = event.target;
 
-        setUserData({ ...userData, [name]: value });
+        setUserData({...userData, [name]: value});
     };
 
     const handleOnSubmit = async (event) => {
@@ -59,7 +59,7 @@ const ProfilePage = () => {
         } = event.target.elements;
 
         if (password.value !== confirmPassword.value) {
-            alert('Passwords do not match');
+            alert("Passwords do not match");
             return;
         }
 
@@ -81,12 +81,12 @@ const ProfilePage = () => {
         await updateEmail(auth.currentUser, email.value);
 
         axios
-            .put('http://localhost:4000/users/profile/', {
+            .put("http://localhost:4000/users/profile/", {
                 data: dataBody,
             })
             .then(function (response) {
                 console.log(response.data);
-                history('/', { replace: true });
+                history("/", {replace: true});
             });
     };
 
@@ -114,14 +114,18 @@ const ProfilePage = () => {
         return (
             <div className='sign-up-container'>
                 <h2>Profile Page</h2>
-                <img alt='profile picture' src={userData.image} />
+                {userData && userData.image ? (
+                    <img alt='profile picture' src={userData.image} />
+                ) : (
+                    <img alt='profile picture' src='/defaultDp.png' />
+                )}
                 <form onSubmit={handleOnSubmit}>
                     <FormInput
                         label='First Name'
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.firstName ? userData.firstName : ''}
+                        value={userData.firstName ? userData.firstName : ""}
                         name='firstName'
                     />
                     <FormInput
@@ -129,7 +133,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.lastName ? userData.lastName : ''}
+                        value={userData.lastName ? userData.lastName : ""}
                         name='lastName'
                     />
                     <FormInput
@@ -137,7 +141,7 @@ const ProfilePage = () => {
                         type='email'
                         required
                         onChange={handleChange}
-                        value={userData.email ? userData.email : ''}
+                        value={userData.email ? userData.email : ""}
                         name='email'
                         disabled
                     />
@@ -146,7 +150,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.phoneNumber ? userData.phoneNumber : ''}
+                        value={userData.phoneNumber ? userData.phoneNumber : ""}
                         name='phoneNumber'
                     />
                     <FormInput
@@ -154,7 +158,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.username ? userData.username : ''}
+                        value={userData.username ? userData.username : ""}
                         name='username'
                     />
                     <FormInput
@@ -162,7 +166,7 @@ const ProfilePage = () => {
                         type='password'
                         required
                         onChange={handleChange}
-                        value={userData.password ? userData.password : ''}
+                        value={userData.password ? userData.password : ""}
                         name='password'
                     />
                     <FormInput
@@ -173,7 +177,7 @@ const ProfilePage = () => {
                         value={
                             userData.confirmPassword
                                 ? userData.confirmPassword
-                                : ''
+                                : ""
                         }
                         name='confirmPassword'
                     />
@@ -182,7 +186,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.address ? userData.address : ''}
+                        value={userData.address ? userData.address : ""}
                         name='address'
                     />
                     <FormInput
@@ -190,7 +194,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.city ? userData.city : ''}
+                        value={userData.city ? userData.city : ""}
                         name='city'
                     />
                     <label>State</label>
@@ -199,7 +203,7 @@ const ProfilePage = () => {
                         label='State'
                         required
                         onChange={handleChange}
-                        value={userData.state ? userData.state : ''}
+                        value={userData.state ? userData.state : ""}
                         name='state'
                     >
                         <option value='AL'>Alabama</option>
@@ -267,7 +271,7 @@ const ProfilePage = () => {
                         type='text'
                         required
                         onChange={handleChange}
-                        value={userData.zip ? userData.zip : ''}
+                        value={userData.zip ? userData.zip : ""}
                         name='zip'
                     />
                     <Button type='submit'>Update</Button>
