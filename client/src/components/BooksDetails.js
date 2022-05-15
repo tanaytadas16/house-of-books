@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,9 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import Button from './Button';
+import AddToWishlist from './AddToWishlist';
+import { UserContext } from '../contexts/userContext';
+// import Button from './Button';
 import {
     makeStyles,
     Card,
@@ -15,6 +17,7 @@ import {
     CardMedia,
     Typography,
 } from '@material-ui/core';
+import { Button } from '@mui/material';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -64,6 +67,11 @@ const BookDetails = (props) => {
     const history = useNavigate();
     const dispatch = useDispatch();
     const cartItems = useSelector(selectCartItems);
+    const [userWishlistData, setUserWishlistData] = useState([]);
+    const [isInserted, setIsInserted] = useState(0);
+    const { currentUser } = useContext(UserContext);
+    const [error, setError] = useState(false);
+    let checkBook;
 
     useEffect(() => {
         console.log('useEffect fired');
@@ -205,14 +213,61 @@ const BookDetails = (props) => {
     //       history(`/books/${bookDetailsData._id}`, { replace: true });
     //     });
     // };
+    let onClickWishlist = async (bookId, title) => {
+        try {
+            // console.log(bookId);
+            const url = `http://localhost:4000/users/bookshelf/add`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+            // setLoading(false);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    let handleRemoveWishlist = async (bookId, title) => {
+        try {
+            // console.log('inside remove onclick');
+            const url = `http://localhost:4000/users/bookshelf/remove`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // console.log(bookId);.
+                const url = `http://localhost:4000/users/profile`;
+                const { data } = await axios.post(url, {
+                    data: currentUser.email,
+                });
+                //
 
+                setUserWishlistData(data.wishlist);
+                if (!userWishlistData.wishlist) setError(true);
+                setLoading(false);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        fetchData();
+    }, [currentUser, isInserted]);
     if (loading) {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -221,41 +276,43 @@ const BookDetails = (props) => {
             </div>
         );
     } else {
-        const price = parseFloat(bookDetailsData.price);
+        checkBook = userWishlistData.some((post, index) => {
+            return post.bookId === bookDetailsData._id;
+        });
         return (
             <>
                 <Grid
                     item
-                    xs={20}
+                    xs={12}
                     sm={11}
                     md={5}
                     lg={5}
                     xl={9}
                     key={bookDetailsData._id}
                 >
-                    <Card className={classes.card} variant='outlined'>
+                    <Card className={classes.card} variant="outlined">
                         <CardMedia
                             className={classes.media}
-                            component='img'
+                            component="img"
                             image={
                                 bookDetailsData.url
                                     ? bookDetailsData.url
                                     : noImage
                             }
-                            title='book image'
+                            title="book image"
                         />
                         <CardContent>
                             <Typography
-                                variant='body2'
-                                color='textSecondary'
-                                component='span'
+                                variant="body2"
+                                color="textSecondary"
+                                component="span"
                             >
-                                <p className='title1'>
+                                <p className="title1">
                                     {bookDetailsData.title}
                                 </p>
                                 <dl>
                                     <p>
-                                        <dt className='title'>Description:</dt>
+                                        <dt className="title">Description:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.description ? (
                                             <dd>
@@ -266,7 +323,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>Author:</dt>
+                                        <dt className="title">Author:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.author ? (
                                             <dd>{bookDetailsData.author}</dd>
@@ -275,7 +332,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>ISBN:</dt>
+                                        <dt className="title">ISBN:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.ISBN ? (
                                             <dd>{bookDetailsData.ISBN}</dd>
@@ -284,7 +341,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>
+                                        <dt className="title">
                                             Average Rating:
                                         </dt>
                                         {bookDetailsData &&
@@ -297,7 +354,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>Publisher:</dt>
+                                        <dt className="title">Publisher:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.publisher ? (
                                             <dd>{bookDetailsData.publisher}</dd>
@@ -306,7 +363,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>Genre:</dt>
+                                        <dt className="title">Genre:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.genre ? (
                                             <dd>{bookDetailsData.genre}</dd>
@@ -315,7 +372,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>
+                                        <dt className="title">
                                             Number of pages:
                                         </dt>
                                         {bookDetailsData &&
@@ -328,7 +385,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>
+                                        <dt className="title">
                                             Original Publication Year:
                                         </dt>
                                         {bookDetailsData &&
@@ -343,7 +400,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>Price:</dt>
+                                        <dt className="title">Price:</dt>
                                         {bookDetailsData &&
                                         bookDetailsData.price ? (
                                             <dd>$ {bookDetailsData.price}</dd>
@@ -352,7 +409,7 @@ const BookDetails = (props) => {
                                         )}
                                     </p>
                                     <p>
-                                        <dt className='title'>
+                                        <dt className="title">
                                             Year Published:
                                         </dt>
                                         {bookDetailsData &&
@@ -367,9 +424,9 @@ const BookDetails = (props) => {
                                 </dl>
                             </Typography>
                         </CardContent>
-                        {isNaN(price) ? (
+                        {isNaN(parseFloat(bookDetailsData.price)) ? (
                             <button
-                                className='button'
+                                className="button"
                                 onClick={() =>
                                     rentBook(
                                         bookDetailsData.title,
@@ -384,8 +441,8 @@ const BookDetails = (props) => {
                             </button>
                         ) : (
                             <button
-                                type='button'
-                                className='button'
+                                type="button"
+                                className="button"
                                 onClick={() =>
                                     buyBook(
                                         bookDetailsData.title,
@@ -399,40 +456,65 @@ const BookDetails = (props) => {
                                 Buy
                             </button>
                         )}
+                        {user && !checkBook && (
+                            <AddToWishlist
+                                bookid={bookDetailsData._id}
+                                handleOnClick={() =>
+                                    onClickWishlist(
+                                        bookDetailsData._id,
+                                        bookDetailsData.title
+                                    )
+                                }
+                            />
+                        )}
+                        {user && checkBook && (
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() =>
+                                    handleRemoveWishlist(
+                                        bookDetailsData._id,
+                                        bookDetailsData.title
+                                    )
+                                }
+                            >
+                                Remove from Wishlist
+                            </Button>
+                        )}
                     </Card>
                 </Grid>
                 {auth.currentUser ? (
-                    <div className='sign-up-container'>
+                    <div className="sign-up-container">
                         <h2>Write a Review</h2>
                         <form onSubmit={handleOnSubmit}>
-                            <label htmlFor='review'>Review </label>
+                            <label htmlFor="review">Review </label>
                             <textarea
-                                label='Review'
-                                type='text'
+                                label="Review"
+                                type="text"
                                 required
                                 onChange={handleChange}
                                 value={review ? review : ''}
-                                id='review'
+                                id="review"
                                 rows={3}
                                 cols={30}
-                                name='review'
+                                name="review"
                             />
                             <br /> <br />
-                            <label htmlFor='rating'>Rating </label>
+                            <label htmlFor="rating">Rating </label>
                             <select
-                                name='rating'
+                                name="rating"
                                 value={rating ? rating : 0}
-                                id='rating'
+                                id="rating"
                                 onChange={handleChange}
                             >
-                                <option value='1'>1 Star</option>
-                                <option value='2'>2 Stars</option>
-                                <option value='3'>3 Stars</option>
-                                <option value='4'>4 Stars</option>
-                                <option value='5'>5 Stars</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
                             </select>
                             <br></br> <br></br>
-                            <Button type='submit'>Post Review</Button>
+                            <Button type="submit">Post Review</Button>
                         </form>
                     </div>
                 ) : null}
@@ -458,8 +540,8 @@ const BookDetails = (props) => {
                                 {auth.currentUser &&
                                 auth.currentUser.email === email ? (
                                     <button
-                                        type='button'
-                                        className='button'
+                                        type="button"
+                                        className="button"
                                         onClick={() => {
                                             if (auth.currentUser) {
                                                 removeReview(_id);
