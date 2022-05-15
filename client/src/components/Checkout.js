@@ -99,7 +99,7 @@ const Checkout = () => {
           <Link className='signin-link' to='/auth'>
             Sign in
           </Link>{' '}
-          to purchase
+          to purchase items
         </p>
       )}
       {visible && (
