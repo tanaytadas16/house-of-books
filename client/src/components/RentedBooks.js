@@ -3,56 +3,11 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import {
-    makeStyles,
-    Card,
-    CardActionArea,
-    Grid,
-    CardContent,
-    CardMedia,
-    Typography,
-} from '@material-ui/core';
-const useStyles = makeStyles({
-    card: {
-        maxWidth: 550,
-        height: 'auto',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        borderRadius: 5,
-        border: '1px solid #222',
-        boxShadow:
-            '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-        color: '#222',
-    },
-    titleHead: {
-        borderBottom: '1px solid #222',
-        fontWeight: 'bold',
-        color: '#222',
-        fontSize: 'large',
-    },
-    grid: {
-        flexGrow: 1,
-        flexDirection: 'row',
-    },
-    media: {
-        height: '100%',
-        width: '100%',
-    },
-    button: {
-        color: '#222',
-        fontWeight: 'bold',
-        fontSize: 12,
-    },
-});
 
 const RentedBooks = (props) => {
     const [loading, setLoading] = useState(true);
-    const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
-    let card = null;
     const user = auth.currentUser;
-    console.log('Current user is ', user);
-    console.log('Current ', user.email);
     useEffect(() => {
         console.log('useEffect fired');
         async function fetchData() {
@@ -70,70 +25,13 @@ const RentedBooks = (props) => {
         fetchData();
     }, []);
 
-    const buildCard = (book) => {
-        return (
-            <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-                <Card className={classes.card} variant="outlined">
-                    <CardActionArea>
-                        <Link to={`/books/${book._id}`}>
-                            <CardMedia
-                                className={classes.media}
-                                component="img"
-                                image={book.url ? book.url : noImage}
-                                title="book image"
-                            />
-
-                            <CardContent>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    component="span"
-                                >
-                                    <p className="title1">{book.title}</p>
-                                    <dl>
-                                        <p>
-                                            <dt className="title">Genre:</dt>
-                                            {book && book.genre ? (
-                                                <dd>{book.genre}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                        <p>
-                                            <dt className="title">
-                                                Rented Date:
-                                            </dt>
-                                            {book && book.startDate ? (
-                                                <dd>{book.startDate}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                        <p>
-                                            <dt className="title">Due Date:</dt>
-                                            {book && book.endDate ? (
-                                                <dd>{book.endDate}</dd>
-                                            ) : (
-                                                <dd>N/A</dd>
-                                            )}
-                                        </p>
-                                    </dl>
-                                </Typography>
-                            </CardContent>
-                        </Link>
-                    </CardActionArea>
-                </Card>
-            </Grid>
-        );
-    };
-
     if (loading) {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
+                    <div>
                         <h1>Error 404: Page not found</h1>
-                    </p>
+                    </div>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -148,16 +46,80 @@ const RentedBooks = (props) => {
             </div>
         );
     } else {
-        card =
-            bookDetailsData &&
-            bookDetailsData.map((book) => {
-                return buildCard(book);
-            });
         return (
-            <div>
-                <Grid container className={classes.grid} spacing={5}>
-                    {card}
-                </Grid>
+            <div className="books-container">
+                {bookDetailsData &&
+                    bookDetailsData.map(
+                        ({
+                            _id,
+                            url,
+                            title,
+                            totalPrice,
+                            quantity,
+                            dateOfPurchase,
+                            startDate,
+                            endDate,
+                        }) => (
+                            <div className="book-card-container" key={_id}>
+                                <Link to={`/books/${_id}`}>
+                                    <img
+                                        src={url ? url : noImage}
+                                        alt={`${title}`}
+                                    />
+                                </Link>
+                                <span className="title">{title}</span>
+                                <span>
+                                    {totalPrice ? (
+                                        <span className="heading">
+                                            Total Price: {totalPrice}
+                                        </span>
+                                    ) : (
+                                        <div className="price-container">
+                                            <span className="rented">
+                                                Rented Book
+                                            </span>
+                                            <span className="heading">
+                                                Total Price: $7.00
+                                            </span>
+                                        </div>
+                                    )}
+                                </span>
+                                <span>
+                                    <span className="heading">Quantity: </span>
+                                    {quantity ? (
+                                        <span>{quantity}</span>
+                                    ) : (
+                                        <span>1</span>
+                                    )}
+                                </span>
+                                <span>
+                                    {dateOfPurchase ? (
+                                        <div>
+                                            <span className="heading">
+                                                Date of Purchase:{' '}
+                                            </span>
+                                            <span>{dateOfPurchase}</span>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <span className="heading">
+                                                Rented Date:{' '}
+                                            </span>
+                                            <span>{startDate}</span>
+                                        </div>
+                                    )}
+                                </span>
+                                <span>
+                                    <span className="heading">End Date: </span>
+                                    {endDate ? (
+                                        <span>{endDate}</span>
+                                    ) : (
+                                        <span>N/A</span>
+                                    )}
+                                </span>
+                            </div>
+                        )
+                    )}
             </div>
         );
     }

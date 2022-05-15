@@ -76,6 +76,9 @@ http://localhost:3000/books/newAdditions
 View the most popular books:
 http://localhost:3000/books/mostPopular
 
+View books by your favourite genre:
+http://localhost:3000/books/genres
+
 View all the books that are available for rent:
 http://localhost:3000/library
 

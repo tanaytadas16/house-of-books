@@ -112,7 +112,9 @@ const NewAdditions = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <h1>Error 404: Page not found</h1>
+                    <p>
+                        <h1>Error 404: Page not found</h1>
+                    </p>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -135,7 +137,7 @@ const NewAdditions = (props) => {
                             <span className="title">{title}</span>
                             {user && (
                                 <Button
-                                    className="btn"
+                                    className="button"
                                     variant="primary"
                                     onClick={() =>
                                         buyBook(title, _id, price, url)
@@ -148,17 +150,16 @@ const NewAdditions = (props) => {
                                 </Button>
                             )}
                             {user && !checkBook(_id) && (
-                                <AddToWishlist
-                                    bookid={_id}
-                                    handleOnClick={() =>
-                                        onClickWishlist(_id, title)
-                                    }
-                                />
+                                <Button
+                                    onClick={() => onClickWishlist(_id, title)}
+                                    variant="danger"
+                                >
+                                    Add To Wishlist
+                                </Button>
                             )}
                             {user && checkBook(_id) && (
                                 <Button
-                                    variant="contained"
-                                    color="error"
+                                    variant="danger"
                                     onClick={() =>
                                         handleRemoveWishlist(_id, title)
                                     }

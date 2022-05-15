@@ -4,16 +4,14 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
-import AddToWishlist from './AddToWishlist';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import { Alert, Toast } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import '../styles/Library.scss';
 
 const Library = (props) => {
-    const [toast, setToast] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
@@ -32,7 +30,6 @@ const Library = (props) => {
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
-                setError(true);
                 console.log(e);
             }
         }
@@ -75,7 +72,6 @@ const Library = (props) => {
             endDate: endDate,
             flag: 'R',
         };
-        setToast(true);
         dispatch(addItemToCart(cartItems, dataBody));
     };
 
@@ -163,8 +159,8 @@ const Library = (props) => {
                                 </Link>
                                 <span className="title">{title}</span>
                                 {user && (
-                                    <button
-                                        className="btn"
+                                    <Button
+                                        className="button"
                                         variant="primary"
                                         onClick={() =>
                                             rentBook(title, _id, price, url)
@@ -177,15 +173,17 @@ const Library = (props) => {
                                                 : price}
                                         </span>
                                         <span>Add to Cart</span>
-                                    </button>
+                                    </Button>
                                 )}
                                 {user && !checkBook(_id) && (
-                                    <AddToWishlist
-                                        bookid={_id}
-                                        handleOnClick={() =>
+                                    <Button
+                                        onClick={() =>
                                             onClickWishlist(_id, title)
                                         }
-                                    />
+                                        variant="danger"
+                                    >
+                                        Add To Wishlist
+                                    </Button>
                                 )}
                                 {user && checkBook(_id) && (
                                     <Button
@@ -198,22 +196,6 @@ const Library = (props) => {
                                         Remove from Wishlist
                                     </Button>
                                 )}
-                                <Toast
-                                    onClose={() => setToast(false)}
-                                    show={toast}
-                                    delay={3000}
-                                    autohide
-                                >
-                                    <Toast.Header>
-                                        <strong className="me-auto">
-                                            Rent Info
-                                        </strong>
-                                    </Toast.Header>
-                                    <Toast.Body>
-                                        Rented books are available only for 30
-                                        days!
-                                    </Toast.Body>
-                                </Toast>
                             </div>
                         ))}
                 </div>
