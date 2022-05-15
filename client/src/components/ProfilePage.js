@@ -6,7 +6,7 @@ import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import { getAuth, updateEmail } from 'firebase/auth';
 import '../styles/Signup.scss';
-import { auth } from '../firebase/firebase';
+import standard from '../assets/images/standard.png';
 
 const ProfilePage = () => {
     const [userData, setUserData] = useState(undefined);
@@ -114,7 +114,10 @@ const ProfilePage = () => {
         return (
             <div className='sign-up-container'>
                 <h2>Profile Page</h2>
-                <img alt='profile picture' src={userData.image} />
+                <img
+                    alt={'profile picture'}
+                    src={userData.image === 'NA' ? standard : userData.image}
+                />
                 <form onSubmit={handleOnSubmit}>
                     <FormInput
                         label='First Name'
