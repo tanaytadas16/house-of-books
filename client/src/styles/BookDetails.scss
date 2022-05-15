@@ -47,22 +47,26 @@
     font-weight: bold;
   }
 
-  .btn {
-    width: 10%;
-    margin-bottom: 10px;
-    font-family: cursive;
+  .button {
+    width: 15%;
+    font-weight: bold;
     display: flex;
     justify-content: space-around;
     align-items: center;
     background-color: #0d6efd;
     border-radius: 7px;
     border-color: #0d6efd;
+    margin-bottom: 10px;
 
     .price {
       background-color: white;
       padding: 5px;
       background-color: #0d6efd;
     }
+  }
+
+  .wishlist {
+    width: 15%;
   }
 
   .review-container {

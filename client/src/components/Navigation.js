@@ -53,15 +53,6 @@ const Navigation = () => {
               </Link>
             ) : null}
             {currentUser ? (
-              <span className='nav-link' onClick={signOutHandler}>
-                SIGN OUT
-              </span>
-            ) : (
-              <Link className='nav-link' to='/auth'>
-                SIGN IN
-              </Link>
-            )}
-            {currentUser ? (
               <Link className='nav-link' to='/users/profile'>
                 PROFILE
               </Link>
@@ -76,6 +67,15 @@ const Navigation = () => {
                 RENTED BOOKS
               </Link>
             ) : null}
+            {currentUser ? (
+              <span className='nav-link' onClick={signOutHandler}>
+                SIGN OUT
+              </span>
+            ) : (
+              <Link className='nav-link' to='/auth'>
+                SIGN IN
+              </Link>
+            )}
             <CartIcon />
           </div>
           {isCartOpen && <CartDropdown />}
