@@ -1,12 +1,22 @@
 .home-container {
     h1 {
-        font-size: large;
+        font-size: 50px;
         text-align: center;
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, -50%)
+        margin-top: 200px;
+        // position: absolute;
+        // top: 50%;
+        // left: 50%;
+        // margin-right: -50%;
+        // transform: translate(-50%, -50%);
+    }
+    h2 {
+        font-size: 30px;
+        text-align: center;
+        margin-top: 50px;
+        // position: absolute;
+        // top: 50%;
+        // left: 50%;
+        // margin-right: -50%;
+        // transform: translate(-50%, -50%);
     }
 }
