@@ -67,7 +67,10 @@ async function addBooktoBookshelf(bookId, email, title) {
             !wishlistArrUpdate.matchedCount &&
             !wishlistArrUpdate.modifiedCount
         ) {
-            throw `Could not add to user wishlist.`;
+            throwError(
+                ErrorCode.NOT_FOUND,
+                `Error:Could not add to user wishlist.`
+            );
         }
         return { inserted: true };
     } catch (error) {
