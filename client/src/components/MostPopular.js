@@ -3,60 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { auth } from '../firebase/firebase';
 import { UserContext } from '../contexts/userContext';
 import noImage from '../assets/images/no-image.jpeg';
-import AddToWishlist from './AddToWishlist';
-import { Button } from '@mui/material';
-import {
-  makeStyles,
-  Card,
-  CardActionArea,
-  Grid,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@material-ui/core';
-const useStyles = makeStyles({
-  card: {
-    maxWidth: 550,
-    height: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    borderRadius: 5,
-    border: '1px solid #222',
-    boxShadow: '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-    color: '#222',
-  },
-  titleHead: {
-    borderBottom: '1px solid #222',
-    fontWeight: 'bold',
-    color: '#222',
-    fontSize: 'large',
-  },
-  grid: {
-    flexGrow: 1,
-    flexDirection: 'row',
-  },
-  media: {
-    height: '100%',
-    width: '100%',
-  },
-  button: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-});
+import { Button } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
+import '../styles/Library.scss';
 
 const MostPopular = () => {
   const [loading, setLoading] = useState(true);
-  const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const [error, setError] = useState(false);
-  let card = null;
-  const history = useNavigate();
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
   const [userWishlistData, setUserWishlistData] = useState([]);
@@ -146,86 +104,10 @@ const MostPopular = () => {
     fetchData();
   }, [currentUser, isInserted]);
 
-  let checkBook;
-
-  const buildCard = (book) => {
-    checkBook = userWishlistData.some((post, index) => {
-      return post.bookId === book._id;
+  const checkBook = (id) => {
+    return userWishlistData.some((post, index) => {
+      return post.bookId === id;
     });
-    return (
-      <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-        <Card className={classes.card} variant='outlined'>
-          <CardActionArea>
-            <Link to={`/books/${book._id}`}>
-              <CardMedia
-                className={classes.media}
-                component='img'
-                image={book.url ? book.url : noImage}
-                title='book image'
-              />
-
-              <CardContent>
-                <Typography
-                  variant='body2'
-                  color='textSecondary'
-                  component='span'
-                >
-                  <p className='title1'>{book.title}</p>
-                  <dl>
-                    <p>
-                      <dt className='title'>Genre:</dt>
-                      {book && book.genre ? (
-                        <dd>{book.genre}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
-                    <p>
-                      <dt className='title'>Price:</dt>
-                      {book && book.price ? (
-                        <dd>$ {book.price}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
-                  </dl>
-                </Typography>
-              </CardContent>
-            </Link>
-          </CardActionArea>
-          {user && (
-            <button
-              type='button'
-              className='button'
-              onClick={() => {
-                if (auth.currentUser) {
-                  buyBook(book.title, book._id, book.price, book.url);
-                } else {
-                  alert('You need to sign in first to buy the book');
-                }
-              }}
-            >
-              Buy
-            </button>
-          )}
-          {user && !checkBook && (
-            <AddToWishlist
-              bookid={book._id}
-              handleOnClick={() => onClickWishlist(book._id, book.title)}
-            />
-          )}
-          {user && checkBook && (
-            <Button
-              variant='contained'
-              color='error'
-              onClick={() => handleRemoveWishlist(book._id, book.title)}
-            >
-              Remove from Wishlist
-            </Button>
-          )}
-        </Card>
-      </Grid>
-    );
   };
 
   if (loading) {
@@ -249,16 +131,50 @@ const MostPopular = () => {
       </div>
     );
   } else {
-    card =
-      bookDetailsData &&
-      bookDetailsData.map((book) => {
-        return buildCard(book);
-      });
     return (
-      <div>
-        <Grid container className={classes.grid} spacing={5}>
-          {card}
-        </Grid>
+      <div className='main-container'>
+        <Alert variant='info'>
+          The hottest picks that our customers love. These books are most
+          frequently bought.
+        </Alert>
+        <div className='books-container'>
+          {bookDetailsData &&
+            bookDetailsData.map(({ _id, url, title, price }) => (
+              <div className='book-card-container' key={_id}>
+                <Link to={`/books/${_id}`}>
+                  <img src={url ? url : noImage} alt={`${title}`} />
+                </Link>
+                <span className='title'>{title}</span>
+                {user && (
+                  <Button
+                    className='button'
+                    onClick={() => buyBook(title, _id, price, url)}
+                  >
+                    <span className='price'>
+                      ${isNaN(parseInt(price)) ? 7.0 : price}
+                    </span>
+                    <span>Add to Cart</span>
+                  </Button>
+                )}
+                {user && !checkBook(_id) && (
+                  <Button
+                    onClick={() => onClickWishlist(_id, title)}
+                    variant='danger'
+                  >
+                    Add To Wishlist
+                  </Button>
+                )}
+                {user && checkBook(_id) && (
+                  <Button
+                    variant='danger'
+                    onClick={() => handleRemoveWishlist(_id, title)}
+                  >
+                    Remove from Wishlist
+                  </Button>
+                )}
+              </div>
+            ))}
+        </div>
       </div>
     );
   }

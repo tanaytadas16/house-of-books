@@ -134,7 +134,7 @@ const NewAdditions = (props) => {
               <span className='title'>{title}</span>
               {user && (
                 <Button
-                  className='btn'
+                  className='button'
                   variant='primary'
                   onClick={() => buyBook(title, _id, price, url)}
                 >
@@ -145,15 +145,16 @@ const NewAdditions = (props) => {
                 </Button>
               )}
               {user && !checkBook(_id) && (
-                <AddToWishlist
-                  bookid={_id}
-                  handleOnClick={() => onClickWishlist(_id, title)}
-                />
+                <Button
+                  onClick={() => onClickWishlist(_id, title)}
+                  variant='danger'
+                >
+                  Add To Wishlist
+                </Button>
               )}
               {user && checkBook(_id) && (
                 <Button
-                  variant='contained'
-                  color='error'
+                  variant='danger'
                   onClick={() => handleRemoveWishlist(_id, title)}
                 >
                   Remove from Wishlist
