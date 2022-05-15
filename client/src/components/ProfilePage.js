@@ -86,6 +86,7 @@ const ProfilePage = () => {
             })
             .then(function (response) {
                 console.log(response.data);
+                // setUserData(response.data);
                 history('/', { replace: true });
             });
     };
