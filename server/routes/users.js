@@ -125,7 +125,7 @@ router.post('/myOrders', async (req, res) => {
   } catch (e) {
     return res.status(400).send(String(e));
   }
-  email = email.toLowerCase().trim();
+  req.body.data = req.body.data.toLowerCase().trim();
   try {
     const myOrders = await userData.myOrders(req.body.data);
     res.status(200).json(myOrders);
