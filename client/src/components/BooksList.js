@@ -4,7 +4,6 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import { Link } from 'react-router-dom';
-import AddToWishlist from './AddToWishlist';
 import axios from 'axios';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
@@ -19,10 +18,6 @@ const BookList = () => {
   const user = auth.currentUser;
   const [userWishlistData, setUserWishlistData] = useState([]);
   const [isInserted, setIsInserted] = useState(0);
-  let userdata = [];
-  const getRandomFloat = (max) => {
-    return (Math.random() * max).toFixed(2);
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -53,6 +48,7 @@ const BookList = () => {
     };
     dispatch(addItemToCart(cartItems, dataBody));
   };
+
   let onClickWishlist = async (bookId, title) => {
     try {
       const url = `http://localhost:4000/users/bookshelf/add`;
@@ -137,7 +133,6 @@ const BookList = () => {
               {user && (
                 <button
                   className='btn'
-                  variant='primary'
                   onClick={() => buyBook(title, _id, price, url)}
                 >
                   <span className='price'>
@@ -147,10 +142,13 @@ const BookList = () => {
                 </button>
               )}
               {user && !checkBook(_id) && (
-                <AddToWishlist
-                  bookid={_id}
-                  handleOnClick={() => onClickWishlist(_id, title)}
-                />
+                <Button
+                  onClick={() => onClickWishlist(_id, title)}
+                  variant='contained'
+                  color='error'
+                >
+                  Add To Wishlist
+                </Button>
               )}
               {user && checkBook(_id) && (
                 <Button
