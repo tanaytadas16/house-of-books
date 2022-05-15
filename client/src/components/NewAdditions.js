@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { UserContext } from '../contexts/userContext';
+import AddToWishlist from './AddToWishlist';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
     makeStyles,
     Card,
@@ -11,6 +14,7 @@ import {
     CardMedia,
     Typography,
 } from '@material-ui/core';
+import { Button } from '@mui/material';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -48,6 +52,11 @@ const NewAdditions = (props) => {
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
+    const [error, setError] = useState(false);
+    const { currentUser } = useContext(UserContext);
+    const user = auth.currentUser;
+    const [userWishlistData, setUserWishlistData] = useState([]);
+    const [isInserted, setIsInserted] = useState(0);
     let { id } = useParams();
     let card = null;
     useEffect(() => {
@@ -65,7 +74,62 @@ const NewAdditions = (props) => {
         }
         fetchData();
     }, [id]);
+    let onClickWishlist = async (bookId, title) => {
+        try {
+            // console.log(bookId);
+            const url = `http://localhost:4000/users/bookshelf/add`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+            // setLoading(false);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    let handleRemoveWishlist = async (bookId, title) => {
+        try {
+            // console.log('inside remove onclick');
+            const url = `http://localhost:4000/users/bookshelf/remove`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // console.log(bookId);.
+                const url = `http://localhost:4000/users/profile`;
+                const { data } = await axios.post(url, {
+                    data: currentUser.email,
+                });
+                //
+
+                setUserWishlistData(data.wishlist);
+                if (!userWishlistData.wishlist) setError(true);
+                setLoading(false);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        fetchData();
+    }, [currentUser, isInserted]);
+
+    let checkBook;
     const buildCard = (book) => {
+        checkBook = userWishlistData.some((post, index) => {
+            return post.bookId === book._id;
+        });
         return (
             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
                 <Card className={classes.card} variant="outlined">
@@ -107,6 +171,25 @@ const NewAdditions = (props) => {
                             </CardContent>
                         </Link>
                     </CardActionArea>
+                    {user && !checkBook && (
+                        <AddToWishlist
+                            bookid={book._id}
+                            handleOnClick={() =>
+                                onClickWishlist(book._id, book.title)
+                            }
+                        />
+                    )}
+                    {user && checkBook && (
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() =>
+                                handleRemoveWishlist(book._id, book.title)
+                            }
+                        >
+                            Remove from Wishlist
+                        </Button>
+                    )}
                 </Card>
             </Grid>
         );
