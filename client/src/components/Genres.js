@@ -5,7 +5,6 @@ import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import { auth } from '../firebase/firebase';
 import axios from 'axios';
-import AddToWishlist from './AddToWishlist';
 import { Link, useParams } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import { Button } from 'react-bootstrap';
@@ -150,7 +149,7 @@ const BookGenres = (props) => {
                 {bookDetailsData && bookDetailsData.length !== 0 && (
                     <h2>You are viewing {genreNew} books</h2>
                 )}
-                {bookDetailsData && bookDetailsData.length === 0 && (
+                {bookDetailsData.length === 0 && (
                     <h2>Please select a genre from the dropdown</h2>
                 )}
                 <br></br>
@@ -168,7 +167,7 @@ const BookGenres = (props) => {
                                 <span className="title">{title}</span>
                                 {user && (
                                     <Button
-                                        className="btn"
+                                        className="button"
                                         variant="primary"
                                         onClick={() =>
                                             buyBook(title, _id, price, url)
@@ -184,17 +183,18 @@ const BookGenres = (props) => {
                                     </Button>
                                 )}
                                 {user && !checkBook(_id) && (
-                                    <AddToWishlist
-                                        bookid={_id}
-                                        handleOnClick={() =>
+                                    <Button
+                                        onClick={() =>
                                             onClickWishlist(_id, title)
                                         }
-                                    />
+                                        variant="danger"
+                                    >
+                                        Add To Wishlist
+                                    </Button>
                                 )}
                                 {user && checkBook(_id) && (
                                     <Button
-                                        variant="contained"
-                                        color="error"
+                                        variant="danger"
                                         onClick={() =>
                                             handleRemoveWishlist(_id, title)
                                         }
