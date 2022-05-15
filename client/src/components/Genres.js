@@ -152,7 +152,7 @@ const BookGenres = (props) => {
                 {bookDetailsData && bookDetailsData.length !== 0 && (
                     <h2>You are viewing {genreNew} books</h2>
                 )}
-                {bookDetailsData.length === 0 && (
+                {bookDetailsData && bookDetailsData.length === 0 && (
                     <h2>Please select a genre from the dropdown</h2>
                 )}
                 <br></br>
