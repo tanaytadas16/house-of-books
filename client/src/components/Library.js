@@ -1,12 +1,12 @@
-import React, {useState, useContext, useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCartItems} from "../store/selector/cartSelector";
-import {addItemToCart} from "../store/actions/cartAction";
-import {UserContext} from "../contexts/userContext";
-import axios from "axios";
-import {Link, useNavigate} from "react-router-dom";
-import noImage from "../assets/images/no-image.jpeg";
-import {auth} from "../firebase/firebase";
+import React, { useState, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
+import { UserContext } from '../contexts/userContext';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
     makeStyles,
     Card,
@@ -15,36 +15,36 @@ import {
     CardContent,
     CardMedia,
     Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
-        height: "auto",
-        marginLeft: "auto",
-        marginRight: "auto",
+        height: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         borderRadius: 5,
-        border: "1px solid #222",
+        border: '1px solid #222',
         boxShadow:
-            "0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);",
-        color: "#222",
+            '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
+        color: '#222',
     },
     titleHead: {
-        borderBottom: "1px solid #222",
-        fontWeight: "bold",
-        color: "#222",
-        fontSize: "large",
+        borderBottom: '1px solid #222',
+        fontWeight: 'bold',
+        color: '#222',
+        fontSize: 'large',
     },
     grid: {
         flexGrow: 1,
-        flexDirection: "row",
+        flexDirection: 'row',
     },
     media: {
-        height: "100%",
-        width: "100%",
+        height: '100%',
+        width: '100%',
     },
     button: {
-        color: "#222",
-        fontWeight: "bold",
+        color: '#222',
+        fontWeight: 'bold',
         fontSize: 12,
     },
 });
@@ -54,16 +54,16 @@ const Library = (props) => {
     const classes = useStyles();
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     let card = null;
-    const {currentUser} = useContext(UserContext);
+    const { currentUser } = useContext(UserContext);
     const user = auth.currentUser;
     //   const history = useNavigate();
 
     useEffect(() => {
-        console.log("useEffect fired");
+        console.log('useEffect fired');
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/library`;
-                const {data} = await axios.get(url);
+                const { data } = await axios.get(url);
                 console.log(data);
                 setBookDetailsData(data);
                 setLoading(false);
@@ -76,13 +76,13 @@ const Library = (props) => {
 
     function alertFunc(date) {
         alert(
-            "Book has been rented. Please return it within 30 days. Your end date for return is " +
+            'Book has been rented. Please return it within 30 days. Your end date for return is ' +
                 date
         );
     }
 
     function padTo2Digits(num) {
-        return num.toString().padStart(2, "0");
+        return num.toString().padStart(2, '0');
     }
 
     function formatDate(date) {
@@ -90,14 +90,14 @@ const Library = (props) => {
             padTo2Digits(date.getMonth() + 1),
             padTo2Digits(date.getDate()),
             date.getFullYear(),
-        ].join("-");
+        ].join('/');
     }
     function formatDateNextMonth(date) {
         return [
             padTo2Digits(date.getMonth() + 2),
             padTo2Digits(date.getDate()),
             date.getFullYear(),
-        ].join("-");
+        ].join('/');
     }
 
     const dispatch = useDispatch();
@@ -117,7 +117,7 @@ const Library = (props) => {
             imageUrl: imageUrl,
             startDate: todayDate,
             endDate: endDate,
-            flag: "R",
+            flag: 'R',
         };
         dispatch(addItemToCart(cartItems, dataBody));
         // axios

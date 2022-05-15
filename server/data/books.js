@@ -58,7 +58,7 @@ function validateWebsite(websiteLink) {
 }
 
 function validateDate(dateParams) {
-  const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
+  const validDateFormat = /^\d{2}\/\d{2}\/\d{4}$/;
   if (!dateParams.match(validDateFormat)) {
     throw 'date is not in valid format';
   }
