@@ -82,8 +82,8 @@ function checkIsUsername(s) {
 
 router.get('/rentedbooks/:email', async (req, res) => {
   try {
-    console.log('got request', req.params.email);
     checkIsString(req.params.email);
+    checkIsEmail(req.params.email);
     req.params.email = req.params.email.trim();
     if (!req.params.email) throw 'must provide user email';
   } catch (e) {
@@ -105,6 +105,7 @@ router.post('/profile', async (req, res) => {
   // error check
   try {
     if (!req.body.data) throw 'must provide email Id';
+    checkIsEmail(req.body.data);
   } catch (e) {
     return res.status(400).send(String(e));
   }
@@ -120,15 +121,16 @@ router.post('/myOrders', async (req, res) => {
   // error check
   try {
     if (!req.body.data) throw 'must provide email Id';
+    checkIsEmail(req.body.data);
   } catch (e) {
     return res.status(400).send(String(e));
   }
+  email = email.toLowerCase().trim();
   try {
     const myOrders = await userData.myOrders(req.body.data);
     res.status(200).json(myOrders);
   } catch (e) {
-    console.log(e);
-    res.status(500).send(String(e));
+    return res.status(400).send(String(e));
   }
 });
 

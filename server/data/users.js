@@ -551,6 +551,7 @@ function formatDate(date) {
 async function getRentedBooks(userEmail) {
   const userCollection = await users();
   let user = await getUser(userEmail);
+  if (user === null) throw `No user with that id.`;
   let rentedBooks = user.bookRenting;
   let rentedBooksCollection = [];
   let todayDate = formatDate(new Date());
@@ -563,6 +564,7 @@ async function getRentedBooks(userEmail) {
       rentedBooksCollection.push(bookDetail);
     }
   }
+
   console.log(rentedBooksCollection);
   return rentedBooksCollection;
 }
