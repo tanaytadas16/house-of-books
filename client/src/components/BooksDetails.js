@@ -7,45 +7,8 @@ import { addItemToCart } from '../store/actions/cartAction';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
 import Button from './Button';
-import {
-  makeStyles,
-  Card,
-  Grid,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@material-ui/core';
-const useStyles = makeStyles({
-  card: {
-    maxWidth: 550,
-    height: 'auto',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    borderRadius: 5,
-    border: '1px solid #222',
-    boxShadow: '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-    color: '#222',
-  },
-  titleHead: {
-    borderBottom: '1px solid #222',
-    fontWeight: 'bold',
-    color: '#222',
-    fontSize: 'large',
-  },
-  grid: {
-    flexGrow: 1,
-    flexDirection: 'row',
-  },
-  media: {
-    height: '100%',
-    width: '100%',
-  },
-  button: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-});
+import { Toast } from 'react-bootstrap';
+import '../styles/BookDetails.scss';
 
 const defaultFormFields = {
   review: '',
@@ -53,10 +16,10 @@ const defaultFormFields = {
 };
 
 const BookDetails = (props) => {
+  const [toast, setToast] = useState(false);
   const [loading, setLoading] = useState(true);
   const [reviewDetails, setReviewDetails] = useState(defaultFormFields);
   const { review, rating } = reviewDetails;
-  const classes = useStyles();
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const user = auth.currentUser;
   let { id } = useParams();
@@ -146,6 +109,7 @@ const BookDetails = (props) => {
       startDate: todayDate,
       endDate: endDate,
     };
+    setToast(true);
     dispatch(addItemToCart(cartItems, dataBody));
     // axios
     //   .post('https://houseof-books.herokuapp.com/library', {
@@ -220,153 +184,96 @@ const BookDetails = (props) => {
       </div>
     );
   } else {
-    const price = parseFloat(bookDetailsData.price);
     return (
       <>
-        <Grid
-          item
-          xs={20}
-          sm={11}
-          md={5}
-          lg={5}
-          xl={9}
-          key={bookDetailsData._id}
-        >
-          <Card className={classes.card} variant='outlined'>
-            <CardMedia
-              className={classes.media}
-              component='img'
-              image={bookDetailsData.url ? bookDetailsData.url : noImage}
-              title='book image'
-            />
-            <CardContent>
-              <Typography
-                variant='body2'
-                color='textSecondary'
-                component='span'
-              >
-                <p className='title1'>{bookDetailsData.title}</p>
-                <dl>
-                  <p>
-                    <dt className='title'>Description:</dt>
-                    {bookDetailsData && bookDetailsData.description ? (
-                      <dd>{bookDetailsData.description}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Author:</dt>
-                    {bookDetailsData && bookDetailsData.author ? (
-                      <dd>{bookDetailsData.author}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>ISBN:</dt>
-                    {bookDetailsData && bookDetailsData.ISBN ? (
-                      <dd>{bookDetailsData.ISBN}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Average Rating:</dt>
-                    {bookDetailsData && bookDetailsData.averageRating ? (
-                      <dd>{bookDetailsData.averageRating}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Publisher:</dt>
-                    {bookDetailsData && bookDetailsData.publisher ? (
-                      <dd>{bookDetailsData.publisher}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Genre:</dt>
-                    {bookDetailsData && bookDetailsData.genre ? (
-                      <dd>{bookDetailsData.genre}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Number of pages:</dt>
-                    {bookDetailsData && bookDetailsData.numberofPages ? (
-                      <dd>{bookDetailsData.numberofPages}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Original Publication Year:</dt>
-                    {bookDetailsData &&
-                    bookDetailsData.originalPublicationYear ? (
-                      <dd>{bookDetailsData.originalPublicationYear}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Price:</dt>
-                    {bookDetailsData && bookDetailsData.price ? (
-                      <dd>$ {bookDetailsData.price}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                  <p>
-                    <dt className='title'>Year Published:</dt>
-                    {bookDetailsData && bookDetailsData.yearPublished ? (
-                      <dd>{bookDetailsData.yearPublished}</dd>
-                    ) : (
-                      <dd>N/A</dd>
-                    )}
-                  </p>
-                </dl>
-              </Typography>
-            </CardContent>
-            {isNaN(price) ? (
-              <button
-                className='button'
-                onClick={() =>
-                  rentBook(
-                    bookDetailsData.title,
-                    bookDetailsData._id,
-                    1,
-                    bookDetailsData.price,
-                    bookDetailsData.url
-                  )
-                }
-              >
-                Rent
-              </button>
+        <div className='book-details-container' key={bookDetailsData._id}>
+          <img
+            src={bookDetailsData.url ? bookDetailsData.url : noImage}
+            alt={`${bookDetailsData.title}`}
+          />
+          <span className='title'>Title: {bookDetailsData.title}</span>
+          {user && (
+            <button
+              className='btn'
+              variant='primary'
+              onClick={() =>
+                rentBook(
+                  bookDetailsData.title,
+                  bookDetailsData._id,
+                  bookDetailsData.price,
+                  bookDetailsData.url
+                )
+              }
+            >
+              <span className='price'>
+                $
+                {isNaN(parseInt(bookDetailsData.price))
+                  ? 7.0
+                  : bookDetailsData.price}
+              </span>
+              <span>Add to Cart</span>
+            </button>
+          )}
+          <Toast
+            onClose={() => setToast(false)}
+            show={toast}
+            delay={3000}
+            autohide
+          >
+            <Toast.Header>
+              <strong className='me-auto'>Rent Info</strong>
+            </Toast.Header>
+            <Toast.Body>
+              Rented books are available only for 30 days!
+            </Toast.Body>
+          </Toast>
+          <p className='desc'>
+            <span className='heading'>Description: </span>
+            {bookDetailsData.description}
+          </p>
+          <span>
+            <span className='heading'>Author: </span>
+            {bookDetailsData.author}
+          </span>
+          <span>
+            <span className='heading'>ISBN: </span>
+            {bookDetailsData.ISBN}
+          </span>
+          <span>
+            <span className='heading'>Average Rating: </span>
+            {bookDetailsData.averageRating}
+          </span>
+          <span>
+            <span className='heading'>Publisher: </span>
+            {bookDetailsData.publisher}
+          </span>
+          <span>
+            <span className='heading'>Number of Pages: </span>
+            {bookDetailsData && bookDetailsData.numberofPages ? (
+              <span>{bookDetailsData.numberofPages}</span>
             ) : (
-              <button
-                type='button'
-                className='button'
-                onClick={() =>
-                  buyBook(
-                    bookDetailsData.title,
-                    bookDetailsData._id,
-                    1,
-                    bookDetailsData.price,
-                    bookDetailsData.url
-                  )
-                }
-              >
-                Buy
-              </button>
+              <span>N/A</span>
             )}
-          </Card>
-        </Grid>
+          </span>
+          <span>
+            <span className='heading'>Original Publication Year: </span>
+            {bookDetailsData && bookDetailsData.originalPublicationYear ? (
+              <span>{bookDetailsData.numberofPages}</span>
+            ) : (
+              <span>N/A</span>
+            )}
+          </span>
+          <span>
+            <span className='heading'>Year Published: </span>
+            {bookDetailsData && bookDetailsData.yearPublished ? (
+              <span>{bookDetailsData.yearPublished}</span>
+            ) : (
+              <span>N/A</span>
+            )}
+          </span>
+        </div>
         {auth.currentUser ? (
-          <div className='sign-up-container'>
+          <div className='review-container'>
             <h2>Write a Review</h2>
             <form onSubmit={handleOnSubmit}>
               <label htmlFor='review'>Review </label>
@@ -396,7 +303,9 @@ const BookDetails = (props) => {
                 <option value='5'>5 Stars</option>
               </select>
               <br></br> <br></br>
-              <Button type='submit'>Post Review</Button>
+              <Button buttonType='inverted' type='submit'>
+                Post Review
+              </Button>
             </form>
           </div>
         ) : null}

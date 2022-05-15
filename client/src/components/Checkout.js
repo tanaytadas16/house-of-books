@@ -1,8 +1,9 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { UserContext } from '../contexts/userContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { clearCart } from '../store/actions/cartAction';
+import { Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 import {
@@ -16,6 +17,7 @@ import Button from './Button';
 import '../styles/Checkout.scss';
 
 const Checkout = () => {
+  const [visible, setVisible] = useState(false);
   const { currentUser } = useContext(UserContext);
   const cartItems = useSelector(selectCartItems);
   console.log('Cart Items:', cartItems);
@@ -57,6 +59,10 @@ const Checkout = () => {
     } catch (error) {
       console.log(error);
     }
+    setVisible(true);
+    window.setTimeout(() => {
+      setVisible(false);
+    }, 2000);
     dispatch(clearCart([]));
   };
 
@@ -95,6 +101,11 @@ const Checkout = () => {
           </Link>{' '}
           to purchase
         </p>
+      )}
+      {visible && (
+        <Alert variant='success' isOpen={visible}>
+          Purchase successful!
+        </Alert>
       )}
     </div>
   );
