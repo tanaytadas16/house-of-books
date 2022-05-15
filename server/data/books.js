@@ -25,11 +25,17 @@ function validateBoolParams(param, paramName) {
 }
 
 function validateNumberParams(param, paramName) {
-  if (typeof param !== 'number' || !Number.isInteger(param)) {
-    throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
-  }
   if (param < 0) {
     throw `${paramName} can not be negative`;
+  }
+  if (typeof param === 'number' || !isNaN(param)) {
+    if (Number.isInteger(param)) {
+      return true;
+    } else {
+      return true;
+    }
+  } else {
+    throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
   }
 }
 

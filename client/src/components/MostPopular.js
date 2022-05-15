@@ -76,22 +76,10 @@ const MostPopular = () => {
     fetchData();
   }, []);
 
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
-  }
-  function formatDate(date) {
-    return [
-      padTo2Digits(date.getMonth() + 1),
-      padTo2Digits(date.getDate()),
-      date.getFullYear(),
-    ].join('-');
-  }
-
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
   const buyBook = (title, bookId, price, imageUrl) => {
-    console.log('Quantity inside cart is', quantity);
     price = parseFloat(price);
     let dataBody = {
       email: user.email,
