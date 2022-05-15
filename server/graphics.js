@@ -2,7 +2,7 @@ var fs = require("fs"),
     gm = require("gm"),
     path = require("path");
 
-var dir = path.join(__dirname, "../client/src/img/");
+var dir = path.join(__dirname, "../client/public/");
 function createImage(text, email) {
     console.log(dir);
     gm(150, 100, "#84defaaa")
