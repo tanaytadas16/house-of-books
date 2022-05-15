@@ -114,7 +114,11 @@ const ProfilePage = () => {
         return (
             <div className="sign-up-container">
                 <h2>Profile Page</h2>
-                <img alt="profile picture" src={userData.image} />
+                {userData && userData.image ? (
+                    <img alt="profile picture" src={userData.image} />
+                ) : (
+                    <img alt="profile picture" src="/defaultDp.png" />
+                )}
                 <form onSubmit={handleOnSubmit}>
                     <FormInput
                         label="First Name"
