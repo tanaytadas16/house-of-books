@@ -5,6 +5,7 @@ import { createNativeUser } from '../firebase/firebase';
 import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
+import { Alert, Toast } from 'react-bootstrap';
 import '../styles/Signup.scss';
 
 const defaultFormFields = {
@@ -155,7 +156,9 @@ const Signup = () => {
           value={firstName}
           name='firstName'
         />
-        <p>{formErrors.firstName}</p>
+        {formErrors.firstName && (
+          <Alert variant='danger'>{formErrors.firstName}</Alert>
+        )}
         <FormInput
           label='Last Name'
           type='text'
@@ -164,7 +167,9 @@ const Signup = () => {
           value={lastName}
           name='lastName'
         />
-        <p>{formErrors.lastName}</p>
+        {formErrors.lastName && (
+          <Alert variant='danger'>{formErrors.lastName}</Alert>
+        )}
         <FormInput
           label='Email'
           type='email'
@@ -173,7 +178,7 @@ const Signup = () => {
           value={email}
           name='email'
         />
-        <p>{formErrors.email}</p>
+        {formErrors.email && <Alert variant='danger'>{formErrors.email}</Alert>}
         <FormInput
           label='Phone Number'
           type='text'
@@ -182,7 +187,9 @@ const Signup = () => {
           value={phoneNumber}
           name='phoneNumber'
         />
-        <p>{formErrors.phoneNumber}</p>
+        {formErrors.phoneNumber && (
+          <Alert variant='danger'>{formErrors.phoneNumber}</Alert>
+        )}
         <FormInput
           label='Username'
           type='text'
@@ -191,7 +198,9 @@ const Signup = () => {
           value={username}
           name='username'
         />
-        <p>{formErrors.username}</p>
+        {formErrors.username && (
+          <Alert variant='danger'>{formErrors.username}</Alert>
+        )}
         <FormInput
           label='Password'
           type='password'
@@ -200,7 +209,9 @@ const Signup = () => {
           value={password}
           name='password'
         />
-        <p>{formErrors.password}</p>
+        {formErrors.password && (
+          <Alert variant='danger'>{formErrors.password}</Alert>
+        )}
         <FormInput
           label='Confirm Password'
           type='password'
@@ -209,7 +220,9 @@ const Signup = () => {
           value={confirmPassword}
           name='confirmPassword'
         />
-        <p>{formErrors.ConfirmPassword}</p>
+        {formErrors.ConfirmPassword && (
+          <Alert variant='danger'>{formErrors.ConfirmPassword}</Alert>
+        )}
         <FormInput
           label='Address'
           type='text'
@@ -218,7 +231,6 @@ const Signup = () => {
           value={address}
           name='address'
         />
-        <p>{formErrors.address}</p>
         <FormInput
           label='City'
           type='text'
@@ -227,7 +239,6 @@ const Signup = () => {
           value={city}
           name='city'
         />
-        <p>{formErrors.city}</p>
         <label>State</label>
         <select
           className='form-input-label'
@@ -297,8 +308,7 @@ const Signup = () => {
           value={zip}
           name='zip'
         />
-        <p>{formErrors.zip}</p>
-
+        {formErrors.zip && <Alert variant='danger'>{formErrors.zip}</Alert>}
         <Button type='submit'>Sign Up</Button>
       </form>
     </div>

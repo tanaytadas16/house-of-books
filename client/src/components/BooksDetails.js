@@ -9,7 +9,7 @@ import { auth } from '../firebase/firebase';
 import { Button } from 'react-bootstrap';
 import AddToWishlist from './AddToWishlist';
 import { UserContext } from '../contexts/userContext';
-import { Toast } from 'react-bootstrap';
+import { Alert, Toast } from 'react-bootstrap';
 import '../styles/BookDetails.scss';
 
 const defaultFormFields = {
@@ -32,7 +32,8 @@ const BookDetails = (props) => {
   const [userWishlistData, setUserWishlistData] = useState([]);
   const [isInserted, setIsInserted] = useState(0);
   const { currentUser } = useContext(UserContext);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('false');
+  const [reviewError, setReviewError] = useState('');
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -49,7 +50,7 @@ const BookDetails = (props) => {
       }
     }
     fetchData();
-  }, [id, postReview]);
+  }, [id, postReview, reviewError]);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -105,6 +106,10 @@ const BookDetails = (props) => {
     dispatch(addItemToCart(cartItems, dataBody));
   };
 
+  const resetFormFields = () => {
+    setReviewDetails(defaultFormFields);
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setReviewDetails({ ...reviewDetails, [name]: value });
@@ -120,13 +125,21 @@ const BookDetails = (props) => {
       comment: review,
       username: bookDetailsData.username,
     };
-    await axios
-      .post('http://localhost:4000/reviews/review', { data: dataBody })
-      .then(function (response) {
-        console.log(response.data);
-        setPostReview(!postReview);
-        history(`/books/${bookDetailsData._id}`, { replace: true });
-      });
+    try {
+      await axios
+        .post('http://localhost:4000/reviews/review', { data: dataBody })
+        .then(function (response) {
+          console.log(response.data);
+          setPostReview(!postReview);
+          resetFormFields();
+          setReviewError('');
+          history(`/books/${bookDetailsData._id}`, { replace: true });
+        });
+    } catch (error) {
+      console.log(error.response.data);
+      setReviewError(error.response.data);
+      return;
+    }
   };
 
   const removeReview = (reviewId) => {
@@ -135,6 +148,7 @@ const BookDetails = (props) => {
       .then(function (response) {
         console.log(response.data);
         setPostReview(!postReview);
+        setReviewError('');
         history(`/books/${bookDetailsData._id}`, { replace: true });
       });
   };
@@ -332,6 +346,11 @@ const BookDetails = (props) => {
         {auth.currentUser ? (
           <div className='review-container'>
             <h2>Write a Review</h2>
+            {reviewError && (
+              <Alert variant='danger' className='alert-container'>
+                {reviewError}
+              </Alert>
+            )}
             <form onSubmit={handleOnSubmit}>
               <label htmlFor='review'>Review </label>
               <textarea
@@ -347,12 +366,11 @@ const BookDetails = (props) => {
               />
               <br /> <br />
               <label htmlFor='rating'>Rating </label>
-              <select
-                name='rating'
-                value={rating ? rating : 0}
-                id='rating'
-                onChange={handleChange}
-              >
+              <select name='rating' id='rating' onChange={handleChange}>
+                <option disabled selected value>
+                  {' '}
+                  -- select an option --{' '}
+                </option>
                 <option value='1'>1 Star</option>
                 <option value='2'>2 Stars</option>
                 <option value='3'>3 Stars</option>
