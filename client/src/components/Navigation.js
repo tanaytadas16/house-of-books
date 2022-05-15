@@ -12,6 +12,7 @@ import '../styles/Navigation.scss';
 const Navigation = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const isCartOpen = useSelector(selectIsCartOpen);
+  // console.log(currentUser);
   const history = useNavigate();
 
   const signOutHandler = async () => {
@@ -28,6 +29,9 @@ const Navigation = () => {
         </Link>
         <div className='navigation'>
           <div className='nav-links-container'>
+            <Link className='nav-link' to='/books/search'>
+              SEARCH
+            </Link>
             <Link className='nav-link' to='/books'>
               BOOKS
             </Link>
