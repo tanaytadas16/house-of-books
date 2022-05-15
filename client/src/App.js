@@ -6,7 +6,6 @@ import BooksList from './components/BooksList';
 import Home from './components/Home';
 import Library from './components/Library';
 import MostPopular from './components/MostPopular';
-import RecentBooks from './components/RecentBooks';
 import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
 import Bookshelf from './components/Bookshelf';
@@ -40,14 +39,13 @@ const App = () => {
                     path="/books/mostPopular"
                     element={<MostPopular />}
                 />
-                <Route exact path="/books/recents" element={<RecentBooks />} />
                 <Route exact path="/users/profile" element={<ProfilePage />} />
                 <Route exact path="/users/myOrders" element={<MyOrders />} />
                 <Route exact path="/users/bookshelf" element={<Bookshelf />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route
                     exact
-                    path="/users/addNewBook"
+                    path="/books/addNewBook"
                     element={<AddNewBook />}
                 />
                 <Route

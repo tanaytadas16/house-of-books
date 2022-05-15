@@ -80,7 +80,7 @@ export default function AddNewBook() {
             })
             .then(function (response) {
                 console.log(response.data);
-                navigate('/newAdditions', { replace: true });
+                navigate('/books', { replace: true });
             });
     };
 

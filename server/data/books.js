@@ -3,16 +3,27 @@ const books = mongoCollections.books;
 const library = mongoCollections.library;
 const { ObjectId } = require('mongodb');
 const users = mongoCollections.users;
+const ErrorCode = {
+    BAD_REQUEST: 400,
+    NOT_FOUND: 404,
+    INTERNAL_SERVER_ERROR: 500,
+};
 
 function validateStringParams(param, paramName) {
     if (!param) {
-        throw `Error: No ${paramName} passed to the function`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     } else if (typeof param !== 'string') {
-        throw `Type Error: Argument ${param} passed is not a string ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Argument ${param} entered is not a string ${paramName}.`
+        );
     } else if (param.length === 0) {
-        throw `Error: No element present in string ${paramName}`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     } else if (!param.trim()) {
-        throw `Error: Empty spaces passed to string ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Empty spaces entered to ${paramName}.`
+        );
     }
 }
 function validateBoolParams(param, paramName) {
@@ -26,7 +37,7 @@ function validateBoolParams(param, paramName) {
 
 function validateNumberParams(param, paramName) {
     if (param < 0) {
-        throw `${paramName} can not be negative`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     }
     if (typeof param === 'number' || !isNaN(param)) {
         if (Number.isInteger(param)) {
@@ -35,7 +46,10 @@ function validateNumberParams(param, paramName) {
             return true;
         }
     } else {
-        throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Argument ${param} passed is not a numeric ${paramName}.`
+        );
     }
 }
 
@@ -53,7 +67,10 @@ function validateWebsite(websiteLink) {
     const validLink = /^http(s)/;
     websiteLink = websiteLink.trim().toLowerCase();
     if (!websiteLink.match(validLink)) {
-        throw `Error: ${websiteLink} is not a valid web site link`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error:  ${websiteLink} is not a valid web site link.`
+        );
     }
 }
 
@@ -80,13 +97,16 @@ async function getById(searchId) {
     validateStringParams(searchId, 'Id');
     searchId = searchId.trim();
     if (!ObjectId.isValid(searchId)) {
-        throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`
+        );
     }
     let parseId = ObjectId(searchId);
     const booksCollection = await books();
     const bookFound = await booksCollection.findOne({ _id: parseId });
     if (bookFound === null) {
-        throw `No book found with the id ${searchId}`;
+        throwError(ErrorCode.NotFound, `No book found with the id ${searchId}`);
     } else {
         bookFound['_id'] = searchId;
     }
@@ -191,6 +211,7 @@ function validateBookCreations(
     validateNumberParams(yearPublished, 'yearPublished');
     // validateBoolParams(popular, 'popular');
     // validateBoolParams(availableForRent, 'availableForRent');
+    return true;
 }
 async function addNewBook(
     ISBN,
@@ -233,31 +254,36 @@ async function addNewBook(
         publisher = publisher.trim();
         title = title.trim();
         const booksCollection = await books();
-        let newBook = {
-            ISBN: ISBN,
-            url: url,
-            description: description,
-            author: author,
-            averageRating: averageRating,
-            binding: binding,
-            genre: genre,
-            numberofPages: numberofPages,
-            originalPublicationYear: originalPublicationYear,
-            price: price,
-            publisher: publisher,
-            title: title,
-            yearPublished: yearPublished,
-            count: count,
-        };
-        const insertedDatadetails = await booksCollection.insertOne(newBook);
-        if (insertedDatadetails.insertedCount === 0) {
-            throw 'Book could not be inserted ';
+        if (validateBookCreations) {
+            let newBook = {
+                ISBN: ISBN,
+                url: url,
+                description: description,
+                author: author,
+                averageRating: averageRating,
+                binding: binding,
+                genre: genre,
+                numberofPages: numberofPages,
+                originalPublicationYear: originalPublicationYear,
+                price: price,
+                publisher: publisher,
+                title: title,
+                yearPublished: yearPublished,
+                count: count,
+                reviews: [],
+            };
+            const insertedDatadetails = await booksCollection.insertOne(
+                newBook
+            );
+            if (insertedDatadetails.insertedCount === 0) {
+                throw 'Book could not be inserted ';
+            }
+
+            const insertedBookId = insertedDatadetails.insertedId.toString();
+
+            const bookDetails = await getById(insertedBookId);
+            return bookDetails;
         }
-
-        const insertedBookId = insertedDatadetails.insertedId.toString();
-
-        const bookDetails = await getById(insertedBookId);
-        return bookDetails;
     } catch (error) {
         console.log(error);
         throwCatchError(error);
@@ -426,7 +452,7 @@ async function searchBooks(searchVal) {
 }
 
 async function getBooksByGenre(genre) {
-    validateStringParams(genre, "genre");
+    validateStringParams(genre, 'genre');
     const booksCollection = await books();
     const booksList = await booksCollection
         .find({
@@ -437,11 +463,25 @@ async function getBooksByGenre(genre) {
         return [];
     }
     for (let book of booksList) {
-        let id = book["_id"];
-        book["_id"] = id.toString();
+        let id = book['_id'];
+        book['_id'] = id.toString();
     }
     return booksList;
 }
+const throwError = (code = 404, message = 'Not found') => {
+    throw { code, message };
+};
+
+const throwCatchError = (error) => {
+    if (error.code && error.message) {
+        throwError(error.code, error.message);
+    }
+
+    throwError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        'Error: Internal server error.'
+    );
+};
 
 module.exports = {
     addNewBook,
