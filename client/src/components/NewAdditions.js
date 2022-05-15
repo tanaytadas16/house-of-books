@@ -199,9 +199,7 @@ const NewAdditions = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>

@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from "react";
-import axios from "axios";
-import {Link, useNavigate} from "react-router-dom";
-import noImage from "../assets/images/no-image.jpeg";
-import {auth} from "../firebase/firebase";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import noImage from '../assets/images/no-image.jpeg';
+import { auth } from '../firebase/firebase';
 import {
     makeStyles,
     Card,
@@ -11,36 +11,36 @@ import {
     CardContent,
     CardMedia,
     Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
-        height: "auto",
-        marginLeft: "auto",
-        marginRight: "auto",
+        height: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         borderRadius: 5,
-        border: "1px solid #222",
+        border: '1px solid #222',
         boxShadow:
-            "0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);",
-        color: "#222",
+            '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
+        color: '#222',
     },
     titleHead: {
-        borderBottom: "1px solid #222",
-        fontWeight: "bold",
-        color: "#222",
-        fontSize: "large",
+        borderBottom: '1px solid #222',
+        fontWeight: 'bold',
+        color: '#222',
+        fontSize: 'large',
     },
     grid: {
         flexGrow: 1,
-        flexDirection: "row",
+        flexDirection: 'row',
     },
     media: {
-        height: "100%",
-        width: "100%",
+        height: '100%',
+        width: '100%',
     },
     button: {
-        color: "#222",
-        fontWeight: "bold",
+        color: '#222',
+        fontWeight: 'bold',
         fontSize: 12,
     },
 });
@@ -51,16 +51,16 @@ const RentedBooks = (props) => {
     const [bookDetailsData, setBookDetailsData] = useState(undefined);
     let card = null;
     const user = auth.currentUser;
-    console.log("Current user is ", user);
-    console.log("Current ", user.email);
+    console.log('Current user is ', user);
+    console.log('Current ', user.email);
     useEffect(() => {
-        console.log("useEffect fired");
+        console.log('useEffect fired');
         async function fetchData() {
             try {
                 const url = `http://localhost:4000/users/rentedbooks/${user.email}`;
                 console.log(url);
-                const {data} = await axios.get(url);
-                console.log("data", data);
+                const { data } = await axios.get(url);
+                console.log('data', data);
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
@@ -73,26 +73,26 @@ const RentedBooks = (props) => {
     const buildCard = (book) => {
         return (
             <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-                <Card className={classes.card} variant='outlined'>
+                <Card className={classes.card} variant="outlined">
                     <CardActionArea>
                         <Link to={`/books/${book._id}`}>
                             <CardMedia
                                 className={classes.media}
-                                component='img'
+                                component="img"
                                 image={book.url ? book.url : noImage}
-                                title='book image'
+                                title="book image"
                             />
 
                             <CardContent>
                                 <Typography
-                                    variant='body2'
-                                    color='textSecondary'
-                                    component='span'
+                                    variant="body2"
+                                    color="textSecondary"
+                                    component="span"
                                 >
-                                    <p className='title1'>{book.title}</p>
+                                    <p className="title1">{book.title}</p>
                                     <dl>
                                         <p>
-                                            <dt className='title'>Genre:</dt>
+                                            <dt className="title">Genre:</dt>
                                             {book && book.genre ? (
                                                 <dd>{book.genre}</dd>
                                             ) : (
@@ -100,7 +100,7 @@ const RentedBooks = (props) => {
                                             )}
                                         </p>
                                         <p>
-                                            <dt className='title'>
+                                            <dt className="title">
                                                 Rented Date:
                                             </dt>
                                             {book && book.startDate ? (
@@ -110,7 +110,7 @@ const RentedBooks = (props) => {
                                             )}
                                         </p>
                                         <p>
-                                            <dt className='title'>Due Date:</dt>
+                                            <dt className="title">Due Date:</dt>
                                             {book && book.endDate ? (
                                                 <dd>{book.endDate}</dd>
                                             ) : (
@@ -131,9 +131,7 @@ const RentedBooks = (props) => {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
