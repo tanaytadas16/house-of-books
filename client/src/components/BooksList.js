@@ -69,9 +69,8 @@ const BooksList = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const url = `https://houseof-books.herokuapp.com/books`;
+                const url = `http://localhost:4000/books`;
                 const { data } = await axios.get(url);
-
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
@@ -85,23 +84,18 @@ const BooksList = () => {
     const dispatch = useDispatch();
     const cartItems = useSelector(selectCartItems);
 
-    const buyBook = (title, bookId, quantity, price, imageUrl) => {
+    const buyBook = (title, bookId, price, imageUrl) => {
         price = parseFloat(price);
-        // let todayDate = formatDate(new Date());
         let dataBody = {
             email: user.email,
             name: title,
             bookId: bookId,
             price: price,
-            quantity: quantity,
-            totalPrice: quantity * price,
             imageUrl: imageUrl,
             flag: 'B',
         };
         dispatch(addItemToCart(cartItems, dataBody));
     };
-    //// add to wishlist button onclick function
-
     let onClickWishlist = async (bookId, title) => {
         try {
             // console.log(bookId);

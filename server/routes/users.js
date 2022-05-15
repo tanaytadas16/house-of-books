@@ -44,7 +44,6 @@ stateList = [
     'OK',
     'OR',
     'PA',
-    'PR',
     'RI',
     'SC',
     'SD',
@@ -104,6 +103,7 @@ router.get('/rentedbooks/:email', async (req, res) => {
 });
 
 router.post('/profile', async (req, res) => {
+    // error check
     try {
         if (!req.body.data) throw 'must provide email Id';
         checkIsEmail(req.body.data);
@@ -119,24 +119,23 @@ router.post('/profile', async (req, res) => {
 });
 
 router.post('/myOrders', async (req, res) => {
+    // error check
     try {
         if (!req.body.data) throw 'must provide email Id';
         checkIsEmail(req.body.data);
     } catch (e) {
         return res.status(400).send(String(e));
     }
+    req.body.data = req.body.data.toLowerCase().trim();
     try {
         const myOrders = await userData.myOrders(req.body.data);
-        console.log('In routes my orders are ', myOrders);
         res.status(200).json(myOrders);
     } catch (e) {
-        console.log(e);
-        res.status(500).send(String(e));
+        return res.status(400).send(String(e));
     }
 });
 
 router.post('/signup', async (req, res) => {
-    console.log(req.body.data);
     let {
         firstName,
         lastName,
@@ -151,7 +150,6 @@ router.post('/signup', async (req, res) => {
         flag,
     } = req.body.data;
 
-    console.log('flag is ', flag);
     if (flag === 'G') {
         if (!email) {
             return res
@@ -233,7 +231,7 @@ router.post('/signup', async (req, res) => {
             state,
             zip,
             flag,
-            '/img/' + email + '.png'
+            '../img/' + email + '.png'
         );
         res.status(200).json(newUser);
     } catch (e) {
@@ -304,7 +302,6 @@ router.put('/profile', async (req, res) => {
         zip,
     } = req.body.data;
 
-    console.log(req.body.data);
     try {
         if (!firstName) throw 'Must provide the first name';
         if (!lastName) throw 'Must provide the last name';

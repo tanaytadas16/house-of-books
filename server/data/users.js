@@ -211,7 +211,7 @@ async function createUser(
         bookRenting: [],
         purchasedBooks: [],
         reviews: [],
-        whishlist: [],
+        wishlist: [],
         image: image,
     };
 
@@ -226,6 +226,8 @@ async function createUser(
 }
 
 async function getUser(emailId) {
+    console.log('After function call');
+
     if (
         typeof emailId !== 'string' ||
         emailId.length === 0 ||
@@ -235,9 +237,11 @@ async function getUser(emailId) {
 
     checkIsEmail(emailId);
 
+    console.log('Before DB call');
+
     const userCollection = await users();
     const singleUserId = await userCollection.findOne({ email: emailId });
-    if (singleUserId === null) throw 'Id not found';
+    if (singleUserId === null) return null;
     console.log(singleUserId);
     return { ...singleUserId, _id: singleUserId._id.toString() };
 }
@@ -561,12 +565,14 @@ async function getRentedBooks(userEmail) {
             rentedBooksCollection.push(bookDetail);
         }
     }
+
     console.log(rentedBooksCollection);
     return rentedBooksCollection;
 }
 
 async function myOrders(emailId) {
     let myOrdersArr = [];
+    let demoArr = [];
     let bookFound;
     const userCollection = await users();
     const booksCollection = await books();
@@ -574,8 +580,16 @@ async function myOrders(emailId) {
     let user = await userCollection.findOne({ email: emailId });
     if (user === null) throw 'No users present with given Email Id';
 
+    user.bookRenting.map((element) => {
+        demoArr.push(element);
+    });
+    user.purchasedBooks.map((element) => {
+        demoArr.push(element);
+    });
+    //   console.log('Demo array is ', demoArr);
+
     const d = await Promise.all(
-        user.purchasedBooks.map(async (element) => {
+        demoArr.map(async (element) => {
             bookFound = {};
             bookFound = await booksCollection.findOne({
                 _id: element._id,
@@ -583,6 +597,8 @@ async function myOrders(emailId) {
             if (bookFound === null) {
                 throw `No book found with the id ${element._id}`;
             }
+            bookFound.startDate = element.startDate;
+            bookFound.endDate = element.endDate;
             bookFound.dateOfPurchase = element.dateOfPurchase;
             bookFound.totalPrice = element.totalPrice;
             bookFound.quantity = element.quantity;
@@ -590,6 +606,7 @@ async function myOrders(emailId) {
         })
     );
     myOrdersArr = d;
+    console.log(myOrdersArr);
     return myOrdersArr;
 }
 

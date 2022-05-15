@@ -25,11 +25,17 @@ function validateBoolParams(param, paramName) {
 }
 
 function validateNumberParams(param, paramName) {
-    if (typeof param !== 'number' || !Number.isInteger(param)) {
-        throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
-    }
     if (param < 0) {
         throw `${paramName} can not be negative`;
+    }
+    if (typeof param === 'number' || !isNaN(param)) {
+        if (Number.isInteger(param)) {
+            return true;
+        } else {
+            return true;
+        }
+    } else {
+        throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
     }
 }
 
@@ -52,7 +58,7 @@ function validateWebsite(websiteLink) {
 }
 
 function validateDate(dateParams) {
-    const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
+    const validDateFormat = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateParams.match(validDateFormat)) {
         throw 'date is not in valid format';
     }
@@ -94,7 +100,9 @@ async function getAll() {
     }
     const booksCollection = await books();
 
-    const booksList = await booksCollection.find({}).toArray();
+    const booksList = await booksCollection
+        .find({ price: { $ne: 'Not For Sale' } })
+        .toArray();
     if (booksList.length === 0) {
         return [];
     }
@@ -102,7 +110,6 @@ async function getAll() {
         let id = book['_id'];
         book['_id'] = id.toString();
     }
-    // console.log(booksList);
     return booksList;
 }
 
@@ -249,7 +256,6 @@ async function addNewBook(
     const insertedBookId = insertedDatadetails.insertedId.toString();
 
     const bookDetails = await getById(insertedBookId);
-    console.log(bookDetails);
     return bookDetails;
 }
 function validateCreations(email, bookId, startDate, endDate, flag) {
@@ -335,11 +341,14 @@ async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
     validateNumberParams(quantity, 'quantity');
     validateNumberParams(totalPrice, 'totalPrice');
     validateDateOfPurchase(dateOfPurchase);
+    let totalCount = 0;
     email = email.trim();
     bookId = bookId.trim();
 
     const checkBookDetails = await getById(bookId);
+    const booksCollection = await books();
     const userCollection = await users();
+    totalCount = checkBookDetails.count + quantity;
 
     let constUserId = await userCollection.findOne({
         email: email,
@@ -360,6 +369,14 @@ async function buyBook(email, bookId, quantity, totalPrice, dateOfPurchase) {
     if (!booksArrUpdated.matchedCount && !booksArrUpdated.modifiedCount) {
         throw `Could not add purchased book to the user db.`;
     }
+
+    const updateBookCount = await booksCollection.updateOne(
+        { _id: ObjectId(bookId) },
+        { $set: { count: totalCount } }
+    );
+    if (!updateBookCount.matchedCount && !updateBookCount.modifiedCount) {
+        throw `Could not add purchased book to the user db.`;
+    }
     return newBook;
 }
 
@@ -372,7 +389,7 @@ async function getMostPopular() {
     const booksCollection = await books();
     const booksList = await booksCollection
         .find({
-            popular: true,
+            count: { $gt: 1 },
         })
         .toArray();
     if (booksList.length === 0) {
@@ -382,7 +399,7 @@ async function getMostPopular() {
         let id = book['_id'];
         book['_id'] = id.toString();
     }
-    console.log(booksList);
+    booksList.sort((a, b) => b.count - a.count);
     return booksList;
 }
 
