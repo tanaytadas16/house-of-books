@@ -4,63 +4,23 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
+import AddToWishlist from './AddToWishlist';
 import { Link, useNavigate } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import { Button } from '@mui/material';
-import AddToWishlist from './AddToWishlist';
-import {
-  makeStyles,
-  Card,
-  CardActionArea,
-  Grid,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@material-ui/core';
-const useStyles = makeStyles({
-  card: {
-    maxWidth: 550,
-    height: 'auto',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    borderRadius: 5,
-    border: '1px solid #222',
-    boxShadow: '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);',
-    color: '#222',
-  },
-  titleHead: {
-    borderBottom: '1px solid #222',
-    fontWeight: 'bold',
-    color: '#222',
-    fontSize: 'large',
-  },
-  grid: {
-    flexGrow: 1,
-    flexDirection: 'row',
-  },
-  media: {
-    height: '100%',
-    width: '100%',
-  },
-  button: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-});
+import { Alert, Toast } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import '../styles/Library.scss';
 
 const Library = (props) => {
-  const [loading, setLoading] = useState(true);
-  const classes = useStyles();
-  const [bookDetailsData, setBookDetailsData] = useState(undefined);
-  let card = null;
+  const [toast, setToast] = useState(false);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
   const [userWishlistData, setUserWishlistData] = useState([]);
   const [isInserted, setIsInserted] = useState(0);
-  //   const history = useNavigate();
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -78,13 +38,6 @@ const Library = (props) => {
     }
     fetchData();
   }, [currentUser]);
-
-  function alertFunc(date) {
-    alert(
-      'Book has been rented. Please return it within 30 days. Your end date for return is ' +
-        date
-    );
-  }
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -108,7 +61,7 @@ const Library = (props) => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  const rentBook = (title, bookId, quantity, price, imageUrl) => {
+  const rentBook = (title, bookId, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     let endDate = formatDateNextMonth(new Date());
     console.log(todayDate);
@@ -117,24 +70,15 @@ const Library = (props) => {
       name: title,
       bookId: bookId,
       price: 7.0,
-      quantity: quantity,
-      totalPrice: quantity * price,
       imageUrl: imageUrl,
       startDate: todayDate,
       endDate: endDate,
       flag: 'R',
     };
+    setToast(true);
     dispatch(addItemToCart(cartItems, dataBody));
-    // axios
-    //     .post("http://localhost:4000/library", {
-    //         data: dataBody,
-    //     })
-    //     .then(function (response) {
-    //         console.log(response.data);
-    //         alertFunc(endDate);
-    //         history("/", {replace: true}); //to be changed to cart
-    //     });
   };
+
   let onClickWishlist = async (bookId, title) => {
     try {
       // console.log(bookId);
@@ -144,23 +88,19 @@ const Library = (props) => {
         bookId: bookId,
         title: title,
       });
-      // console.log(data);
       if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
-      // setLoading(false);
     } catch (e) {
       console.log(e);
     }
   };
   let handleRemoveWishlist = async (bookId, title) => {
     try {
-      // console.log('inside remove onclick');
       const url = `http://localhost:4000/users/bookshelf/remove`;
       const { data } = await axios.post(url, {
         email: currentUser.email,
         bookId: bookId,
         title: title,
       });
-      // console.log(data);
       if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
     } catch (e) {
       console.log(e);
@@ -169,12 +109,10 @@ const Library = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // console.log(bookId);.
         const url = `http://localhost:4000/users/profile`;
         const { data } = await axios.post(url, {
           data: currentUser.email,
         });
-        //
 
         setUserWishlistData(data.wishlist);
         if (!userWishlistData.wishlist) setError(true);
@@ -186,110 +124,84 @@ const Library = (props) => {
     fetchData();
   }, [currentUser, isInserted]);
 
-  let checkBook;
-
-  const buildCard = (book) => {
-    checkBook = userWishlistData.some((post, index) => {
-      return post.bookId === book._id;
+  const checkBook = (id) => {
+    return userWishlistData.some((post, index) => {
+      return post.bookId === id;
     });
-    return (
-      <Grid item xs={10} sm={7} md={5} lg={4} xl={3} key={book._id}>
-        <Card className={classes.card} variant='outlined'>
-          <CardActionArea>
-            <Link to={`/books/${book._id}`}>
-              <CardMedia
-                className={classes.media}
-                component='img'
-                image={book.url ? book.url : noImage}
-                title='book image'
-              />
-
-              <CardContent>
-                <Typography
-                  variant='body2'
-                  color='textSecondary'
-                  component='span'
-                >
-                  <p className='title1'>{book.title}</p>
-                  <dl>
-                    <p>
-                      <dt className='title'>Genre:</dt>
-                      {book && book.genre ? (
-                        <dd>{book.genre}</dd>
-                      ) : (
-                        <dd>N/A</dd>
-                      )}
-                    </p>
-                    <p>
-                      <dt className='title'>Fee:</dt>
-                      {book && book.price ? <dd>$7</dd> : <dd>N/A</dd>}
-                    </p>
-                  </dl>
-                </Typography>
-              </CardContent>
-            </Link>
-          </CardActionArea>
-          {user && (
-            <button
-              className='button'
-              onClick={() =>
-                rentBook(book.title, book._id, 1, book.price, book.url)
-              }
-            >
-              Rent
-            </button>
-          )}
-          {user && !checkBook && (
-            <AddToWishlist
-              bookid={book._id}
-              handleOnClick={() => onClickWishlist(book._id, book.title)}
-            />
-          )}
-          {user && checkBook && (
-            <Button
-              variant='contained'
-              color='error'
-              onClick={() => handleRemoveWishlist(book._id, book.title)}
-            >
-              Remove from Wishlist
-            </Button>
-          )}
-        </Card>
-      </Grid>
-    );
   };
 
   if (loading) {
-    if (error) {
-      return (
-        <div>
-          <h2>No books are present in the Library</h2>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <h2>Loading....</h2>
-        </div>
-      );
-    }
-  } else if (bookDetailsData && bookDetailsData.length === 0) {
     return (
       <div>
-        <h2>No books found in Library</h2>
+        {isNaN(bookDetailsData) ? (
+          <div>
+            <h2>No books are present in the Library</h2>
+          </div>
+        ) : (
+          <div>
+            <h2>Loading....</h2>
+          </div>
+        )}
       </div>
     );
   } else {
-    card =
-      bookDetailsData &&
-      bookDetailsData.map((book) => {
-        return buildCard(book);
-      });
     return (
-      <div>
-        <Grid container className={classes.grid} spacing={5}>
-          {card}
-        </Grid>
+      <div className='main-container'>
+        <Alert variant='primary'>
+          These books can only be rented. Rented books are available only for 30
+          days
+        </Alert>
+        <div className='books-container'>
+          {bookDetailsData &&
+            bookDetailsData.map(({ _id, url, title, price }) => (
+              <div className='book-card-container' key={_id}>
+                <Link to={`/books/${_id}`}>
+                  <img src={url ? url : noImage} alt={`${title}`} />
+                </Link>
+                <span className='title'>{title}</span>
+                {user && (
+                  <button
+                    className='btn'
+                    variant='primary'
+                    onClick={() => rentBook(title, _id, price, url)}
+                  >
+                    <span className='price'>
+                      ${isNaN(parseInt(price)) ? 7.0 : price}
+                    </span>
+                    <span>Add to Cart</span>
+                  </button>
+                )}
+                {user && !checkBook(_id) && (
+                  <AddToWishlist
+                    bookid={_id}
+                    handleOnClick={() => onClickWishlist(_id, title)}
+                  />
+                )}
+                {user && checkBook(_id) && (
+                  <Button
+                    variant='contained'
+                    color='error'
+                    onClick={() => handleRemoveWishlist(_id, title)}
+                  >
+                    Remove from Wishlist
+                  </Button>
+                )}
+                <Toast
+                  onClose={() => setToast(false)}
+                  show={toast}
+                  delay={3000}
+                  autohide
+                >
+                  <Toast.Header>
+                    <strong className='me-auto'>Rent Info</strong>
+                  </Toast.Header>
+                  <Toast.Body>
+                    Rented books are available only for 30 days!
+                  </Toast.Body>
+                </Toast>
+              </div>
+            ))}
+        </div>
       </div>
     );
   }

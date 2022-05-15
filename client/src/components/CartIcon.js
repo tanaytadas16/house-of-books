@@ -16,9 +16,9 @@ const CartIcon = () => {
   const toggleIsCartOpen = () => dispatch(setIsCartOpen(!isCartOpen));
 
   return (
-    <div className="cart-icon-container">
-      <ShoppingBag className="shopping-icon" onClick={toggleIsCartOpen} />
-      <span className="item-count">{cartCount}</span>
+    <div className='cart-icon-container' onClick={toggleIsCartOpen}>
+      <ShoppingBag className='shopping-icon' />
+      <span className='item-count'>{cartCount}</span>
     </div>
   );
 };
