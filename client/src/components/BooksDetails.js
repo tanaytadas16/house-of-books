@@ -179,7 +179,7 @@ const BookDetails = (props) => {
       comment: review,
       username: bookDetailsData.username,
     };
-    axios
+    await axios
       .post('http://localhost:4000/reviews/review', { data: dataBody })
       .then(function (response) {
         console.log(response.data);

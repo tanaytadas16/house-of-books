@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userData = require('../data/users');
-const { ObjectId } = require('mongodb');
 const imageData = require('../graphics');
 
 stateList = [
@@ -112,7 +111,6 @@ router.post('/profile', async (req, res) => {
   try {
     res.status(200).json(await userData.getUser(req.body.data));
   } catch (e) {
-    console.log(e);
     res.status(500).send(String(e));
   }
 });
@@ -125,9 +123,9 @@ router.post('/myOrders', async (req, res) => {
   } catch (e) {
     return res.status(400).send(String(e));
   }
-  req.body.data = req.body.data.toLowerCase().trim();
+  let email = req.body.data.toLowerCase().trim();
   try {
-    const myOrders = await userData.myOrders(req.body.data);
+    const myOrders = await userData.myOrders(email);
     res.status(200).json(myOrders);
   } catch (e) {
     return res.status(400).send(String(e));
@@ -258,25 +256,9 @@ router.post('/login', async (req, res) => {
     if (auth.authenticated) res.status(200).json(auth);
     else res.status(401).send('Invalid username or password');
   } catch (e) {
-    console.log(e);
     return res.status(400).json({ error: e });
   }
 });
-
-// router.delete("/delete/:id", async (req, res) => {
-//   if (!req.params.id) {
-//     res.status(400).json({ error: "You must supply a user Id" });
-//     return;
-//   }
-
-//   try {
-//     const deleteData = await userData.deleteUser(req.params.id);
-//     res.redirect("/users/logout");
-//   } catch (error) {
-//     res.status(404).json({ message: "Data not found " });
-//     return;
-//   }
-// });
 
 router.put('/profile', async (req, res) => {
   let {
@@ -346,7 +328,6 @@ router.put('/profile', async (req, res) => {
     );
     res.status(200).json(updatedUser);
   } catch (e) {
-    console.log(e);
     res.status(500).send(String(e));
   }
 });
