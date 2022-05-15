@@ -25,6 +25,7 @@ const ProfilePage = () => {
                 const { data } = await axios.post(url, {
                     data: currentUser.email,
                 });
+                console.log(data);
                 setUserData(data);
                 setOldUsername(data.username);
                 setLoading(false);
@@ -104,109 +105,114 @@ const ProfilePage = () => {
             );
         } else {
             return (
-                <div className="sign-up-container">
-                    <h2>Profile Page</h2>
-                    <form onSubmit={handleOnSubmit}>
-                        <FormInput
-                            label="First Name"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.firstName ? userData.firstName : ''}
-                            name="firstName"
-                        />
-                        <FormInput
-                            label="Last Name"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.lastName ? userData.lastName : ''}
-                            name="lastName"
-                        />
-                        <FormInput
-                            label="Email"
-                            type="email"
-                            required
-                            onChange={handleChange}
-                            value={userData.email ? userData.email : ''}
-                            name="email"
-                            disabled
-                        />
-                        <FormInput
-                            label="Phone Number"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={
-                                userData.phoneNumber ? userData.phoneNumber : ''
-                            }
-                            name="phoneNumber"
-                        />
-                        <FormInput
-                            label="Username"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.username ? userData.username : ''}
-                            name="username"
-                        />
-                        <FormInput
-                            label="Password"
-                            type="password"
-                            required
-                            onChange={handleChange}
-                            value={userData.password ? userData.password : ''}
-                            name="password"
-                        />
-                        <FormInput
-                            label="Confirm Password"
-                            type="password"
-                            required
-                            onChange={handleChange}
-                            value={
-                                userData.confirmPassword
-                                    ? userData.confirmPassword
-                                    : ''
-                            }
-                            name="confirmPassword"
-                        />
-                        <FormInput
-                            label="Address"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.address ? userData.address : ''}
-                            name="address"
-                        />
-                        <FormInput
-                            label="City"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.city ? userData.city : ''}
-                            name="city"
-                        />
-                        <FormInput
-                            label="State"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.state ? userData.state : ''}
-                            name="state"
-                        />
-                        <FormInput
-                            label="Zip"
-                            type="text"
-                            required
-                            onChange={handleChange}
-                            value={userData.zip ? userData.zip : ''}
-                            name="zip"
-                        />
-                        <Button type="submit">Update</Button>
-                    </form>
+                <div>
+                    <h2>Loading....</h2>
                 </div>
             );
         }
+    } else {
+        return (
+            <div className="sign-up-container">
+                <h2>Profile Page</h2>
+                <img alt="profile picture" src={userData.image} />
+                <form onSubmit={handleOnSubmit}>
+                    <FormInput
+                        label="First Name"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.firstName ? userData.firstName : ''}
+                        name="firstName"
+                    />
+                    <FormInput
+                        label="Last Name"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.lastName ? userData.lastName : ''}
+                        name="lastName"
+                    />
+                    <FormInput
+                        label="Email"
+                        type="email"
+                        required
+                        onChange={handleChange}
+                        value={userData.email ? userData.email : ''}
+                        name="email"
+                        disabled
+                    />
+                    <FormInput
+                        label="Phone Number"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.phoneNumber ? userData.phoneNumber : ''}
+                        name="phoneNumber"
+                    />
+                    <FormInput
+                        label="Username"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.username ? userData.username : ''}
+                        name="username"
+                    />
+                    <FormInput
+                        label="Password"
+                        type="password"
+                        required
+                        onChange={handleChange}
+                        value={userData.password ? userData.password : ''}
+                        name="password"
+                    />
+                    <FormInput
+                        label="Confirm Password"
+                        type="password"
+                        required
+                        onChange={handleChange}
+                        value={
+                            userData.confirmPassword
+                                ? userData.confirmPassword
+                                : ''
+                        }
+                        name="confirmPassword"
+                    />
+                    <FormInput
+                        label="Address"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.address ? userData.address : ''}
+                        name="address"
+                    />
+                    <FormInput
+                        label="City"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.city ? userData.city : ''}
+                        name="city"
+                    />
+                    <FormInput
+                        label="State"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.state ? userData.state : ''}
+                        name="state"
+                    />
+                    <FormInput
+                        label="Zip"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={userData.zip ? userData.zip : ''}
+                        name="zip"
+                    />
+                    <Button type="submit">Update</Button>
+                </form>
+            </div>
+        );
     }
 };
 
