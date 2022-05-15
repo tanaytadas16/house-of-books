@@ -4,18 +4,23 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
+import AddToWishlist from './AddToWishlist';
 import { Link, useNavigate } from 'react-router-dom';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
 import { Alert, Toast } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import '../styles/Library.scss';
 
 const Library = (props) => {
   const [toast, setToast] = useState(false);
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
   const { currentUser } = useContext(UserContext);
   const user = auth.currentUser;
+  const [userWishlistData, setUserWishlistData] = useState([]);
+  const [isInserted, setIsInserted] = useState(0);
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -129,9 +134,9 @@ const Library = (props) => {
     return (
       <div>
         {isNaN(bookDetailsData) ? (
-          <p>
-            <h1>Error 404: Page not found</h1>
-          </p>
+          <div>
+            <h2>No books are present in the Library</h2>
+          </div>
         ) : (
           <div>
             <h2>Loading....</h2>
@@ -147,54 +152,55 @@ const Library = (props) => {
           days
         </Alert>
         <div className='books-container'>
-          {bookDetailsData.map(({ _id, url, title, price }) => (
-            <div className='book-card-container' key={_id}>
-              <Link to={`/books/${_id}`}>
-                <img src={url ? url : noImage} alt={`${title}`} />
-              </Link>
-              <span className='title'>{title}</span>
-              {user && (
-                <button
-                  className='btn'
-                  variant='primary'
-                  onClick={() => rentBook(title, _id, price, url)}
+          {bookDetailsData &&
+            bookDetailsData.map(({ _id, url, title, price }) => (
+              <div className='book-card-container' key={_id}>
+                <Link to={`/books/${_id}`}>
+                  <img src={url ? url : noImage} alt={`${title}`} />
+                </Link>
+                <span className='title'>{title}</span>
+                {user && (
+                  <button
+                    className='btn'
+                    variant='primary'
+                    onClick={() => rentBook(title, _id, price, url)}
+                  >
+                    <span className='price'>
+                      ${isNaN(parseInt(price)) ? 7.0 : price}
+                    </span>
+                    <span>Add to Cart</span>
+                  </button>
+                )}
+                {user && !checkBook(_id) && (
+                  <AddToWishlist
+                    bookid={_id}
+                    handleOnClick={() => onClickWishlist(_id, title)}
+                  />
+                )}
+                {user && checkBook(_id) && (
+                  <Button
+                    variant='contained'
+                    color='error'
+                    onClick={() => handleRemoveWishlist(_id, title)}
+                  >
+                    Remove from Wishlist
+                  </Button>
+                )}
+                <Toast
+                  onClose={() => setToast(false)}
+                  show={toast}
+                  delay={3000}
+                  autohide
                 >
-                  <span className='price'>
-                    ${isNaN(parseInt(price)) ? 7.0 : price}
-                  </span>
-                  <span>Add to Cart</span>
-                </button>
-              )}
-              {user && !checkBook(_id) && (
-                <AddToWishlist
-                  bookid={book._id}
-                  handleOnClick={() => onClickWishlist(book._id, book.title)}
-                />
-              )}
-              {user && checkBook(_id) && (
-                <Button
-                  variant='contained'
-                  color='error'
-                  onClick={() => handleRemoveWishlist(book._id, book.title)}
-                >
-                  Remove from Wishlist
-                </Button>
-              )}
-              <Toast
-                onClose={() => setToast(false)}
-                show={toast}
-                delay={3000}
-                autohide
-              >
-                <Toast.Header>
-                  <strong className='me-auto'>Rent Info</strong>
-                </Toast.Header>
-                <Toast.Body>
-                  Rented books are available only for 30 days!
-                </Toast.Body>
-              </Toast>
-            </div>
-          ))}
+                  <Toast.Header>
+                    <strong className='me-auto'>Rent Info</strong>
+                  </Toast.Header>
+                  <Toast.Body>
+                    Rented books are available only for 30 days!
+                  </Toast.Body>
+                </Toast>
+              </div>
+            ))}
         </div>
       </div>
     );

@@ -127,41 +127,42 @@ const BookList = () => {
   } else {
     return (
       <div className='books-container'>
-        {bookDetailsData.map(({ _id, url, title, price }) => (
-          <div className='book-card-container' key={_id}>
-            <Link to={`/books/${_id}`}>
-              <img src={url ? url : noImage} alt={`${title}`} />
-            </Link>
-            <span className='title'>{title}</span>
-            {user && (
-              <button
-                className='btn'
-                variant='primary'
-                onClick={() => buyBook(title, _id, price, url)}
-              >
-                <span className='price'>
-                  ${isNaN(parseInt(price)) ? 7.0 : price}
-                </span>
-                <span>Add to Cart</span>
-              </button>
-            )}
-            {user && !checkBook(_id) && (
-              <AddToWishlist
-                bookid={book._id}
-                handleOnClick={() => onClickWishlist(book._id, book.title)}
-              />
-            )}
-            {user && checkBook(_id) && (
-              <Button
-                variant='contained'
-                color='error'
-                onClick={() => handleRemoveWishlist(book._id, book.title)}
-              >
-                Remove from Wishlist
-              </Button>
-            )}
-          </div>
-        ))}
+        {bookDetailsData &&
+          bookDetailsData.map(({ _id, url, title, price }) => (
+            <div className='book-card-container' key={_id}>
+              <Link to={`/books/${_id}`}>
+                <img src={url ? url : noImage} alt={`${title}`} />
+              </Link>
+              <span className='title'>{title}</span>
+              {user && (
+                <button
+                  className='btn'
+                  variant='primary'
+                  onClick={() => buyBook(title, _id, price, url)}
+                >
+                  <span className='price'>
+                    ${isNaN(parseInt(price)) ? 7.0 : price}
+                  </span>
+                  <span>Add to Cart</span>
+                </button>
+              )}
+              {user && !checkBook(_id) && (
+                <AddToWishlist
+                  bookid={_id}
+                  handleOnClick={() => onClickWishlist(_id, title)}
+                />
+              )}
+              {user && checkBook(_id) && (
+                <Button
+                  variant='contained'
+                  color='error'
+                  onClick={() => handleRemoveWishlist(_id, title)}
+                >
+                  Remove from Wishlist
+                </Button>
+              )}
+            </div>
+          ))}
       </div>
     );
   }
