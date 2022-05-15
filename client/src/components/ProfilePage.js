@@ -25,6 +25,7 @@ const ProfilePage = () => {
                 const { data } = await axios.post(url, {
                     data: currentUser.email,
                 });
+                console.log(data);
                 setUserData(data);
                 setOldUsername(data.username);
                 setLoading(false);
@@ -113,6 +114,7 @@ const ProfilePage = () => {
         return (
             <div className='sign-up-container'>
                 <h2>Profile Page</h2>
+                <img alt='profile picture' src={userData.image} />
                 <form onSubmit={handleOnSubmit}>
                     <FormInput
                         label='First Name'
