@@ -19,20 +19,15 @@ const ProfilePage = () => {
   const auth = getAuth();
 
   useEffect(() => {
-    console.log('useEffect fired');
     async function fetchData() {
       try {
-        console.log('Before axios call in profile page');
         const url = `http://localhost:4000/users/profile`;
         const { data } = await axios.post(url, { data: currentUser.email });
-        console.log(data);
         setUserData(data);
-        console.log('Old username is ', data.username);
         setOldUsername(data.username);
         setLoading(false);
       } catch (e) {
         setError(true);
-        // console.log(e);
       }
     }
     fetchData();

@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../store/selector/cartSelector';
+import { addItemToCart } from '../store/actions/cartAction';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebase';
@@ -52,15 +55,15 @@ const MostPopular = () => {
   const [error, setError] = useState(false);
   let card = null;
   const history = useNavigate();
-
   const { currentUser } = useContext(UserContext);
+  const user = auth.currentUser;
 
   useEffect(() => {
     console.log('useEffect fired');
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `https://houseof-books.herokuapp.com/books/mostPopular`;
+        const url = `http://localhost:4000/books/mostPopular`;
         const { data } = await axios.get(url);
         console.log(data);
         setBookDetailsData(data);
@@ -73,40 +76,20 @@ const MostPopular = () => {
     fetchData();
   }, []);
 
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
-  }
-  function formatDate(date) {
-    return [
-      padTo2Digits(date.getMonth() + 1),
-      padTo2Digits(date.getDate()),
-      date.getFullYear(),
-    ].join('-');
-  }
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
 
-  const buyBook = (customerId, bookId, quantity, price) => {
-    if (currentUser.email) {
-      let todayDate = formatDate(new Date());
-      console.log(todayDate);
-      console.log(customerId, bookId);
-      let dataBody = {
-        customerId: customerId,
-        bookId: bookId,
-        quantity: quantity,
-        totalPrice: quantity * price,
-      };
-      axios
-        .post('http://localhost:4000/books/purchase', {
-          data: dataBody,
-        })
-        .then(function (response) {
-          console.log(response.data);
-          history('/', { replace: true }); //to be changed to cart
-        });
-    } else {
-      alert('Please sign to buy the book');
-      return;
-    }
+  const buyBook = (title, bookId, price, imageUrl) => {
+    price = parseFloat(price);
+    let dataBody = {
+      email: user.email,
+      name: title,
+      bookId: bookId,
+      price: price,
+      imageUrl: imageUrl,
+      flag: 'B',
+    };
+    dispatch(addItemToCart(cartItems, dataBody));
   };
 
   const buildCard = (book) => {
@@ -156,7 +139,7 @@ const MostPopular = () => {
             className='button'
             onClick={() => {
               if (auth.currentUser) {
-                buyBook(auth.currentUser.email, book._id, 2, book.price);
+                buyBook(book.title, book._id, book.price, book.url);
               } else {
                 alert('You need to sign in first to buy the book');
               }
