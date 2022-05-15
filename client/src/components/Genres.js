@@ -9,7 +9,7 @@ import AddToWishlist from "./AddToWishlist";
 import {Link, useParams} from "react-router-dom";
 import noImage from "../assets/images/no-image.jpeg";
 import {Button} from "react-bootstrap";
-import "../styles/NewAdditions.scss";
+import "../styles/Genres.scss";
 
 const BookGenres = (props) => {
     const [loading, setLoading] = useState(true);
@@ -21,13 +21,10 @@ const BookGenres = (props) => {
     const user = auth.currentUser;
     const [userWishlistData, setUserWishlistData] = useState([]);
     const [isInserted, setIsInserted] = useState(0);
-    let {genre} = useParams();
     const [genreNew, setGenre] = useState(undefined);
-    genre = genreNew;
 
     const handleChange = (event) => {
         const {name, value} = event.target;
-        console.log("value", value);
         setGenre(value);
     };
 
@@ -35,9 +32,9 @@ const BookGenres = (props) => {
         console.log("useEffect fired");
         async function fetchData() {
             try {
-                const url = `http://localhost:4000/books/genres/${genre}`;
+                const url = `http://localhost:4000/books/genres/${genreNew}`;
                 const {data} = await axios.get(url);
-                console.log(data);
+                console.log("data", data);
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
@@ -46,7 +43,7 @@ const BookGenres = (props) => {
             }
         }
         fetchData();
-    }, [genre, currentUser]);
+    }, [genreNew, currentUser]);
     let onClickWishlist = async (bookId, title) => {
         try {
             const url = `http://localhost:4000/users/bookshelf/add`;
@@ -130,7 +127,7 @@ const BookGenres = (props) => {
         );
     } else {
         return (
-            <div className='new-additions-container'>
+            <div>
                 <div>
                     <label>Genre</label>
                     <select
@@ -138,10 +135,11 @@ const BookGenres = (props) => {
                         label='Genre'
                         required
                         onChange={handleChange}
-                        value={genre}
+                        value={genreNew}
                         name='Genre'
                     >
                         {" "}
+                        <option value='None'></option>
                         <option value='thriller'>Thriller</option>
                         <option value='fiction'>Fiction</option>
                         <option value='fantasy'>Fantasy</option>
@@ -151,51 +149,61 @@ const BookGenres = (props) => {
                         <option value='humor'>Humor</option>
                     </select>
                 </div>
-                {bookDetailsData &&
-                    bookDetailsData.map(({_id, url, title, price}) => (
-                        <div className='new-additions-card-container' key={_id}>
-                            <Link to={`/books/${_id}`}>
-                                <img
-                                    src={url ? url : noImage}
-                                    alt={`${title}`}
-                                />
-                            </Link>
-                            <span className='title'>{title}</span>
-                            {user && (
-                                <Button
-                                    className='btn'
-                                    variant='primary'
-                                    onClick={() =>
-                                        buyBook(title, _id, price, url)
-                                    }
-                                >
-                                    <span className='price'>
-                                        ${isNaN(parseInt(price)) ? 7.0 : price}
-                                    </span>
-                                    <span>Add to Cart</span>
-                                </Button>
-                            )}
-                            {user && !checkBook(_id) && (
-                                <AddToWishlist
-                                    bookid={_id}
-                                    handleOnClick={() =>
-                                        onClickWishlist(_id, title)
-                                    }
-                                />
-                            )}
-                            {user && checkBook(_id) && (
-                                <Button
-                                    variant='contained'
-                                    color='error'
-                                    onClick={() =>
-                                        handleRemoveWishlist(_id, title)
-                                    }
-                                >
-                                    Remove from Wishlist
-                                </Button>
-                            )}
-                        </div>
-                    ))}
+                {bookDetailsData && bookDetailsData.length !== 0 && (
+                    <h2>You are viewing {genreNew} books</h2>
+                )}
+                <br></br>
+                <br></br>
+                <div className='genres-container'>
+                    {bookDetailsData &&
+                        bookDetailsData.map(({_id, url, title, price}) => (
+                            <div className='genres-card-container' key={_id}>
+                                <Link to={`/books/${_id}`}>
+                                    <img
+                                        src={url ? url : noImage}
+                                        alt={`${title}`}
+                                    />
+                                </Link>
+                                <span className='title'>{title}</span>
+                                {user && (
+                                    <Button
+                                        className='btn'
+                                        variant='primary'
+                                        onClick={() =>
+                                            buyBook(title, _id, price, url)
+                                        }
+                                    >
+                                        <span className='price'>
+                                            $
+                                            {isNaN(parseInt(price))
+                                                ? 7.0
+                                                : price}
+                                        </span>
+                                        <span>Add to Cart</span>
+                                    </Button>
+                                )}
+                                {user && !checkBook(_id) && (
+                                    <AddToWishlist
+                                        bookid={_id}
+                                        handleOnClick={() =>
+                                            onClickWishlist(_id, title)
+                                        }
+                                    />
+                                )}
+                                {user && checkBook(_id) && (
+                                    <Button
+                                        variant='contained'
+                                        color='error'
+                                        onClick={() =>
+                                            handleRemoveWishlist(_id, title)
+                                        }
+                                    >
+                                        Remove from Wishlist
+                                    </Button>
+                                )}
+                            </div>
+                        ))}
+                </div>
             </div>
         );
     }
