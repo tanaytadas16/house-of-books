@@ -23,6 +23,7 @@ const BookDetails = (props) => {
   const [reviewDetails, setReviewDetails] = useState(defaultFormFields);
   const { review, rating } = reviewDetails;
   const [bookDetailsData, setBookDetailsData] = useState(undefined);
+  const [postReview, setPostReview] = useState(false);
   const user = auth.currentUser;
   let { id } = useParams();
   const history = useNavigate();
@@ -43,11 +44,12 @@ const BookDetails = (props) => {
         setBookDetailsData(data);
         setLoading(false);
       } catch (e) {
+        setError(true);
         console.log(e);
       }
     }
     fetchData();
-  }, [id]);
+  }, [id, postReview]);
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -122,6 +124,7 @@ const BookDetails = (props) => {
       .post('http://localhost:4000/reviews/review', { data: dataBody })
       .then(function (response) {
         console.log(response.data);
+        setPostReview(!postReview);
         history(`/books/${bookDetailsData._id}`, { replace: true });
       });
   };
@@ -131,6 +134,7 @@ const BookDetails = (props) => {
       .delete(`http://localhost:4000/reviews/deleteReview/${reviewId}`)
       .then(function (response) {
         console.log(response.data);
+        setPostReview(!postReview);
         history(`/books/${bookDetailsData._id}`, { replace: true });
       });
   };

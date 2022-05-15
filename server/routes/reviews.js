@@ -171,14 +171,25 @@ router.delete('/deleteReview/:reviewId', async (req, res) => {
   }
 
   try {
-    await reviewData.getReview(req.params.reviewId);
+    let getReview = await reviewData.getReview(req.params.reviewId);
+    console.log('Get review is ', getReview);
   } catch (e) {
     res.status(404).json({ error: 'Review not found' });
     return;
   }
   try {
+    console.log('Before delete review');
     const deletedReview = await reviewData.removeReview(req.params.reviewId);
-    res.status(200).json(deletedReview);
+    console.log(deletedReview, deletedReview.deleted);
+    if (deletedReview.deleted == true) {
+      console.log('Inside if');
+      let getReview = await booksData.getById(deletedReview.bookId);
+      console.log(getReview);
+      res.status(200).json(getReview);
+    } else
+      res
+        .status(400)
+        .json({ error: 'Review cannot be deleted due to some error' });
   } catch (e) {
     res
       .status(404)
