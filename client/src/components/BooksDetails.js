@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,9 @@ import { selectCartItems } from '../store/selector/cartSelector';
 import { addItemToCart } from '../store/actions/cartAction';
 import noImage from '../assets/images/no-image.jpeg';
 import { auth } from '../firebase/firebase';
-import Button from './Button';
+import AddToWishlist from './AddToWishlist';
+import { UserContext } from '../contexts/userContext';
+// import Button from './Button';
 import {
     makeStyles,
     Card,
@@ -15,6 +17,7 @@ import {
     CardMedia,
     Typography,
 } from '@material-ui/core';
+import { Button } from '@mui/material';
 const useStyles = makeStyles({
     card: {
         maxWidth: 550,
@@ -64,6 +67,11 @@ const BookDetails = (props) => {
     const history = useNavigate();
     const dispatch = useDispatch();
     const cartItems = useSelector(selectCartItems);
+    const [userWishlistData, setUserWishlistData] = useState([]);
+    const [isInserted, setIsInserted] = useState(0);
+    const { currentUser } = useContext(UserContext);
+    const [error, setError] = useState(false);
+    let checkBook;
 
     useEffect(() => {
         console.log('useEffect fired');
@@ -205,14 +213,61 @@ const BookDetails = (props) => {
     //       history(`/books/${bookDetailsData._id}`, { replace: true });
     //     });
     // };
+    let onClickWishlist = async (bookId, title) => {
+        try {
+            // console.log(bookId);
+            const url = `http://localhost:4000/users/bookshelf/add`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.inserted === true) setIsInserted(Number(isInserted) + 1);
+            // setLoading(false);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    let handleRemoveWishlist = async (bookId, title) => {
+        try {
+            // console.log('inside remove onclick');
+            const url = `http://localhost:4000/users/bookshelf/remove`;
+            const { data } = await axios.post(url, {
+                email: currentUser.email,
+                bookId: bookId,
+                title: title,
+            });
+            // console.log(data);
+            if (data.deleted === true) setIsInserted(Number(isInserted) - 1);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // console.log(bookId);.
+                const url = `http://localhost:4000/users/profile`;
+                const { data } = await axios.post(url, {
+                    data: currentUser.email,
+                });
+                //
 
+                setUserWishlistData(data.wishlist);
+                if (!userWishlistData.wishlist) setError(true);
+                setLoading(false);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        fetchData();
+    }, [currentUser, isInserted]);
     if (loading) {
         return (
             <div>
                 {isNaN(bookDetailsData) ? (
-                    <p>
-                        <h1>Error 404: Page not found</h1>
-                    </p>
+                    <h1>Error 404: Page not found</h1>
                 ) : (
                     <div>
                         <h2>Loading....</h2>
@@ -222,11 +277,14 @@ const BookDetails = (props) => {
         );
     } else {
         const price = parseFloat(bookDetailsData.price);
+        checkBook = userWishlistData.some((post, index) => {
+            return post.bookId === bookDetailsData._id;
+        });
         return (
             <>
                 <Grid
                     item
-                    xs={20}
+                    xs={12}
                     sm={11}
                     md={5}
                     lg={5}
@@ -398,6 +456,31 @@ const BookDetails = (props) => {
                             >
                                 Buy
                             </button>
+                        )}
+                        {user && !checkBook && (
+                            <AddToWishlist
+                                bookid={bookDetailsData._id}
+                                handleOnClick={() =>
+                                    onClickWishlist(
+                                        bookDetailsData._id,
+                                        bookDetailsData.title
+                                    )
+                                }
+                            />
+                        )}
+                        {user && checkBook && (
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() =>
+                                    handleRemoveWishlist(
+                                        bookDetailsData._id,
+                                        bookDetailsData.title
+                                    )
+                                }
+                            >
+                                Remove from Wishlist
+                            </Button>
                         )}
                     </Card>
                 </Grid>
