@@ -12,7 +12,6 @@ import '../styles/Navigation.scss';
 const Navigation = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const isCartOpen = useSelector(selectIsCartOpen);
-  console.log(currentUser);
   const history = useNavigate();
 
   const signOutHandler = async () => {
