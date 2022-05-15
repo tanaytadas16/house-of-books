@@ -39,7 +39,7 @@ const Navigation = () => {
                         <Link className='nav-link' to='/books/newAdditions'>
                             NEW ADDITIONS
                         </Link>
-                        <Link className='nav-link' to='/books/genres/fantasy'>
+                        <Link className='nav-link' to='/books/genres/'>
                             BOOKS BY GENRE
                         </Link>
                         <Link className='nav-link' to='/library'>
