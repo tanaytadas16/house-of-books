@@ -64,7 +64,6 @@ router.post('/add', async (request, response) => {
         const validatedBookId = validateObjectId(bookId);
         const validatedTitle = validateTitle(title);
 
-        // console.log('add to wishlist clicked');
         let bookShelf = await bookShelfData.addBooktoBookshelf(
             validatedBookId,
             validatedEmail,
@@ -76,6 +75,8 @@ router.post('/add', async (request, response) => {
                 'Error: Could not add to wishlist '
             );
         }
+        console.log(bookShelf);
+        // console.log('add to wishlist clicked');
         response.json({ inserted: true });
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({

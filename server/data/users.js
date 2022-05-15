@@ -211,6 +211,7 @@ async function createUser(
         bookRenting: [],
         purchasedBooks: [],
         reviews: [],
+        whishlist: [],
         image: image,
     };
 

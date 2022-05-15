@@ -39,18 +39,20 @@ async function addBooktoBookshelf(bookId, email, title) {
         if (checkUser === null)
             throwError(ErrorCode.NOT_FOUND, 'Error: No user with that email.');
 
-        for (let book of checkUser.wishlist) {
-            if (book.bookId.equals(validatedBookId)) {
-                throwError(
-                    ErrorCode.BAD_REQUEST,
-                    'Error: Book Already in wishList'
-                );
-                return;
+        if (checkUser.wishlist != undefined) {
+            for (let book of checkUser.wishlist) {
+                if (book.bookId.equals(validatedBookId)) {
+                    throwError(
+                        ErrorCode.BAD_REQUEST,
+                        'Error: Book Already in wishList'
+                    );
+                    return;
+                }
             }
         }
-
+        console.log('inside add data');
         const wishlistArrUpdate = await userCollection.updateOne(
-            { email: email },
+            { email: validatedEmail },
             {
                 $push: {
                     wishlist: {
@@ -60,7 +62,7 @@ async function addBooktoBookshelf(bookId, email, title) {
                 },
             }
         );
-
+        console.log('inside add data');
         if (
             !wishlistArrUpdate.matchedCount &&
             !wishlistArrUpdate.modifiedCount

@@ -71,7 +71,7 @@ const BooksList = () => {
             try {
                 const url = `https://houseof-books.herokuapp.com/books`;
                 const { data } = await axios.get(url);
-                console.log(data);
+
                 setBookDetailsData(data);
                 setLoading(false);
             } catch (e) {
@@ -87,7 +87,7 @@ const BooksList = () => {
 
     const buyBook = (title, bookId, quantity, price, imageUrl) => {
         price = parseFloat(price);
-        let todayDate = formatDate(new Date());
+        // let todayDate = formatDate(new Date());
         let dataBody = {
             email: user.email,
             name: title,
@@ -141,8 +141,11 @@ const BooksList = () => {
                 const { data } = await axios.post(url, {
                     data: currentUser.email,
                 });
+                //
+
                 setUserWishlistData(data.wishlist);
-                // setLoading(false);
+                if (!userWishlistData.wishlist) setError(true);
+                setLoading(false);
             } catch (e) {
                 console.log(e);
             }
@@ -150,10 +153,12 @@ const BooksList = () => {
         fetchData();
     }, [currentUser, isInserted]);
 
+    let checkBook;
     const buildCard = (book) => {
-        const checkBook = userWishlistData.some((post, index) => {
+        checkBook = userWishlistData.some((post, index) => {
             return post.bookId === book._id;
         });
+
         return (
             <Grid
                 item
