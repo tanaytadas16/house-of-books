@@ -1,12 +1,12 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const booksData = require("../data/books");
-const {ObjectId} = require("mongodb");
+const booksData = require('../data/books');
+const { ObjectId } = require('mongodb');
 
 function validateStringParams(param, paramName) {
     if (!param) {
         throw `Error: No ${paramName} passed to the function`;
-    } else if (typeof param !== "string") {
+    } else if (typeof param !== 'string') {
         throw `Type Error: Argument ${param} passed is not a string ${paramName}`;
     } else if (param.length === 0) {
         throw `Error: No element present in string ${paramName}`;
@@ -16,42 +16,42 @@ function validateStringParams(param, paramName) {
 }
 
 function validateDate(dateParams) {
-    const validDateFormat = /^\d{2}\-\d{2}\-\d{4}$/;
+    const validDateFormat = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateParams.match(validDateFormat)) {
-        throw "date is not in valid format";
+        throw 'date is not in valid format';
     }
 }
 
 function validateEmail(email) {
     const emailRegex = /^\S+@[a-zA-Z]+\.[a-zA-Z]+$/;
-    if (!emailRegex.test(email)) throw "Given email id is invalid";
+    if (!emailRegex.test(email)) throw 'Given email id is invalid';
 }
 
 function validateCreations(email, bookId, startDate, endDate, flag) {
     validateEmail(email);
-    validateStringParams(bookId, "bookId");
+    validateStringParams(bookId, 'bookId');
     if (!ObjectId.isValid(bookId)) {
         throw `Error : Id passed in must be a Buffer or string of 12 bytes or a string of 24 hex characters`;
     }
-    validateStringParams(flag, "flag");
-    validateStringParams(startDate, "startDate");
-    validateStringParams(endDate, "endDate");
+    validateStringParams(flag, 'flag');
+    validateStringParams(startDate, 'startDate');
+    validateStringParams(endDate, 'endDate');
     validateDate(startDate);
     validateDate(endDate);
 }
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         let books = await booksData.getBooksForRent();
         res.status(200).json(books);
         return books;
     } catch (e) {
-        res.status(500).json({error: e});
+        res.status(500).json({ error: e });
         return e.message;
     }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
     let bookToBeRented = req.body.data;
     try {
         if (Object.keys(req.body.data).length === 0) {
@@ -66,7 +66,7 @@ router.post("/", async (req, res) => {
         );
     } catch (e) {
         console.log(e);
-        res.status(400).json({error: e});
+        res.status(400).json({ error: e });
         return;
     }
     try {
@@ -81,7 +81,7 @@ router.post("/", async (req, res) => {
         return books;
     } catch (e) {
         console.log(e);
-        res.status(500).json({error: "Book could not be rented"});
+        res.status(500).json({ error: 'Book could not be rented' });
         return e.message;
     }
 });
