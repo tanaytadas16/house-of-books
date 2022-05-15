@@ -117,7 +117,7 @@ router.post('/profile', async (req, res) => {
   }
 });
 
-router.post('/myOrders', async (req, res) => {
+router.post('/myorders', async (req, res) => {
   // error check
   try {
     if (!req.body.data) throw 'must provide email Id';
