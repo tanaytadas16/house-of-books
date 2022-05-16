@@ -11,13 +11,19 @@ const ErrorCode = {
 
 function validateStringParams(param, paramName) {
     if (!param) {
-        throw `No ${paramName} entered`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     } else if (typeof param !== 'string') {
-        throw ` Argument ${param} entered is not a string ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Argument ${param} entered is not a string ${paramName}.`
+        );
     } else if (param.length === 0) {
-        throw ` No ${paramName} entered`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     } else if (!param.trim()) {
-        throw ` Empty spaces entered to ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Empty spaces entered to ${paramName}.`
+        );
     }
 }
 
@@ -27,7 +33,7 @@ function validateEmail(email) {
 }
 function validateNumberParams(param, paramName) {
     if (param < 0) {
-        throw `${paramName} can not be negative`;
+        throwError(ErrorCode.BAD_REQUEST, `Error: No ${paramName} entered.`);
     }
     if (typeof param === 'number' || !isNaN(param)) {
         if (Number.isInteger(param)) {
@@ -36,7 +42,20 @@ function validateNumberParams(param, paramName) {
             return true;
         }
     } else {
-        throw `Type Error: Argument ${param} passed is not a numeric ${paramName}`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Argument ${param} passed is not a numeric ${paramName}.`
+        );
+    }
+}
+function validateWebsite(websiteLink) {
+    const validLink = /^http(s)/;
+    websiteLink = websiteLink.trim().toLowerCase();
+    if (!websiteLink.match(validLink)) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error:  ${websiteLink} is not a valid web site link.`
+        );
     }
 }
 
@@ -72,20 +91,6 @@ router.get('/mostPopular', async (req, res) => {
         return e.message;
     }
 });
-
-// router.get('/recents', async (req, res) => {
-//     let cachedPost = [];
-//     console.log('Inside recents');
-//     const recentList = await client.lRange('recents', 0, 19);
-//     if (recentList.length > 0) {
-//         for (let i = 0; i < recentList.length; i++) {
-//             cachedPost[i] = JSON.parse(recentList[i]);
-//         }
-//         res.status(200).json(cachedPost);
-//     } else {
-//         res.status(400).json('No users present in the recent list');
-//     }
-// });
 
 router.get('/search/:searchTerm', async (req, res) => {
     try {
@@ -125,7 +130,7 @@ router.get('/:id', async (req, res) => {
         return e.message;
     }
 });
-router.post('/addNewBook', async (request, response) => {
+router.post('/addnewbook', async (request, response) => {
     try {
         const {
             ISBN,
@@ -133,40 +138,61 @@ router.post('/addNewBook', async (request, response) => {
             url,
             description,
             author,
-            // averageRating,
             binding,
             genre,
             numberofPages,
-            originalPublicationYear,
             price,
             publisher,
-            yearPublished,
-            // reviews,
-            // count,
         } = request.body.data;
-        averageRating = 0;
+
+        const validateISBN = isArgumentString(ISBN, 'ISBN');
+        const validatetitle = isArgumentString(title, 'title');
+        const validateurl = isArgumentString(url, 'url');
+        const validatedescription = isArgumentString(
+            description,
+            'description'
+        );
+        const validateauthor = isArgumentString(author, 'author');
+        const validatebinding = isArgumentString(binding, 'binding');
+        const validategenre = isArgumentString(genre, 'genre');
+        const validatenumberofPages = isArgumentString(
+            numberofPages,
+            'numberofPages'
+        );
+
+        const validateprice = isArgumentString(price, 'price');
+        const validatepublisher = isArgumentString(publisher, 'publisher');
+
+        const averageRating = 0;
         reviews = [];
         count = 0;
-        console.log(' add route');
+        console.log(' add route validations passed');
+
         let books = await booksData.addNewBook(
-            ISBN,
-            url,
-            description,
-            author,
+            validateISBN,
+            validateurl,
+            validatedescription,
+            validateauthor,
             averageRating,
-            binding,
-            genre,
-            numberofPages,
-            originalPublicationYear,
-            price,
-            publisher,
-            title,
-            yearPublished,
+            validatebinding,
+            validategenre,
+            parseInt(validatenumberofPages),
+            parseFloat(validateprice),
+            validatepublisher,
+            validatetitle,
             count
         );
 
+        if (!books) {
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                `Error: Could not Add Book.`
+            );
+        }
+
         response.json(books);
     } catch (error) {
+        console.log(error);
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || 'Internal server error.',
         });
@@ -260,5 +286,29 @@ const restrictRequestQuery = (request, response) => {
         throw { code: 400, message: 'Request query not allowed.' };
     }
 };
+const isArgumentString = (str, variableName) => {
+    if (typeof str !== 'string') {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Invalid argument passed for ${
+                variableName || 'provided variable'
+            }. Expected string.`
+        );
+    } else if ((str && !str.trim()) || str.length < 1) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Empty string passed for ${variableName || 'provided variable'}.`
+        );
+    }
+    return str.trim();
+};
+// const isStringEmpty = (str, variableName) => {
+//     if (!str.trim() || str.length < 1) {
+//         throwError(
+//             ErrorCode.BAD_REQUEST,
+//             `Empty string passed for ${variableName || 'provided variable'}.`
+//         );
+//     }
+// };
 
 module.exports = router;

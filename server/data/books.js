@@ -181,38 +181,7 @@ async function getBooksForRent() {
     }
     return booksList;
 }
-function validateBookCreations(
-    ISBN,
-    url,
-    description,
-    author,
-    averageRating,
-    binding,
-    genre,
-    numberofPages,
-    originalPublicationYear,
-    price,
-    publisher,
-    title,
-    yearPublished
-) {
-    validateStringParams(ISBN, 'ISBN');
-    validateWebsite(url, 'url');
-    validateStringParams(description, 'description');
-    validateStringParams(author, 'author');
-    validateStringParams(binding, 'binding');
-    validateStringParams(genre, 'genre');
-    validateStringParams(publisher, 'publisher');
-    validateStringParams(title, 'title');
-    validateRating(averageRating, 'averageRating');
-    validateNumberParams(numberofPages, 'numberofPages');
-    validateNumberParams(originalPublicationYear, 'originalPublicationYear');
-    validateNumberParams(price, 'price');
-    validateNumberParams(yearPublished, 'yearPublished');
-    // validateBoolParams(popular, 'popular');
-    // validateBoolParams(availableForRent, 'availableForRent');
-    return true;
-}
+
 async function addNewBook(
     ISBN,
     url,
@@ -222,68 +191,64 @@ async function addNewBook(
     binding,
     genre,
     numberofPages,
-    originalPublicationYear,
     price,
     publisher,
     title,
-    yearPublished,
     count
 ) {
     try {
-        validateBookCreations(
-            ISBN,
-            url,
+        const validateISBN = isArgumentString(ISBN, 'ISBN');
+        const validatetitle = isArgumentString(title, 'title');
+        const validateurl = isArgumentString(url, 'url');
+        const validatedescription = isArgumentString(
             description,
-            author,
-            averageRating,
-            binding,
-            genre,
-            numberofPages,
-            originalPublicationYear,
-            price,
-            publisher,
-            title,
-            yearPublished
+            'description'
         );
-        console.log('add data');
-        ISBN = ISBN.trim();
-        description = description.trim();
-        author = author.trim();
-        binding = binding.trim();
-        genre = genre.trim();
-        publisher = publisher.trim();
-        title = title.trim();
+        const validateauthor = isArgumentString(author, 'author');
+        const validatebinding = isArgumentString(binding, 'binding');
+        const validategenre = isArgumentString(genre, 'genre');
+        const validatenumberofPages = isArgumentNumber(
+            numberofPages,
+            'numberofPages'
+        );
+
+        const validateprice = isArgumentNumber(price, 'price');
+        const validatepublisher = isArgumentString(publisher, 'publisher');
+
+        const validatecount = isArgumentNumber(count, 'count');
+        const validateaverageRating = isArgumentNumber(
+            averageRating,
+            'averageRating'
+        );
         const booksCollection = await books();
-        if (validateBookCreations) {
-            let newBook = {
-                ISBN: ISBN,
-                url: url,
-                description: description,
-                author: author,
-                averageRating: averageRating,
-                binding: binding,
-                genre: genre,
-                numberofPages: numberofPages,
-                originalPublicationYear: originalPublicationYear,
-                price: price,
-                publisher: publisher,
-                title: title,
-                yearPublished: yearPublished,
-                count: count,
-                reviews: [],
-            };
-            const insertedDatadetails = await booksCollection.insertOne(
-                newBook
-            );
-            if (insertedDatadetails.insertedCount === 0) {
-                throw 'Book could not be inserted ';
-            }
+        var currentYear = new Date().getFullYear();
 
-            const insertedBookId = insertedDatadetails.insertedId.toString();
-
-            const bookDetails = await getById(insertedBookId);
-            return bookDetails;
+        let newBook = {
+            ISBN: validateISBN,
+            url: validateurl,
+            description: validatedescription,
+            author: validateauthor,
+            averageRating: validateaverageRating,
+            binding: validatebinding,
+            genre: validategenre,
+            numberofPages: validatenumberofPages,
+            originalPublicationYear: currentYear,
+            price: validateprice,
+            publisher: validatepublisher,
+            title: validatetitle,
+            yearPublished: currentYear,
+            count: validatecount,
+            reviews: [],
+        };
+        const insertedDatadetails = await booksCollection.insertOne(newBook);
+        if (insertedDatadetails.insertedCount === 0) {
+            throw 'Book could not be inserted ';
         }
+
+        const insertedBookId = insertedDatadetails.insertedId.toString();
+
+        const bookDetails = await getById(insertedBookId);
+        return bookDetails;
     } catch (error) {
         console.log(error);
         throwCatchError(error);
@@ -482,7 +447,39 @@ const throwCatchError = (error) => {
         'Error: Internal server error.'
     );
 };
-
+const isArgumentString = (str, variableName) => {
+    if ((str && !str.trim()) || str.length < 1) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Empty string passed for ${variableName || 'provided variable'}.`
+        );
+    } else if (typeof str !== 'string') {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Invalid argument passed for ${
+                variableName || 'provided variable'
+            }. Expected string.`
+        );
+    }
+    return str.trim();
+};
+const isArgumentNumber = (num, variableName) => {
+    if (num.length === 0) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Empty string passed for ${variableName || 'provided variable'}.`
+        );
+    }
+    if (typeof num !== 'number') {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Invalid argument passed for ${
+                variableName || 'provided variable'
+            }. Expected Number.`
+        );
+    }
+    return num;
+};
 module.exports = {
     addNewBook,
     getAll,
