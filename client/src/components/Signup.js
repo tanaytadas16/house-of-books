@@ -145,7 +145,7 @@ const Signup = () => {
 
   return (
     <div className='sign-up-container'>
-      <h2>Don't have an account?</h2>
+      <h1>Don't have an account?</h1>
       <span>Sign up with your email and password</span>
       <form onSubmit={handleOnSubmit}>
         <FormInput
@@ -242,12 +242,11 @@ const Signup = () => {
         <label>State</label>
         <select
           className='form-input-label'
-          label='State'
-          required
           onChange={handleChange}
           value={state}
           name='state'
         >
+          <option value=''>Choose State</option>
           <option value='AL'>Alabama</option>
           <option value='AK'>Alaska</option>
           <option value='AZ'>Arizona</option>

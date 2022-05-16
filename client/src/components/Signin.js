@@ -88,7 +88,7 @@ const Signin = () => {
 
   return (
     <div className='sign-up-container'>
-      <h2>Already have an account?</h2>
+      <h1>Already have an account?</h1>
       <span>Sign in with your email and password.</span>
       <form onSubmit={handleOnSubmit}>
         <FormInput
@@ -97,7 +97,7 @@ const Signin = () => {
           required
           onChange={handleChange}
           value={email}
-          name='email'
+          name='email-signin'
         />
         <FormInput
           label='Password'
@@ -105,7 +105,7 @@ const Signin = () => {
           required
           onChange={handleChange}
           value={password}
-          name='password'
+          name='password-signin'
         />
         <div className='buttons-container'>
           <Button type='submit'>Sign In</Button>
