@@ -172,8 +172,8 @@ const BooksList = () => {
                   )}
                   {user && checkBook(_id) && (
                     <Button
+                      className='button'
                       variant='danger'
-                      color='error'
                       onClick={() => handleRemoveWishlist(_id, title)}
                     >
                       Remove from Wishlist

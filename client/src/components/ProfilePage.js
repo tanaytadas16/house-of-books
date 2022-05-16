@@ -9,7 +9,6 @@ import { Alert, Toast } from 'react-bootstrap';
 import '../styles/Signup.scss';
 import { auth } from '../firebase/firebase';
 import { Link } from 'react-router-dom';
-// import Button from 'react-bootstrap/Button';
 
 const ProfilePage = () => {
     const [userData, setUserData] = useState(undefined);

@@ -158,6 +158,7 @@ const MostPopular = () => {
                 )}
                 {user && !checkBook(_id) && (
                   <Button
+                    className='button'
                     onClick={() => onClickWishlist(_id, title)}
                     variant='danger'
                   >
@@ -166,6 +167,7 @@ const MostPopular = () => {
                 )}
                 {user && checkBook(_id) && (
                   <Button
+                    className='button'
                     variant='danger'
                     onClick={() => handleRemoveWishlist(_id, title)}
                   >
