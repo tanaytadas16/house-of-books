@@ -114,9 +114,9 @@ const BookGenres = (props) => {
     return (
       <div>
         {isNaN(bookDetailsData) ? (
-          <p>
+          <div>
             <h1>Error 404: Page not found</h1>
-          </p>
+          </div>
         ) : (
           <div>
             <h2>Loading....</h2>

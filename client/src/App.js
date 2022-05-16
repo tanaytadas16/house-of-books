@@ -6,7 +6,6 @@ import BooksList from './components/BooksList';
 import Home from './components/Home';
 import Library from './components/Library';
 import MostPopular from './components/MostPopular';
-import RecentBooks from './components/RecentBooks';
 import Navigation from './components/Navigation';
 import Authentication from './components/Authentication';
 import Bookshelf from './components/Bookshelf';
@@ -17,6 +16,7 @@ import MyOrders from './components/MyOrders';
 import './App.scss';
 import BookSearchDetails from './components/SearchBook';
 import BookGenres from './components/Genres';
+import AddNewBook from './components/AddNewBook';
 
 const App = () => {
   return (
@@ -31,14 +31,14 @@ const App = () => {
         <Route exact path='/books/newAdditions' element={<NewAdditions />} />
         <Route exact path='/library' element={<Library />} />
         <Route exact path='/books/mostPopular' element={<MostPopular />} />
-        <Route exact path='/books/recents' element={<RecentBooks />} />
         <Route exact path='/users/profile' element={<ProfilePage />} />
-        <Route exact path='/users/myorders' element={<MyOrders />} />
+        <Route exact path='/users/myOrders' element={<MyOrders />} />
         <Route exact path='/users/bookshelf' element={<Bookshelf />} />
         <Route path='/checkout' element={<Checkout />} />
+        <Route exact path='/books/addNewBook' element={<AddNewBook />} />
         <Route exact path='/users/rentedbooks' element={<RentedBooks />} />
         <Route exact path='/books/search/' element={<BookSearchDetails />} />
-        <Route exact path='/books/genres/:genre' element={<BookGenres />} />
+        <Route exact path='/books/genres' element={<BookGenres />} />
       </Routes>
     </div>
   );

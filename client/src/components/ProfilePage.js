@@ -174,7 +174,6 @@ const ProfilePage = () => {
             value={userData.firstName ? userData.firstName : ''}
             name='firstName'
           />
-          <p>{formErrors.firstName}</p>
           <FormInput
             label='Last Name'
             type='text'
@@ -183,7 +182,6 @@ const ProfilePage = () => {
             value={userData.lastName ? userData.lastName : ''}
             name='lastName'
           />
-          <p>{formErrors.lastName}</p>
           <FormInput
             label='Email'
             type='email'
@@ -191,8 +189,8 @@ const ProfilePage = () => {
             onChange={handleChange}
             value={userData.email ? userData.email : ''}
             name='email'
+            disabled
           />
-          <p>{formErrors.email}</p>
           <FormInput
             label='Phone Number'
             type='text'
@@ -201,7 +199,6 @@ const ProfilePage = () => {
             value={userData.phoneNumber ? userData.phoneNumber : ''}
             name='phoneNumber'
           />
-          <p>{formErrors.phoneNumber}</p>
           <FormInput
             label='Username'
             type='text'
@@ -210,7 +207,6 @@ const ProfilePage = () => {
             value={userData.username ? userData.username : ''}
             name='username'
           />
-          <p>{formErrors.username}</p>
           <FormInput
             label='Password'
             type='password'
@@ -219,7 +215,6 @@ const ProfilePage = () => {
             value={userData.password ? userData.password : ''}
             name='password'
           />
-          <p>{formErrors.password}</p>
           <FormInput
             label='Confirm Password'
             type='password'
@@ -228,7 +223,6 @@ const ProfilePage = () => {
             value={userData.confirmPassword ? userData.confirmPassword : ''}
             name='confirmPassword'
           />
-          <p>{formErrors.ConfirmPassword}</p>
           <FormInput
             label='Address'
             type='text'
@@ -322,7 +316,6 @@ const ProfilePage = () => {
             value={userData.zip ? userData.zip : ''}
             name='zip'
           />
-          <p>{formErrors.zip}</p>
           <Button type='submit'>Update</Button>
         </form>
       </div>
