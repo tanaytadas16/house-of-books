@@ -279,8 +279,8 @@ const BookDetails = (props) => {
             )}
             {user && checkBook() && (
               <Button
+                className='button'
                 variant='danger'
-                type='button'
                 onClick={() =>
                   handleRemoveWishlist(
                     bookDetailsData._id,
