@@ -123,7 +123,7 @@ export default function AddNewBook() {
                 // count: 0,
             };
             axios
-                .post('http://localhost:4000/books/addNewBook', {
+                .post('https://houseof-books.herokuapp.com/books/addNewBook', {
                     data: dataBody,
                 })
                 .then(function (response) {

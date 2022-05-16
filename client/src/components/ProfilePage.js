@@ -25,7 +25,7 @@ const ProfilePage = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const url = `http://localhost:4000/users/profile`;
+                const url = `https://houseof-books.herokuapp.com/users/profile`;
                 const { data } = await axios.post(url, {
                     data: currentUser.email,
                 });
@@ -128,7 +128,7 @@ const ProfilePage = () => {
         await updateEmail(auth.currentUser, email.value);
 
         axios
-            .put('http://localhost:4000/users/profile/', {
+            .put('https://houseof-books.herokuapp.com/users/profile/', {
                 data: dataBody,
             })
             .then(function (response) {
