@@ -5,6 +5,7 @@ import FormInput from './FormInput';
 import Button from './Button';
 import { UserContext } from '../contexts/userContext';
 import { getAuth, updateEmail } from 'firebase/auth';
+import { Alert, Toast } from 'react-bootstrap';
 import '../styles/Signup.scss';
 import { auth } from '../firebase/firebase';
 
@@ -174,6 +175,9 @@ const ProfilePage = () => {
             value={userData.firstName ? userData.firstName : ''}
             name='firstName'
           />
+          {formErrors.firstName && (
+            <Alert variant='danger'>{formErrors.firstName}</Alert>
+          )}
           <FormInput
             label='Last Name'
             type='text'
@@ -182,6 +186,9 @@ const ProfilePage = () => {
             value={userData.lastName ? userData.lastName : ''}
             name='lastName'
           />
+          {formErrors.lastName && (
+            <Alert variant='danger'>{formErrors.lastName}</Alert>
+          )}
           <FormInput
             label='Email'
             type='email'
@@ -189,8 +196,10 @@ const ProfilePage = () => {
             onChange={handleChange}
             value={userData.email ? userData.email : ''}
             name='email'
-            disabled
           />
+          {formErrors.email && (
+            <Alert variant='danger'>{formErrors.email}</Alert>
+          )}
           <FormInput
             label='Phone Number'
             type='text'
@@ -199,6 +208,9 @@ const ProfilePage = () => {
             value={userData.phoneNumber ? userData.phoneNumber : ''}
             name='phoneNumber'
           />
+          {formErrors.phoneNumber && (
+            <Alert variant='danger'>{formErrors.phoneNumber}</Alert>
+          )}
           <FormInput
             label='Username'
             type='text'
@@ -207,6 +219,9 @@ const ProfilePage = () => {
             value={userData.username ? userData.username : ''}
             name='username'
           />
+          {formErrors.username && (
+            <Alert variant='danger'>{formErrors.username}</Alert>
+          )}
           <FormInput
             label='Password'
             type='password'
@@ -215,6 +230,9 @@ const ProfilePage = () => {
             value={userData.password ? userData.password : ''}
             name='password'
           />
+          {formErrors.password && (
+            <Alert variant='danger'>{formErrors.password}</Alert>
+          )}
           <FormInput
             label='Confirm Password'
             type='password'
@@ -223,6 +241,9 @@ const ProfilePage = () => {
             value={userData.confirmPassword ? userData.confirmPassword : ''}
             name='confirmPassword'
           />
+          {formErrors.ConfirmPassword && (
+            <Alert variant='danger'>{formErrors.ConfirmPassword}</Alert>
+          )}
           <FormInput
             label='Address'
             type='text'
@@ -300,14 +321,7 @@ const ProfilePage = () => {
             <option value='WI'>Wisconsin</option>
             <option value='WY'>Wyoming</option>
           </select>
-          {/* <FormInput
-            label='State'
-            type='text'
-            required
-            onChange={handleChange}
-            value={userData.state ? userData.state : ''}
-            name='state'
-          /> */}
+
           <FormInput
             label='Zip'
             type='text'
@@ -316,6 +330,7 @@ const ProfilePage = () => {
             value={userData.zip ? userData.zip : ''}
             name='zip'
           />
+          {formErrors.zip && <Alert variant='danger'>{formErrors.zip}</Alert>}
           <Button type='submit'>Update</Button>
         </form>
       </div>
