@@ -1,10 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import FormInput from './FormInput';
 import { useNavigate } from 'react-router-dom';
 import Button from './Button';
 import '../styles/Signup.scss';
 import { UserContext } from '../contexts/userContext';
+import { Alert, Toast } from 'react-bootstrap';
 
 const defaultFormFields = {
     ISBN: '',
@@ -43,8 +44,17 @@ export default function AddNewBook() {
         // reviews,
         // count,
     } = formFields;
+    const [formErrors, setFormErrors] = useState({});
+    const [isSubmit, setIsSubmit] = useState(false);
+
     const { setCurrentUser } = useContext(UserContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log('Form errors are ', formErrors);
+        if (Object.keys(formErrors).length === 0 && isSubmit) {
+        }
+    }, [formErrors]);
 
     const resetFormFields = () => {
         setFormFields(defaultFormFields);
@@ -54,140 +64,173 @@ export default function AddNewBook() {
 
         setFormFields({ ...formFields, [name]: value });
     };
+
+    const isArgumentString = (values) => {
+        let errors = {};
+        const webRegex = /^http(s)/;
+        console.log('Values are ', values);
+        if (!webRegex.test(values.url)) {
+            errors.url = `Invalid Image Url passed`;
+        }
+
+        if (parseInt(values.numberofPages) < 0) {
+            errors.numberofPages = `Pages cannot be less than 0`;
+        }
+        if (parseFloat(values.price) < 0) {
+            errors.price = `Price cannot be less than 0`;
+        }
+        if (
+            parseInt(values.originalPublicationYear) > 2022 &&
+            parseInt(values.originalPublicationYear) < 2000
+        ) {
+            errors.originalPublicationYear = `Year cannot be greater than current year`;
+        }
+        if (
+            parseInt(values.yearPublished) > 2022 &&
+            parseInt(values.yearPublished) < 2000
+        ) {
+            errors.yearPublished = `Year cannot be greater than current year`;
+        }
+        return errors;
+    };
+
     const handleOnSubmit = async (event) => {
         event.preventDefault();
+        console.log('Before function call');
+        setFormErrors(isArgumentString(formFields));
+        console.log('After function call');
 
-        let dataBody = {
-            ISBN: ISBN,
-            title: title,
-            url: url,
-            description: description,
-            author: author,
-            // averageRating: 0,
-            binding: binding,
-            genre: genre,
-            numberofPages: numberofPages,
-            originalPublicationYear: originalPublicationYear,
-            price: price,
-            publisher: publisher,
-            yearPublished: yearPublished,
-            // reviews: [],
-            // count: 0,
-        };
-        axios
-            .post('http://localhost:4000/books/addnewbook', {
-                data: dataBody,
-            })
-            .then(function (response) {
-                console.log(response.data);
-                navigate('/books', { replace: true });
-            });
+        setIsSubmit(true);
+
+        if (Object.keys(formErrors).length === 0) {
+            let dataBody = {
+                ISBN: formFields.ISBN,
+                title: formFields.title,
+                url: formFields.url,
+                description: formFields.description,
+                author: formFields.author,
+                // averageRating: 0,
+                binding: formFields.binding,
+                genre: formFields.genre,
+                numberofPages: formFields.numberofPages,
+                price: formFields.price,
+                publisher: formFields.publisher,
+                // reviews: [],
+                // count: 0,
+            };
+            axios
+                .post('http://localhost:4000/books/addNewBook', {
+                    data: dataBody,
+                })
+                .then(function (response) {
+                    console.log(response.data);
+                    navigate('/books', { replace: true });
+                });
+        }
     };
 
     return (
-        <div className="addnewbook-container">
-            AddNewBook
-            <form onSubmit={handleOnSubmit}>
-                <FormInput
-                    label="Title"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={title}
-                    name="title"
-                />
-                <FormInput
-                    label="ISBN"
-                    type="text"
-                    onChange={handleChange}
-                    value={ISBN}
-                    name="ISBN"
-                />
-                <FormInput
-                    label="Image URL"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={url}
-                    name="url"
-                />
-                <FormInput
-                    label="Author"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={author}
-                    name="author"
-                />
-                <FormInput
-                    label="Description"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={description}
-                    name="description"
-                />
+        <div style={{ textAlign: 'center' }}>
+            <div className="text-center">
+                <h1>AddNewBook</h1>
+            </div>
+            <div style={{ justifyContent: 'center' }}>
+                <form onSubmit={handleOnSubmit} style={{ width: '30%' }}>
+                    <FormInput
+                        label="Title"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={title}
+                        name="title"
+                    />
+                    <FormInput
+                        label="ISBN"
+                        type="text"
+                        onChange={handleChange}
+                        value={ISBN}
+                        name="ISBN"
+                    />
+                    {formErrors.url && (
+                        <Alert variant="danger">{formErrors.url}</Alert>
+                    )}
+                    <FormInput
+                        label="Image URL"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={url}
+                        name="url"
+                    />
+                    <FormInput
+                        label="Author"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={author}
+                        name="author"
+                    />
+                    <FormInput
+                        label="Description"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={description}
+                        name="description"
+                    />
 
-                <FormInput
-                    label="Genre"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={genre}
-                    name="genre"
-                />
-                <FormInput
-                    label="Paperback/HardCover"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={binding}
-                    name="binding"
-                />
+                    <FormInput
+                        label="Genre"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={genre}
+                        name="genre"
+                    />
+                    <FormInput
+                        label="Paperback/HardCover"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={binding}
+                        name="binding"
+                    />
+                    {formErrors.numberofPages && (
+                        <Alert variant="danger">
+                            {formErrors.numberofPages}
+                        </Alert>
+                    )}
+                    <FormInput
+                        label="Pages"
+                        type="number"
+                        required
+                        onChange={handleChange}
+                        value={numberofPages}
+                        name="numberofPages"
+                    />
+                    {formErrors.price && (
+                        <Alert variant="danger">{formErrors.price}</Alert>
+                    )}
+                    <FormInput
+                        label="Price"
+                        type="number"
+                        required
+                        onChange={handleChange}
+                        value={price}
+                        name="price"
+                    />
+                    <FormInput
+                        label="Publisher"
+                        type="text"
+                        required
+                        onChange={handleChange}
+                        value={publisher}
+                        name="publisher"
+                    />
 
-                <FormInput
-                    label="Pages"
-                    type="number"
-                    required
-                    onChange={handleChange}
-                    value={numberofPages}
-                    name="numberofPages"
-                />
-                <FormInput
-                    label="Price"
-                    type="number"
-                    required
-                    onChange={handleChange}
-                    value={price}
-                    name="price"
-                />
-                <FormInput
-                    label="Publisher"
-                    type="text"
-                    required
-                    onChange={handleChange}
-                    value={publisher}
-                    name="publisher"
-                />
-                <FormInput
-                    label="Original Publication Year"
-                    type="number"
-                    required
-                    onChange={handleChange}
-                    value={originalPublicationYear}
-                    name="originalPublicationYear"
-                />
-
-                <FormInput
-                    label="Year Published"
-                    type="number"
-                    required
-                    onChange={handleChange}
-                    value={yearPublished}
-                    name="yearPublished"
-                />
-                <Button type="submit">Submit</Button>
-            </form>
+                    <Button type="submit">Submit</Button>
+                </form>
+            </div>
         </div>
     );
 }

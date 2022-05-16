@@ -191,11 +191,9 @@ async function addNewBook(
     binding,
     genre,
     numberofPages,
-    originalPublicationYear,
     price,
     publisher,
     title,
-    yearPublished,
     count
 ) {
     try {
@@ -213,23 +211,17 @@ async function addNewBook(
             numberofPages,
             'numberofPages'
         );
-        const validateoriginalPublicationYear = isArgumentNumber(
-            originalPublicationYear,
-            'originalPublicationYear'
-        );
+
         const validateprice = isArgumentNumber(price, 'price');
         const validatepublisher = isArgumentString(publisher, 'publisher');
-        const validateyearPublished = isArgumentNumber(
-            yearPublished,
-            'yearPublished'
-        );
-        console.log(count);
+
         const validatecount = isArgumentNumber(count, 'count');
         const validateaverageRating = isArgumentNumber(
             averageRating,
             'averageRating'
         );
         const booksCollection = await books();
+        var currentYear = new Date().getFullYear();
 
         let newBook = {
             ISBN: validateISBN,
@@ -240,11 +232,11 @@ async function addNewBook(
             binding: validatebinding,
             genre: validategenre,
             numberofPages: validatenumberofPages,
-            originalPublicationYear: validateoriginalPublicationYear,
+            originalPublicationYear: currentYear,
             price: validateprice,
             publisher: validatepublisher,
             title: validatetitle,
-            yearPublished: validateyearPublished,
+            yearPublished: currentYear,
             count: validatecount,
             reviews: [],
         };

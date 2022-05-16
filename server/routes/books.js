@@ -59,35 +59,6 @@ function validateWebsite(websiteLink) {
     }
 }
 
-function validateBookCreations(
-    ISBN,
-    url,
-    description,
-    author,
-    binding,
-    genre,
-    numberofPages,
-    originalPublicationYear,
-    price,
-    publisher,
-    title,
-    yearPublished
-) {
-    validateStringParams(ISBN, 'ISBN');
-    validateWebsite(url, 'url');
-    validateStringParams(description, 'description');
-    validateStringParams(author, 'author');
-    validateStringParams(binding, 'binding');
-    validateStringParams(genre, 'genre');
-    validateStringParams(publisher, 'publisher');
-    validateStringParams(title, 'title');
-    validateNumberParams(numberofPages, 'numberofPages');
-    validateNumberParams(originalPublicationYear, 'originalPublicationYear');
-    validateNumberParams(price, 'price');
-    validateNumberParams(yearPublished, 'yearPublished');
-    return true;
-}
-
 router.get('/', async (req, res) => {
     try {
         let books = await booksData.getAll();
@@ -170,10 +141,8 @@ router.post('/addnewbook', async (request, response) => {
             binding,
             genre,
             numberofPages,
-            originalPublicationYear,
             price,
             publisher,
-            yearPublished,
         } = request.body.data;
 
         const validateISBN = isArgumentString(ISBN, 'ISBN');
@@ -190,16 +159,9 @@ router.post('/addnewbook', async (request, response) => {
             numberofPages,
             'numberofPages'
         );
-        const validateoriginalPublicationYear = isArgumentString(
-            originalPublicationYear,
-            'originalPublicationYear'
-        );
+
         const validateprice = isArgumentString(price, 'price');
         const validatepublisher = isArgumentString(publisher, 'publisher');
-        const validateyearPublished = isArgumentString(
-            yearPublished,
-            'yearPublished'
-        );
 
         const averageRating = 0;
         reviews = [];
@@ -215,14 +177,12 @@ router.post('/addnewbook', async (request, response) => {
             validatebinding,
             validategenre,
             parseInt(validatenumberofPages),
-            parseInt(validateoriginalPublicationYear),
             parseFloat(validateprice),
             validatepublisher,
             validatetitle,
-            parseInt(validateyearPublished),
             count
         );
-        console.log('validateISBN');
+
         if (!books) {
             throwError(
                 ErrorCode.INTERNAL_SERVER_ERROR,
