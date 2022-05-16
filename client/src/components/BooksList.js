@@ -131,29 +131,28 @@ const BookList = () => {
               </Link>
               <span className='title'>{title}</span>
               {user && (
-                <button
-                  className='btn'
+                <Button
+                  variant='primary'
+                  className='button'
                   onClick={() => buyBook(title, _id, price, url)}
                 >
                   <span className='price'>
                     ${isNaN(parseInt(price)) ? 7.0 : price}
                   </span>
                   <span>Add to Cart</span>
-                </button>
+                </Button>
               )}
               {user && !checkBook(_id) && (
                 <Button
                   onClick={() => onClickWishlist(_id, title)}
-                  variant='contained'
-                  color='error'
+                  variant='danger'
                 >
                   Add To Wishlist
                 </Button>
               )}
               {user && checkBook(_id) && (
                 <Button
-                  variant='contained'
-                  color='error'
+                  variant='danger'
                   onClick={() => handleRemoveWishlist(_id, title)}
                 >
                   Remove from Wishlist

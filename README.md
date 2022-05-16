@@ -76,6 +76,9 @@ http://localhost:3000/books/newAdditions
 View the most popular books:
 http://localhost:3000/books/mostPopular
 
+View books by your favourite genre:
+http://localhost:3000/books/genres
+
 View all the books that are available for rent:
 http://localhost:3000/library
 
@@ -89,3 +92,12 @@ View your previous orders at:
 http://localhost:3000/users/myOrders
 
 You can view details of a book by clicking on that particular book
+
+Search any book at:
+http://localhost:3000/books/search
+
+View the books in your wishlist:
+http://localhost:3000/users/bookshelf
+
+You can checkout the order:
+http://localhost:3000/checkout

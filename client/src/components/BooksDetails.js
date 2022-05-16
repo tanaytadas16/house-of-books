@@ -86,19 +86,17 @@ const BookDetails = (props) => {
     dispatch(addItemToCart(cartItems, dataBody));
   };
 
-  const rentBook = (title, bookId, quantity, price, imageUrl) => {
+  const rentBook = (title, bookId, price, imageUrl) => {
     let todayDate = formatDate(new Date());
     let endDate = formatDateNextMonth(new Date());
     console.log(todayDate);
     let dataBody = {
       email: user.email,
       name: title,
-      price: 7.0,
+      price: isNaN(parseFloat(price)) ? 7.0 : bookDetailsData.price,
       bookId: bookId,
-      quantity: quantity,
-      totalPrice: quantity * price,
       imageUrl: imageUrl,
-      flag: 'B',
+      flag: 'R',
       startDate: todayDate,
       endDate: endDate,
     };
@@ -106,15 +104,14 @@ const BookDetails = (props) => {
     dispatch(addItemToCart(cartItems, dataBody));
   };
 
-  const resetFormFields = () => {
-    setReviewDetails(defaultFormFields);
-  };
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setReviewDetails({ ...reviewDetails, [name]: value });
   };
 
+  const resetFormFields = () => {
+    setReviewDetails(defaultFormFields);
+  };
   const handleOnSubmit = async (event) => {
     event.preventDefault();
 
@@ -136,7 +133,6 @@ const BookDetails = (props) => {
           history(`/books/${bookDetailsData._id}`, { replace: true });
         });
     } catch (error) {
-      console.log(error.response.data);
       setReviewError(error.response.data);
       return;
     }
@@ -153,20 +149,6 @@ const BookDetails = (props) => {
       });
   };
 
-  // const editReview = (bookId, reviewId) => {
-  //   let dataBody = {
-  //     bookId: bookId,
-  //     reviewId: reviewId,
-  //   };
-  //   axios
-  //     .put('http://localhost:4000/reviews/updateReview', {
-  //       data: dataBody,
-  //     })
-  //     .then(function (response) {
-  //       console.log(response.data);
-  //       history(`/books/${bookDetailsData._id}`, { replace: true });
-  //     });
-  // };
   let onClickWishlist = async (bookId, title) => {
     try {
       const url = `http://localhost:4000/users/bookshelf/add`;
@@ -240,40 +222,65 @@ const BookDetails = (props) => {
               alt={`${bookDetailsData.title}`}
             />
             <span className='title'>Title: {bookDetailsData.title}</span>
-            {user && (
-              <button
-                className='btn'
-                variant='primary'
-                onClick={() =>
-                  rentBook(
-                    bookDetailsData.title,
-                    bookDetailsData._id,
-                    bookDetailsData.price,
-                    bookDetailsData.url
-                  )
-                }
-              >
-                <span className='price'>
-                  $
-                  {isNaN(parseInt(bookDetailsData.price))
-                    ? 7.0
-                    : bookDetailsData.price}
-                </span>
-                <span>Add to Cart</span>
-              </button>
-            )}
+            {user &&
+              (isNaN(parseFloat(bookDetailsData.price)) ? (
+                <Button
+                  className='button'
+                  variant='primary'
+                  onClick={() =>
+                    rentBook(
+                      bookDetailsData.title,
+                      bookDetailsData._id,
+                      bookDetailsData.price,
+                      bookDetailsData.url
+                    )
+                  }
+                >
+                  <span className='price'>
+                    $
+                    {isNaN(parseInt(bookDetailsData.price))
+                      ? 7.0
+                      : bookDetailsData.price}
+                  </span>
+                  <span>Add to Cart</span>
+                </Button>
+              ) : (
+                <Button
+                  className='button'
+                  variant='primary'
+                  onClick={() =>
+                    buyBook(
+                      bookDetailsData.title,
+                      bookDetailsData._id,
+                      bookDetailsData.price,
+                      bookDetailsData.url
+                    )
+                  }
+                >
+                  <span className='price'>
+                    $
+                    {isNaN(parseInt(bookDetailsData.price))
+                      ? 7.0
+                      : bookDetailsData.price}
+                  </span>
+                  <span>Add to Cart</span>
+                </Button>
+              ))}
             {user && !checkBook() && (
-              <AddToWishlist
-                bookid={bookDetailsData._id}
-                handleOnClick={() =>
+              <Button
+                className='wishlist'
+                onClick={() =>
                   onClickWishlist(bookDetailsData._id, bookDetailsData.title)
                 }
-              />
+                variant='danger'
+              >
+                Add To Wishlist
+              </Button>
             )}
             {user && checkBook() && (
               <Button
-                variant='contained'
-                color='error'
+                variant='danger'
+                className='wishlist'
                 onClick={() =>
                   handleRemoveWishlist(
                     bookDetailsData._id,
@@ -366,11 +373,13 @@ const BookDetails = (props) => {
               />
               <br /> <br />
               <label htmlFor='rating'>Rating </label>
-              <select name='rating' id='rating' onChange={handleChange}>
-                <option disabled selected value>
-                  {' '}
-                  -- select an option --{' '}
-                </option>
+              <select
+                name='rating'
+                value={rating ? rating : 0}
+                id='rating'
+                onChange={handleChange}
+              >
+                <option value='Choose'>Choose Rating</option>
                 <option value='1'>1 Star</option>
                 <option value='2'>2 Stars</option>
                 <option value='3'>3 Stars</option>

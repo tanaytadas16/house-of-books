@@ -84,6 +84,9 @@ const Checkout = () => {
         <div className='header-block'>
           <span>Remove</span>
         </div>
+        <div className='header-block'>
+          <span>Purchase Option</span>
+        </div>
       </div>
       {cartItems.map((cartItem) => (
         <CheckoutItem key={cartItem.bookId} cartItem={cartItem} />
@@ -99,7 +102,7 @@ const Checkout = () => {
           <Link className='signin-link' to='/auth'>
             Sign in
           </Link>{' '}
-          to purchase
+          to purchase items
         </p>
       )}
       {visible && (
