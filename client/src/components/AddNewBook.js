@@ -6,6 +6,8 @@ import Button from './Button';
 import '../styles/Signup.scss';
 import { UserContext } from '../contexts/userContext';
 import { Alert, Toast } from 'react-bootstrap';
+import { auth } from '../firebase/firebase';
+import { Navigate } from 'react-router-dom';
 
 const defaultFormFields = {
     ISBN: '',
@@ -47,7 +49,9 @@ export default function AddNewBook() {
     const [formErrors, setFormErrors] = useState({});
     const [isSubmit, setIsSubmit] = useState(false);
 
-    const { setCurrentUser } = useContext(UserContext);
+    const { currentUser } = useContext(UserContext);
+    // const auth = getAuth();
+    const user = auth.currentUser;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -128,109 +132,116 @@ export default function AddNewBook() {
                 });
         }
     };
+    if (user) {
+        return (
+            <div style={{ textAlign: 'center' }}>
+                <div className="text-center">
+                    <h1>AddNewBook</h1>
+                </div>
+                <div style={{ justifyContent: 'center' }}>
+                    <form onSubmit={handleOnSubmit} style={{ width: '30%' }}>
+                        <FormInput
+                            label="Title"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={title}
+                            name="title"
+                        />
+                        <FormInput
+                            label="ISBN"
+                            type="text"
+                            onChange={handleChange}
+                            value={ISBN}
+                            name="ISBN"
+                        />
+                        {formErrors.url && (
+                            <Alert variant="danger">{formErrors.url}</Alert>
+                        )}
+                        <FormInput
+                            label="Image URL"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={url}
+                            name="url"
+                        />
+                        <FormInput
+                            label="Author"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={author}
+                            name="author"
+                        />
+                        <FormInput
+                            label="Description"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={description}
+                            name="description"
+                        />
 
-    return (
-        <div style={{ textAlign: 'center' }}>
-            <div className="text-center">
-                <h1>AddNewBook</h1>
+                        <FormInput
+                            label="Genre"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={genre}
+                            name="genre"
+                        />
+                        <FormInput
+                            label="Paperback/HardCover"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={binding}
+                            name="binding"
+                        />
+                        {formErrors.numberofPages && (
+                            <Alert variant="danger">
+                                {formErrors.numberofPages}
+                            </Alert>
+                        )}
+                        <FormInput
+                            label="Pages"
+                            type="number"
+                            required
+                            onChange={handleChange}
+                            value={numberofPages}
+                            name="numberofPages"
+                        />
+                        {formErrors.price && (
+                            <Alert variant="danger">{formErrors.price}</Alert>
+                        )}
+                        <FormInput
+                            label="Price"
+                            type="number"
+                            required
+                            onChange={handleChange}
+                            value={price}
+                            name="price"
+                        />
+                        <FormInput
+                            label="Publisher"
+                            type="text"
+                            required
+                            onChange={handleChange}
+                            value={publisher}
+                            name="publisher"
+                        />
+
+                        <Button type="submit">Submit</Button>
+                    </form>
+                </div>
             </div>
-            <div style={{ justifyContent: 'center' }}>
-                <form onSubmit={handleOnSubmit} style={{ width: '30%' }}>
-                    <FormInput
-                        label="Title"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={title}
-                        name="title"
-                    />
-                    <FormInput
-                        label="ISBN"
-                        type="text"
-                        onChange={handleChange}
-                        value={ISBN}
-                        name="ISBN"
-                    />
-                    {formErrors.url && (
-                        <Alert variant="danger">{formErrors.url}</Alert>
-                    )}
-                    <FormInput
-                        label="Image URL"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={url}
-                        name="url"
-                    />
-                    <FormInput
-                        label="Author"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={author}
-                        name="author"
-                    />
-                    <FormInput
-                        label="Description"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={description}
-                        name="description"
-                    />
-
-                    <FormInput
-                        label="Genre"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={genre}
-                        name="genre"
-                    />
-                    <FormInput
-                        label="Paperback/HardCover"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={binding}
-                        name="binding"
-                    />
-                    {formErrors.numberofPages && (
-                        <Alert variant="danger">
-                            {formErrors.numberofPages}
-                        </Alert>
-                    )}
-                    <FormInput
-                        label="Pages"
-                        type="number"
-                        required
-                        onChange={handleChange}
-                        value={numberofPages}
-                        name="numberofPages"
-                    />
-                    {formErrors.price && (
-                        <Alert variant="danger">{formErrors.price}</Alert>
-                    )}
-                    <FormInput
-                        label="Price"
-                        type="number"
-                        required
-                        onChange={handleChange}
-                        value={price}
-                        name="price"
-                    />
-                    <FormInput
-                        label="Publisher"
-                        type="text"
-                        required
-                        onChange={handleChange}
-                        value={publisher}
-                        name="publisher"
-                    />
-
-                    <Button type="submit">Submit</Button>
-                </form>
+        );
+    } else {
+        return (
+            <div>
+                <h1>User Need To be Signed Up</h1>
             </div>
-        </div>
-    );
+        );
+    }
 }
