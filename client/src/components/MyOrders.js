@@ -18,7 +18,7 @@ const MyOrders = () => {
     async function fetchData() {
       try {
         console.log('Before axios call');
-        const url = `http://localhost:4000/users/myOrders`;
+        const url = `http://localhost:4000/users/myorders`;
         const { data } = await axios.post(url, {
           data: currentUser.email,
         });
