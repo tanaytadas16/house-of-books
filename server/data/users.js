@@ -354,27 +354,6 @@ async function updateUser(
   return updateUser;
 }
 
-// async function deleteUser(userId) {
-//   // validateID(userId);
-//   userId = userId.trim();
-//   let result = {};
-//   userId = ObjectId(userId);
-
-//   const userCollection = await users();
-
-//   const checkUser = await this.getUser(userId.toString());
-//   if (!checkUser) throw "User info does not exists ";
-
-//   const deleteUser = await userCollection.deleteOne({ _id: userId });
-//   if (deleteUser.deletedCount == 0) {
-//     throw "Could not delete the User";
-//   } else {
-//     result.userId = checkUser._id;
-//     result.deleted = true;
-//   }
-//   return result;
-// }
-
 async function checkUser(email, password) {
   // error check
   if (!email) throw 'You must provide a username';

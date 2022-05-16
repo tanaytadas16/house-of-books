@@ -35,6 +35,13 @@ async function createReview(
 
   if (userData === null) throw 'User does not exist';
 
+  console.log(userData, bookId);
+  const reviewFound = userData.reviews.filter(
+    (element) => element.bookId === bookId
+  );
+  if (reviewFound.length > 0) {
+    throw `User cannot post more than one review for the same book`;
+  }
   const bookCollection = await books();
   const checkBook = await bookCollection.findOne({
     _id: ObjectId(bookId),

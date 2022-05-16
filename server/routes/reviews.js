@@ -7,42 +7,42 @@ const errorCheck = require('../data/errorCheck');
 
 router.get('/:id', async (req, res) => {
   if (!errorCheck.checkId(req.params.id.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Book Id' });
+    res.status(400).json('You must supply a valid Book Id');
     return;
   }
   try {
     const reviewBook = await booksData.getById(req.params.id);
     res.json(reviewBook);
   } catch (e) {
-    res.status(404).json({ error: 'Book not found' });
+    res.status(404).json('Book not found');
     return;
   }
 });
 
 router.get('/userreviews/:id', async (req, res) => {
   if (!errorCheck.checkId(req.params.id.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Book Id' });
+    res.status(400).json('You must supply a valid Book Id');
     return;
   }
   try {
     const reviewsOfUser = await reviewData.getAllReviewsOfUser(req.params.id);
     res.json(reviewsOfUser);
   } catch (e) {
-    res.status(404).json({ error: 'Reviews of user not found' });
+    res.status(404).json('Reviews of user not found');
     return;
   }
 });
 
 router.get('/bookreviews/:id', async (req, res) => {
   if (!errorCheck.checkId(req.params.id.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Book Id' });
+    res.status(400).json('You must supply a valid Book Id');
     return;
   }
   try {
     const reviewsOfBook = await reviewData.getAllReviewsOfBook(req.params.id);
     res.json(reviewsOfBook);
   } catch (e) {
-    res.status(404).json({ error: 'Reviews of book not found' });
+    res.status(404).json('Reviews of book not found');
     return;
   }
 });
@@ -62,38 +62,39 @@ router.post('/review', async (req, res) => {
   reviewInfo.rating = parseInt(reviewInfo.rating);
 
   if (!errorCheck.checkId(reviewInfo.bookId.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Book Id' });
+    res.status(400).json('You must supply a valid Book Id');
     return;
   }
 
   if (!errorCheck.checkRating(reviewInfo.rating)) {
-    res.status(400).json({ error: 'You must supply a valid Rating' });
+    res.status(400).json('You must supply a valid Rating');
     return;
   }
 
   if (!errorCheck.checkString(reviewInfo.comment.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Date' });
+    res.status(400).json('You must supply a valid Date');
     return;
   }
 
   if (!errorCheck.checkDate(dateOfReview.trim())) {
-    res.status(400).json({
-      error:
-        "Date provided is not in proper format. Also please enter today's date",
-    });
+    res
+      .status(400)
+      .json(
+        "Date provided is not in proper format. Also please enter today's date"
+      );
     return;
   }
 
   try {
     await booksData.getById(reviewInfo.bookId);
   } catch (e) {
-    res.status(404).json({ error: 'Book not found' });
+    res.status(404).json('Book not found');
     return;
   }
 
   const user = await usersData.getUser(reviewInfo.email.trim());
   if (user === null) {
-    res.status(404).json({ error: 'User not found' });
+    res.status(404).json('User not found');
     return;
   }
 
@@ -108,21 +109,21 @@ router.post('/review', async (req, res) => {
     );
     res.status(200).json(newReview);
   } catch (e) {
-    res.status(500).json({ error: e });
+    res.status(500).json(e);
     return;
   }
 });
 
 router.get('/editReview/:id', async (req, res) => {
   if (!errorCheck.checkId(req.params.id.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Review Id' });
+    res.status(400).json('You must supply a valid Review Id');
     return;
   }
   try {
     const reviewDetails = await reviewData.getReview(req.params.id);
     res.status(200).json(reviewDetails);
   } catch (e) {
-    res.status(404).json({ error: 'Review not found' });
+    res.status(404).json('Review not found');
     return;
   }
 });
@@ -132,24 +133,24 @@ router.put('/updateReview/', async (req, res) => {
   updateReviewInfo.rating = parseInt(updateReviewInfo.rating);
 
   if (!errorCheck.checkId(updateReviewInfo.reviewId.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Review Id' });
+    res.status(400).json('You must supply a valid Review Id');
     return;
   }
 
   if (!errorCheck.checkRating(updateReviewInfo.rating)) {
-    res.status(400).json({ error: 'You must supply a valid Rating' });
+    res.status(400).json('You must supply a valid Rating');
     return;
   }
 
   if (!errorCheck.checkString(updateReviewInfo.comment.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Date' });
+    res.status(400).json('You must supply a valid Date');
     return;
   }
 
   try {
     await reviewData.getReview(updateReviewInfo.reviewId);
   } catch (e) {
-    res.status(404).json({ error: 'Review not found' });
+    res.status(404).json('Review not found');
     return;
   }
   try {
@@ -160,13 +161,13 @@ router.put('/updateReview/', async (req, res) => {
     );
     res.status(200).json(updatedReview);
   } catch (e) {
-    res.status(404).json({ error: e });
+    res.status(404).json(e);
   }
 });
 
 router.delete('/deleteReview/:reviewId', async (req, res) => {
   if (!errorCheck.checkId(req.params.reviewId.trim())) {
-    res.status(400).json({ error: 'You must supply a valid Book Id' });
+    res.status(400).json('You must supply a valid Book Id');
     return;
   }
 
@@ -174,7 +175,7 @@ router.delete('/deleteReview/:reviewId', async (req, res) => {
     let getReview = await reviewData.getReview(req.params.reviewId);
     console.log('Get review is ', getReview);
   } catch (e) {
-    res.status(404).json({ error: 'Review not found' });
+    res.status(404).json('Review not found');
     return;
   }
   try {
@@ -186,14 +187,9 @@ router.delete('/deleteReview/:reviewId', async (req, res) => {
       let getReview = await booksData.getById(deletedReview.bookId);
       console.log(getReview);
       res.status(200).json(getReview);
-    } else
-      res
-        .status(400)
-        .json({ error: 'Review cannot be deleted due to some error' });
+    } else res.status(400).json('Review cannot be deleted due to some error');
   } catch (e) {
-    res
-      .status(404)
-      .json({ error: 'Review cannot be deleted due to some error' });
+    res.status(404).json('Review cannot be deleted due to some error');
   }
 });
 
