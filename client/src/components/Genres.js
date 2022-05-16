@@ -131,14 +131,12 @@ const BookGenres = (props) => {
           <label>Genre</label>
           <select
             className='form-input-label'
-            label='Genre'
-            required
             onChange={handleChange}
             value={genreNew}
             name='Genre'
           >
             {' '}
-            <option value='None'></option>
+            <option value='None'>Select Genre</option>
             <option value='thriller'>Thriller</option>
             <option value='fiction'>Fiction</option>
             <option value='fantasy'>Fantasy</option>
@@ -149,10 +147,10 @@ const BookGenres = (props) => {
           </select>
         </div>
         {bookDetailsData && bookDetailsData.length !== 0 && (
-          <h2>You are viewing {genreNew} books</h2>
+          <h1>You are viewing {genreNew} books</h1>
         )}
         {bookDetailsData.length === 0 && (
-          <h2>Please select a genre from the dropdown</h2>
+          <h1>Please select a genre from the dropdown</h1>
         )}
         <br></br>
         <br></br>
@@ -161,7 +159,7 @@ const BookGenres = (props) => {
             bookDetailsData.map(({ _id, url, title, price }) => (
               <div className='genres-card-container' key={_id}>
                 <Link to={`/books/${_id}`}>
-                  <img src={url ? url : noImage} alt={`${title}`} />
+                  <img src={url ? url : noImage} alt='{`${title}`}' />
                 </Link>
                 <span className='title'>{title}</span>
                 {user && (
@@ -178,6 +176,7 @@ const BookGenres = (props) => {
                 )}
                 {user && !checkBook(_id) && (
                   <Button
+                    className='button'
                     onClick={() => onClickWishlist(_id, title)}
                     variant='danger'
                   >
@@ -186,6 +185,7 @@ const BookGenres = (props) => {
                 )}
                 {user && checkBook(_id) && (
                   <Button
+                    className='button'
                     variant='danger'
                     onClick={() => handleRemoveWishlist(_id, title)}
                   >

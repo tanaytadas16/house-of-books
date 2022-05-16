@@ -11,6 +11,13 @@ $main-color: black;
   margin-bottom: 15px;
 }
 
+h1 {
+  text-align: center;
+  margin: 30px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
 h2 {
   text-align: center;
   margin: 30px;
@@ -59,14 +66,14 @@ h2 {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: #0d6efd;
+    background-color: #4d678d;
     border-radius: 7px;
-    border-color: #0d6efd;
+    border-color: #4d678d;
 
     .price {
       background-color: white;
       padding: 5px;
-      background-color: #0d6efd;
+      background-color: #4d678d;
     }
   }
 }

@@ -160,7 +160,7 @@ const ProfilePage = () => {
   } else {
     return (
       <div className='sign-up-container'>
-        <h2>Profile Page</h2>
+        <h1>Profile Page</h1>
         {userData && userData.image ? (
           <img alt='profile picture' src={userData.image} />
         ) : (
@@ -263,12 +263,11 @@ const ProfilePage = () => {
           <label>State</label>
           <select
             className='form-input-label'
-            label='State'
-            required
             onChange={handleChange}
             value={userData.state ? userData.state : ''}
             name='state'
           >
+            <option value=''>Choose State</option>
             <option value='AL'>Alabama</option>
             <option value='AK'>Alaska</option>
             <option value='AZ'>Arizona</option>

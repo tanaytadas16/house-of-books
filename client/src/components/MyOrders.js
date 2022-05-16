@@ -11,7 +11,6 @@ const MyOrders = () => {
   const [error, setError] = useState(false);
 
   const { currentUser } = useContext(UserContext);
-  console.log('Current user is ', currentUser.email);
 
   useEffect(() => {
     console.log('useEffect fired');
@@ -77,10 +76,10 @@ const MyOrders = () => {
                   {totalPrice ? (
                     <span className='heading'>Total Price: {totalPrice}</span>
                   ) : (
-                    <div className='price-container'>
+                    <span className='price-container'>
                       <span className='rented'>Rented Book</span>
                       <span className='heading'>Total Price: $7.00</span>
-                    </div>
+                    </span>
                   )}
                 </span>
                 <span>
@@ -89,15 +88,15 @@ const MyOrders = () => {
                 </span>
                 <span>
                   {dateOfPurchase ? (
-                    <div>
+                    <span>
                       <span className='heading'>Date of Purchase: </span>
                       <span>{dateOfPurchase}</span>
-                    </div>
+                    </span>
                   ) : (
-                    <div>
+                    <span>
                       <span className='heading'>Rented Date: </span>
                       <span>{startDate}</span>
-                    </div>
+                    </span>
                   )}
                 </span>
                 <span>
