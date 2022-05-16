@@ -45,7 +45,7 @@ const App = () => {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route
                     exact
-                    path="/books/addNewBook"
+                    path="/books/addnewbook"
                     element={<AddNewBook />}
                 />
                 <Route

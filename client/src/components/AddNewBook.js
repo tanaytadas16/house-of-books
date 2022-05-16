@@ -75,7 +75,7 @@ export default function AddNewBook() {
             // count: 0,
         };
         axios
-            .post('http://localhost:4000/books/addNewBook', {
+            .post('http://localhost:4000/books/addnewbook', {
                 data: dataBody,
             })
             .then(function (response) {
