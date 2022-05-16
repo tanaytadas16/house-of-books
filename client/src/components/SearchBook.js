@@ -73,6 +73,7 @@ const BookSearchDetails = (props) => {
     }, [searchTerm]);
 
     const searchValue = async (value) => {
+        if (value === "") setSearchData([]);
         setSearchTerm(value);
     };
 
