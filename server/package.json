@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node app.js",
-        "dev": "nodemon app.js"
+        "dev": "nodemon app.js",
+        "build": "react-scripts build"
     },
     "repository": {
         "type": "git",
@@ -33,6 +34,7 @@
         "mongodb": "^4.1.4",
         "nodemon": "^2.0.15",
         "qs": "^6.10.1",
+        "react-scripts": "^5.0.1",
         "redis": "^4.1.0",
         "validator": "^13.7.0",
         "xss": "^1.0.10"
